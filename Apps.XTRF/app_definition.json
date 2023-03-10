@@ -1,0 +1,16 @@
+﻿{
+  "definition": [
+    {
+      "name": "url",
+      "description": "URL to your XTRF instane e.g. https://<company name>.s.xtrf.eu"
+    },
+    {
+      "name": "token",
+      "description": "An access token generated for a user in your XTRF admin panel"
+    }
+  ],
+  "communicationWrapperType": "HttpWrapper",
+  "authenticationType": null,
+  "authenticationDefition": null,
+  "authenticationResponseMapping": null
+}
