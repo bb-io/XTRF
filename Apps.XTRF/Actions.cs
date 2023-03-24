@@ -10,15 +10,18 @@ namespace Apps.XTRF
     public class Actions
     {
         [Action("Get customers", Description = "Get all customers on this XTRF instance")]
-        public List<SimpleCustomer>? GetCustomers(string url, AuthenticationCredentialsProvider authenticationCredentialsProvider)
+        public GetCustomersResponse GetCustomers(string url, AuthenticationCredentialsProvider authenticationCredentialsProvider)
         {
             var client = new XtrfClient(url);
             var request = new XtrfRequest("/customers", Method.Get, authenticationCredentialsProvider);
-            return client.Get<List<SimpleCustomer>>(request);
+            return new GetCustomersResponse()
+            {
+                SimpleCustomers = client.Get<List<SimpleCustomer>>(request)
+            };
         }
 
         [Action("Get customer details", Description = "Get all information of a specific customer")]
-        public Customer? GetCustomer(string url, AuthenticationCredentialsProvider authenticationCredentialsProvider, [ActionParameter]int id)
+        public Customer GetCustomer(string url, AuthenticationCredentialsProvider authenticationCredentialsProvider, [ActionParameter]int id)
         {
             var client = new XtrfClient(url);
             var request = new XtrfRequest("/customers/" + id, Method.Get, authenticationCredentialsProvider);
