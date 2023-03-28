@@ -20,5 +20,14 @@ namespace Apps.XTRF
             var request = new XtrfRequest("/v2/quotes/" + id, Method.Get, authenticationCredentialsProvider);
             return client.Get<Quote>(request);
         }
+
+        [Action("Create new quote", Description = "Create a new quote")]
+        public Quote CreateProject(string url, AuthenticationCredentialsProvider authenticationCredentialsProvider, [ActionParameter] SimpleQuote quote)
+        {
+            var client = new XtrfClient(url);
+            var request = new XtrfRequest("/v2/quotes", Method.Post, authenticationCredentialsProvider);
+            request.AddJsonBody(quote);
+            return client.Post<Quote>(request);
+        }
     }
 }

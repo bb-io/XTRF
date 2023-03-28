@@ -20,5 +20,14 @@ namespace Apps.XTRF
             var request = new XtrfRequest("/v2/projects/" + id, Method.Get, authenticationCredentialsProvider);
             return client.Get<Project>(request);
         }
+
+        [Action("Create new project", Description = "Create a new project")]
+        public Project CreateProject(string url, AuthenticationCredentialsProvider authenticationCredentialsProvider, [ActionParameter] SimpleProject project)
+        {
+            var client = new XtrfClient(url);
+            var request = new XtrfRequest("/v2/projects", Method.Post, authenticationCredentialsProvider);
+            request.AddJsonBody(project);
+            return client.Post<Project>(request);
+        }
     }
 }
