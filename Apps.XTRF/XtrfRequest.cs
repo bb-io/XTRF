@@ -10,9 +10,10 @@ namespace Apps.XTRF
 {
     internal class XtrfRequest : RestRequest
     {
-        public XtrfRequest(string endpoint, Method method, AuthenticationCredentialsProvider authenticationCredentialsProvider) : base(endpoint, method)
+        public XtrfRequest(string endpoint, Method method, IEnumerable<AuthenticationCredentialsProvider> authenticationCredentialsProviders) : base(endpoint, method)
         {
-            this.AddHeader("X-AUTH-ACCESS-TOKEN", authenticationCredentialsProvider.Value);
+            var token = authenticationCredentialsProviders.First(p => p.KeyName == "token").Value;
+            this.AddHeader("X-AUTH-ACCESS-TOKEN", token);
             this.AddHeader("accept", "*/*");
         }
     }

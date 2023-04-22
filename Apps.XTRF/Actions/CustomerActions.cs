@@ -5,16 +5,16 @@ using Blackbird.Applications.Sdk.Common.Actions;
 using Blackbird.Applications.Sdk.Common.Authentication;
 using RestSharp;
 
-namespace Apps.XTRF
+namespace Apps.XTRF.Actions
 {
     [ActionList]
     public class CustomerActions
     {
         [Action("Get customers", Description = "Get all customers on this XTRF instance")]
-        public GetCustomersResponse GetCustomers(string url, AuthenticationCredentialsProvider authenticationCredentialsProvider)
+        public GetCustomersResponse GetCustomers(IEnumerable<AuthenticationCredentialsProvider> authenticationCredentialsProviders)
         {
-            var client = new XtrfClient(url);
-            var request = new XtrfRequest("/customers", Method.Get, authenticationCredentialsProvider);
+            var client = new XtrfClient(authenticationCredentialsProviders);
+            var request = new XtrfRequest("/customers", Method.Get, authenticationCredentialsProviders);
             return new GetCustomersResponse()
             {
                 SimpleCustomers = client.Get<List<SimpleCustomer>>(request)
@@ -22,18 +22,18 @@ namespace Apps.XTRF
         }
 
         [Action("Get customer details", Description = "Get all information of a specific customer")]
-        public Customer GetCustomer(string url, AuthenticationCredentialsProvider authenticationCredentialsProvider, [ActionParameter]int id)
+        public Customer GetCustomer(IEnumerable<AuthenticationCredentialsProvider> authenticationCredentialsProviders, [ActionParameter] int id)
         {
-            var client = new XtrfClient(url);
-            var request = new XtrfRequest("/customers/" + id, Method.Get, authenticationCredentialsProvider);
+            var client = new XtrfClient(authenticationCredentialsProviders);
+            var request = new XtrfRequest("/customers/" + id, Method.Get, authenticationCredentialsProviders);
             return client.Get<Customer>(request);
         }
 
         [Action("Create customer", Description = "Create a new customer")]
-        public SimpleCustomer CreateCustomer(string url, AuthenticationCredentialsProvider authenticationCredentialsProvider, [ActionParameter] CreateCustomer newCustomer)
+        public SimpleCustomer CreateCustomer(IEnumerable<AuthenticationCredentialsProvider> authenticationCredentialsProviders, [ActionParameter] CreateCustomer newCustomer)
         {
-            var client = new XtrfClient(url);
-            var request = new XtrfRequest("/customers", Method.Post, authenticationCredentialsProvider);
+            var client = new XtrfClient(authenticationCredentialsProviders);
+            var request = new XtrfRequest("/customers", Method.Post, authenticationCredentialsProviders);
             request.AddJsonBody(new
             {
                 name = newCustomer.Name,

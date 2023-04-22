@@ -9,24 +9,24 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Apps.XTRF
+namespace Apps.XTRF.Actions
 {
     [ActionList]
     public class ProjectActions
     {
         [Action("Get project details", Description = "Get all information of a specific project")]
-        public Project GetProject(string url, AuthenticationCredentialsProvider authenticationCredentialsProvider, [ActionParameter] int id)
+        public Project GetProject(IEnumerable<AuthenticationCredentialsProvider> authenticationCredentialsProviders, [ActionParameter] int id)
         {
-            var client = new XtrfClient(url);
-            var request = new XtrfRequest("/v2/projects/" + id, Method.Get, authenticationCredentialsProvider);
+            var client = new XtrfClient(authenticationCredentialsProviders);
+            var request = new XtrfRequest("/v2/projects/" + id, Method.Get, authenticationCredentialsProviders);
             return client.Get<Project>(request);
         }
 
         [Action("Create new project", Description = "Create a new project")]
-        public Project CreateProject(string url, AuthenticationCredentialsProvider authenticationCredentialsProvider, [ActionParameter] SimpleProject project)
+        public Project CreateProject(IEnumerable<AuthenticationCredentialsProvider> authenticationCredentialsProviders, [ActionParameter] SimpleProject project)
         {
-            var client = new XtrfClient(url);
-            var request = new XtrfRequest("/v2/projects", Method.Post, authenticationCredentialsProvider);
+            var client = new XtrfClient(authenticationCredentialsProviders);
+            var request = new XtrfRequest("/v2/projects", Method.Post, authenticationCredentialsProviders);
             request.AddJsonBody(project);
             return client.Post<Project>(request);
         }

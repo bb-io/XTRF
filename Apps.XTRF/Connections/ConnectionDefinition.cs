@@ -27,8 +27,19 @@ namespace Apps.XTRF.Connections
 
         public IEnumerable<AuthenticationCredentialsProvider> CreateAuthorizationCredentialsProviders(Dictionary<string, string> values)
         {
-            var token = values.First(x => x.Key == "token");
-            yield return new AuthenticationCredentialsProvider(AuthenticationCredentialsRequestLocation.Header, "X-AUTH-ACCESS-TOKEN", token.Value);
+            var url = values.First(v => v.Key == "url");
+            yield return new AuthenticationCredentialsProvider(
+                AuthenticationCredentialsRequestLocation.None,
+                url.Key,
+                url.Value
+            );
+
+            var token = values.First(v => v.Key == "token");
+            yield return new AuthenticationCredentialsProvider(
+                AuthenticationCredentialsRequestLocation.None,
+                token.Key,
+                token.Value
+            );
         }
     }
 }
