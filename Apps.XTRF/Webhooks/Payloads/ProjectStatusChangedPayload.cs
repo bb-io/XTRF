@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace Apps.XTRF.Webhooks.Payloads
 {
-    public class ProjectCreatedPayload
+    public class ProjectStatusChangedPayload
     {
         [JsonProperty("name")]
         public string Name { get; set; }
@@ -42,7 +42,16 @@ namespace Apps.XTRF.Webhooks.Payloads
         [JsonProperty("created on")]
         public DateTime CreatedOn { get; set; }
 
+        [JsonProperty("deadline")]
+        public DateTime Deadline { get; set; }
+
         [JsonProperty("start date and time")]
         public DateTime StartDateAndTime { get; set; }
+
+        [JsonProperty("status")]
+        public string Status { get; set; }
+
+        [JsonProperty("previous status")]
+        public string PreviousStatus { get; set; }
     }
 }
