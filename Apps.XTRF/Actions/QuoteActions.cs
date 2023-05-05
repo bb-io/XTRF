@@ -30,5 +30,27 @@ namespace Apps.XTRF.Actions
             request.AddJsonBody(quote);
             return client.Post<Quote>(request);
         }
+
+        [Action("Get jobs in a quote", Description = "Get all jobs of a specific quote")]
+        public GetJobsResponse GetJobsByQuote(IEnumerable<AuthenticationCredentialsProvider> authenticationCredentialsProviders, [ActionParameter] string quoteId)
+        {
+            var client = new XtrfClient(authenticationCredentialsProviders);
+            var request = new XtrfRequest("/v2/quotes/" + quoteId + "/jobs", Method.Get, authenticationCredentialsProviders);
+            return new GetJobsResponse()
+            {
+                Jobs = client.Get<List<Job>>(request)
+            };
+        }
+
+        [Action("Get files in a quote", Description = "Get all files of a specific quote")]
+        public GetFilesResponse GetFilesByQuote(IEnumerable<AuthenticationCredentialsProvider> authenticationCredentialsProviders, [ActionParameter] string quoteId)
+        {
+            var client = new XtrfClient(authenticationCredentialsProviders);
+            var request = new XtrfRequest("/v2/quotes/" + quoteId + "/files", Method.Get, authenticationCredentialsProviders);
+            return new GetFilesResponse()
+            {
+                Files = client.Get<List<FileXTRF>>(request)
+            };
+        }
     }
 }
