@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Apps.XTRF.Responses;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -12,6 +13,10 @@ namespace Apps.XTRF.Requests
 
         //public byte[] File { get; set; }
 
+       // public IEnumerable<FileXTRF> Files { get; set; } 
+
         public string FileName { get; set; }
+
+        public string Category { get; set; }    
     }
 }

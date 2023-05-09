@@ -54,36 +54,52 @@ namespace Apps.XTRF.Actions
             };
         }
 
-        //[Action("Download file content", Description = "Download the content of a specific file")]
-        //public byte[] DownloadFile(IEnumerable<AuthenticationCredentialsProvider> authenticationCredentialsProviders, [ActionParameter] string fileId, [ActionParameter] string fileName)
-        //{
-        //    var client = new XtrfClient(authenticationCredentialsProviders);
-        //    var request = new XtrfRequest("/v2/projects/files/" + fileId + "/download/" + fileName, Method.Get, authenticationCredentialsProviders);
-        //    return client.Execute(request).RawBytes;
-            
-        //}
+        [Action("Download file content", Description = "Download the content of a specific file")]
+        public DownloadFileResponse DownloadFile(IEnumerable<AuthenticationCredentialsProvider> authenticationCredentialsProviders, [ActionParameter] string fileId, [ActionParameter] string fileName)
+        {
+            var client = new XtrfClient(authenticationCredentialsProviders);
+            var request = new XtrfRequest("/v2/projects/files/" + fileId + "/download/" + fileName, Method.Get, authenticationCredentialsProviders);
+            return new DownloadFileResponse()
+            {
+                FileContent = client.Execute(request).RawBytes
+            };
+        }
 
-        //[Action("Change project status", Description = "Change the status of a project")]
-        //public void ChangeProjectStatus(IEnumerable<AuthenticationCredentialsProvider> authenticationCredentialsProviders, [ActionParameter] string projectId, [ActionParameter] string status)
-        //{
-        //    var client = new XtrfClient(authenticationCredentialsProviders);
-        //    var request = new XtrfRequest("/v2/projects/" + projectId + "/status", Method.Put, authenticationCredentialsProviders);
-        //    request.AddJsonBody(status);
-        //    client.Put(request);
-        //}
+        [Action("Change project status", Description = "Change the status of a project")]
+        public void ChangeProjectStatus(IEnumerable<AuthenticationCredentialsProvider> authenticationCredentialsProviders, [ActionParameter] string projectId, [ActionParameter] string projectStatus)
+        {
+            var client = new XtrfClient(authenticationCredentialsProviders);
+            var request = new XtrfRequest("/v2/projects/" + projectId + "/status", Method.Put, authenticationCredentialsProviders);
+            request.AddJsonBody(new {
+                status = projectStatus
+            });
+            client.Execute(request);
+        }
 
         //[Action("Uplaod a file to a project", Description = "Upload a file to a specific project")]
-        //public string UploadFileToProject(IEnumerable<AuthenticationCredentialsProvider> authenticationCredentialsProviders, [ActionParameter] UploadFileRequest input)
+        //public void UploadFileToProject(IEnumerable<AuthenticationCredentialsProvider> authenticationCredentialsProviders, [ActionParameter] UploadFileRequest input)
         //{
         //    var client = new XtrfClient(authenticationCredentialsProviders);
-        //    var request = new XtrfRequest("/v2/projects/" + input.ProjectId + "/files/upload", Method.Post, authenticationCredentialsProviders);
-        //    request.AddHeader("Content-Disposition", $"filename*=UTF-8''{input.FileName}");
-        //    request.AddHeader("Content-Type", "application/octet-stream");
+        //    var uploadRequest = new XtrfRequest("/v2/projects/" + input.ProjectId + "/files/upload", Method.Post, authenticationCredentialsProviders);
         //    var text = "This is the content of a file";
         //    byte[] fileContent = Encoding.ASCII.GetBytes(text);
-        //    request.AddParameter("application/octet-stream", fileContent, ParameterType.RequestBody);
-        //    var response = client.Post<UploadFileResponse>(request);
-        //    return response.FileId;
+        //    uploadRequest.AddFile("file", fileContent, input.FileName);
+        //    var outputFileId = client.Execute(uploadRequest).Content;
+
+        //    var addRequest = new XtrfRequest("/v2/projects/" + input.ProjectId + "/files/add", Method.Put, authenticationCredentialsProviders);
+        //    addRequest.AddJsonBody(new
+        //    {
+        //        files = new[] 
+        //        { 
+        //            new 
+        //            {
+        //                category = input.Category,
+        //                fileId = outputFileId
+        //            }
+        //        }
+        //    });
+
+        //    client.Execute(addRequest);
         //}
     }
 }
