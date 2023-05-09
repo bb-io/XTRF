@@ -11,9 +11,7 @@ namespace Apps.XTRF.Requests
     {
         public string ProjectId { get; set; }
 
-        //public byte[] File { get; set; }
-
-       // public IEnumerable<FileXTRF> Files { get; set; } 
+        public byte[] File { get; set; }
 
         public string FileName { get; set; }
 
