@@ -7,9 +7,9 @@ using System.Threading.Tasks;
 
 namespace Apps.XTRF.Requests
 {
-    public class UploadFileRequest
+    public class UploadFileToQuoteRequest
     {
-        public string ProjectId { get; set; }
+        public string QuoteId { get; set; }
 
         public byte[] File { get; set; }
 

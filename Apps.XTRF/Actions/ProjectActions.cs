@@ -77,12 +77,10 @@ namespace Apps.XTRF.Actions
         }
 
         [Action("Uplaod a file to a project", Description = "Upload a file to a specific project")]
-        public void UploadFileToProject(IEnumerable<AuthenticationCredentialsProvider> authenticationCredentialsProviders, [ActionParameter] UploadFileRequest input)
+        public void UploadFileToProject(IEnumerable<AuthenticationCredentialsProvider> authenticationCredentialsProviders, [ActionParameter] UploadFileToProjectRequest input)
         {
             var client = new XtrfClient(authenticationCredentialsProviders);
             var uploadRequest = new XtrfRequest("/v2/projects/" + input.ProjectId + "/files/upload", Method.Post, authenticationCredentialsProviders);
-            //var text = "This is the content of a file";
-            //byte[] fileContent = Encoding.ASCII.GetBytes(text);
             uploadRequest.AddFile("file", input.File, input.FileName);
             var outputFileId = client.Post<UploadFileResponse>(uploadRequest).FileId;
 

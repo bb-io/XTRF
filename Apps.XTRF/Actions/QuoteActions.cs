@@ -1,4 +1,5 @@
-﻿using Apps.XTRF.Responses;
+﻿using Apps.XTRF.Requests;
+using Apps.XTRF.Responses;
 using Blackbird.Applications.Sdk.Common;
 using Blackbird.Applications.Sdk.Common.Actions;
 using Blackbird.Applications.Sdk.Common.Authentication;
@@ -51,6 +52,31 @@ namespace Apps.XTRF.Actions
             {
                 Files = client.Get<List<FileXTRF>>(request)
             };
+        }
+
+        [Action("Uplaod a file to a quote", Description = "Upload a file to a specific quote")]
+        public void UploadFileToQuote(IEnumerable<AuthenticationCredentialsProvider> authenticationCredentialsProviders, [ActionParameter] UploadFileToQuoteRequest input)
+        {
+            var client = new XtrfClient(authenticationCredentialsProviders);
+            var uploadRequest = new XtrfRequest("/v2/quotes/" + input.QuoteId + "/files/upload", Method.Post, authenticationCredentialsProviders);
+            uploadRequest.AddFile("file", input.File, input.FileName);
+            var outputFileId = client.Post<UploadFileResponse>(uploadRequest).FileId;
+
+            var addRequest = new XtrfRequest("/v2/quotes/" + input.QuoteId + "/files/add", Method.Put, authenticationCredentialsProviders);
+            addRequest.AddJsonBody(new
+            {
+                files = new[]
+                {
+                    new
+                    {
+                        category = input.Category,
+                        fileId = outputFileId
+                    }
+                }
+            });
+
+            client.Execute(addRequest);
+
         }
     }
 }
