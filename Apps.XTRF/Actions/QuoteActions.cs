@@ -54,7 +54,7 @@ namespace Apps.XTRF.Actions
             };
         }
 
-        [Action("Uplaod a file to a quote", Description = "Upload a file to a specific quote")]
+        [Action("Upload a file to a quote", Description = "Upload a file to a specific quote")]
         public void UploadFileToQuote(IEnumerable<AuthenticationCredentialsProvider> authenticationCredentialsProviders, [ActionParameter] UploadFileToQuoteRequest input)
         {
             var client = new XtrfClient(authenticationCredentialsProviders);

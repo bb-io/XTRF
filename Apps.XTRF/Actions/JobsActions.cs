@@ -56,7 +56,7 @@ namespace Apps.XTRF.Actions
             };
         }
 
-        [Action("Uplaod a delivered file to a job", Description = "Upload a delivered file to a specific job")]
+        [Action("Upload a delivered file to a job", Description = "Upload a delivered file to a specific job")]
         public void UploadDeliveredFileToJob(IEnumerable<AuthenticationCredentialsProvider> authenticationCredentialsProviders, [ActionParameter] UploadFileToJobRequest input)
         {
             var client = new XtrfClient(authenticationCredentialsProviders);

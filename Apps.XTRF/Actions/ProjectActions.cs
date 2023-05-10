@@ -76,7 +76,7 @@ namespace Apps.XTRF.Actions
             client.Execute(request);
         }
 
-        [Action("Uplaod a file to a project", Description = "Upload a file to a specific project")]
+        [Action("Upload a file to a project", Description = "Upload a file to a specific project")]
         public void UploadFileToProject(IEnumerable<AuthenticationCredentialsProvider> authenticationCredentialsProviders, [ActionParameter] UploadFileToProjectRequest input)
         {
             var client = new XtrfClient(authenticationCredentialsProviders);
