@@ -80,5 +80,17 @@ namespace Apps.XTRF.Actions
             client.Execute(addRequest);
 
         }
+
+        [Action("Assign vendor to a job", Description = "Assign vendor to a specific job")]
+        public void AssignVendorToJob(IEnumerable<AuthenticationCredentialsProvider> authenticationCredentialsProviders, [ActionParameter] string jobId, [ActionParameter] int vendorId)
+        {
+            var client = new XtrfClient(authenticationCredentialsProviders);
+            var request = new XtrfRequest("/v2/jobs/" + jobId + "/vendor", Method.Put, authenticationCredentialsProviders);
+            request.AddJsonBody(new
+            {
+                vendorPriceProfileId = vendorId
+            });
+            client.Execute(request);
+        }
     }
 }

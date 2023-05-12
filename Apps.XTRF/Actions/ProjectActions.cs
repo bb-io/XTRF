@@ -100,5 +100,29 @@ namespace Apps.XTRF.Actions
             client.Execute(addRequest);
 
         }
+
+        [Action("Check for created or queued cat tool project", Description = "Check for created or queued cat tool project")]
+        public bool CheckForCatTool(IEnumerable<AuthenticationCredentialsProvider> authenticationCredentialsProviders, [ActionParameter] string projectId)
+        {
+            var client = new XtrfClient(authenticationCredentialsProviders);
+            var request = new XtrfRequest("/v2/projects/" + projectId + "/catToolProject", Method.Get, authenticationCredentialsProviders);
+            return client.Get<bool>(request);
+        }
+
+        [Action("Get client contacts information for a project", Description = "Get client contacts information for a specific project")]
+        public GetClientContactsByProjectResponse GetClientContactsByProject(IEnumerable<AuthenticationCredentialsProvider> authenticationCredentialsProviders, [ActionParameter] string projectId)
+        {
+            var client = new XtrfClient(authenticationCredentialsProviders);
+            var request = new XtrfRequest("/v2/projects/" + projectId + "/clientContacts", Method.Get, authenticationCredentialsProviders);
+            return client.Get<GetClientContactsByProjectResponse>(request);
+        }
+
+        [Action("Get finance information for a project", Description = "Get finance information for a specific project")]
+        public FinanceInformation GetFinanceInfo(IEnumerable<AuthenticationCredentialsProvider> authenticationCredentialsProviders, [ActionParameter] string projectId)
+        {
+            var client = new XtrfClient(authenticationCredentialsProviders);
+            var request = new XtrfRequest("/v2/projects/" + projectId + "/finance", Method.Get, authenticationCredentialsProviders);
+            return client.Get<FinanceInformation>(request);
+        }
     }
 }
