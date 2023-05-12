@@ -6,9 +6,8 @@ using System.Threading.Tasks;
 
 namespace Apps.XTRF.Responses
 {
-    public class GetClientContactsByProjectResponse
+    public class CheckForCatToolResponse
     {
-        public int PrimaryId { get; set; }
-        public IEnumerable<int> AdditionalIds { get; set; }
+        public bool ProjectCreatedInCatToolOrCreationIsQueued { get; set; }
     }
 }

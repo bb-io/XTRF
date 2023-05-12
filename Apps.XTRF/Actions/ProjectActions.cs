@@ -102,11 +102,11 @@ namespace Apps.XTRF.Actions
         }
 
         [Action("Check for created or queued cat tool project", Description = "Check for created or queued cat tool project")]
-        public bool CheckForCatTool(IEnumerable<AuthenticationCredentialsProvider> authenticationCredentialsProviders, [ActionParameter] string projectId)
+        public CheckForCatToolResponse CheckForCatTool(IEnumerable<AuthenticationCredentialsProvider> authenticationCredentialsProviders, [ActionParameter] string projectId)
         {
             var client = new XtrfClient(authenticationCredentialsProviders);
             var request = new XtrfRequest("/v2/projects/" + projectId + "/catToolProject", Method.Get, authenticationCredentialsProviders);
-            return client.Get<bool>(request);
+            return client.Get<CheckForCatToolResponse>(request);
         }
 
         [Action("Get client contacts information for a project", Description = "Get client contacts information for a specific project")]
