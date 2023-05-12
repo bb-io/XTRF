@@ -13,7 +13,7 @@ namespace Apps.XTRF.Responses
         public int CurrencyId { get; set; }
         public double Total { get; set; }
         public string Type { get; set; }
-        public int Quantity { get; set; }
+        public double Quantity { get; set; }
         public string JobId { get; set; }
     }
 }
