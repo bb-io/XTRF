@@ -7,6 +7,7 @@ using RestSharp;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.Cryptography;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -124,5 +125,65 @@ namespace Apps.XTRF.Actions
             var request = new XtrfRequest("/v2/projects/" + projectId + "/finance", Method.Get, authenticationCredentialsProviders);
             return client.Get<FinanceInformation>(request);
         }
+
+        [Action("Get file details", Description = "Get details of a specific file")]
+        public FileXTRF GetFileDetails(IEnumerable<AuthenticationCredentialsProvider> authenticationCredentialsProviders, [ActionParameter] string fileId)
+        {
+            var client = new XtrfClient(authenticationCredentialsProviders);
+            var request = new XtrfRequest("/v2/projects/files/" + fileId, Method.Get, authenticationCredentialsProviders);
+            return client.Get<FileXTRF>(request);
+        }
+
+        [Action("Get process id for a project", Description = "Get process id for a specific project")]
+        public GetProcessIdByProjectResponse GetProcessIdByProject(IEnumerable<AuthenticationCredentialsProvider> authenticationCredentialsProviders, [ActionParameter] string projectId)
+        {
+            var client = new XtrfClient(authenticationCredentialsProviders);
+            var request = new XtrfRequest("/v2/projects/" + projectId + "/process", Method.Get, authenticationCredentialsProviders);
+            return client.Get<GetProcessIdByProjectResponse>(request);
+        }
+
+        [Action("Delete a payable for a project", Description = "Delete a payable for a specific project")]
+        public void DeletePayableForProject(IEnumerable<AuthenticationCredentialsProvider> authenticationCredentialsProviders, [ActionParameter] string projectId, int payableId)
+        {
+            var client = new XtrfClient(authenticationCredentialsProviders);
+            var request = new XtrfRequest("/v2/projects/" + projectId + "/finance/payables/" + payableId, Method.Delete, authenticationCredentialsProviders);
+            client.Execute(request);
+        }
+
+        [Action("Delete a receivable for a project", Description = "Delete a receivable for a specific project")]
+        public void DeleteReceivableForProject(IEnumerable<AuthenticationCredentialsProvider> authenticationCredentialsProviders, [ActionParameter] string projectId, int receivableId)
+        {
+            var client = new XtrfClient(authenticationCredentialsProviders);
+            var request = new XtrfRequest("/v2/projects/" + projectId + "/finance/receivables/" + receivableId, Method.Delete, authenticationCredentialsProviders);
+            client.Execute(request);
+        }
+
+        //[Action("Add a payable to a project", Description = "Add a payable to a specific project")]
+        //public Payable AddPayableToProject(IEnumerable<AuthenticationCredentialsProvider> authenticationCredentialsProviders, [ActionParameter] AddPayableToProjectRequest input)
+        //{
+        //    var client = new XtrfClient(authenticationCredentialsProviders);
+
+        //    //var getJobRequest = new XtrfRequest("/v2/jobs/" + input.JobId, Method.Get, authenticationCredentialsProviders);
+        //    //var job = client.Get<Job>(getJobRequest);
+
+        //    var request = new XtrfRequest("/v2/projects/" + input.ProjectId + "/finance/payables", Method.Post, authenticationCredentialsProviders);
+        //    request.AddJsonBody(new
+        //    {
+        //        jobTypeId = 2, //job.StepType.JobTypeId,
+        //        languageCombination = new { sourceLanguageId = 61, targetLanguageId = 40 },
+        //        rateOrigin = "FILLED_MANUALLY",
+        //        currencyId = 1, //input.CurrencyId
+        //        type = "SIMPLE",
+        //        calculationUnitId = 1,
+        //        ignoreMinimumCharge = false,
+        //        minimumCharge = 12,
+        //        dedescription = "Test POST",
+        //        rate = 0.05,
+        //        quantity = 1,
+        //        jobId = "L2GBVMJUI5DPHOOAT45PVF5CDE" //job.Id
+        //    });
+
+        //    return client.Post<Payable>(request);
+        //}
     }
 }

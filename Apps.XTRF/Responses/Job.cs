@@ -16,6 +16,7 @@ namespace Apps.XTRF.Responses
         public int? VendorId { get; set; }
         public int? VendorPriceProfileId { get; set; }
         public StepType StepType { get; set; }
+        public IEnumerable<Language> Languages { get; set; } 
 
     }
 
@@ -24,6 +25,14 @@ namespace Apps.XTRF.Responses
         public string Id { get; set; }
         public string Name { get; set; }
         public int JobTypeId { get; set; }
+    }
+
+    public class Language
+    {
+        public int SourceLanguageId { get; set; }
+        public int TargetLanguageId { get; set; }
+        public int SpecializationId { get; set; }
+
     }
 
 }
