@@ -12,8 +12,8 @@ namespace Apps.XTRF.Responses
         public int JobTypeId { get; set; }
         public int CurrencyId { get; set; }
         public double Total { get; set; }
-        public string InvoiceId { get; set; }
+        public string? InvoiceId { get; set; }
         public string Type { get; set; }
-        public string Description { get; set; }
+        public string? Description { get; set; }
     }
 }

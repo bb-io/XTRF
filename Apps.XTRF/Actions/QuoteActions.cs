@@ -80,7 +80,7 @@ namespace Apps.XTRF.Actions
         }
 
         [Action("Delete a payable for a quote", Description = "Delete a payable for a specific quote")]
-        public void DeletePayableForQuote(IEnumerable<AuthenticationCredentialsProvider> authenticationCredentialsProviders, [ActionParameter] string quoteId, int payableId)
+        public void DeletePayableForQuote(IEnumerable<AuthenticationCredentialsProvider> authenticationCredentialsProviders, [ActionParameter] string quoteId, [ActionParameter] int payableId)
         {
             var client = new XtrfClient(authenticationCredentialsProviders);
             var request = new XtrfRequest("/v2/quotes/" + quoteId + "/finance/payables/" + payableId, Method.Delete, authenticationCredentialsProviders);
@@ -88,7 +88,7 @@ namespace Apps.XTRF.Actions
         }
 
         [Action("Delete a receivable for a quote", Description = "Delete a receivable for a specific quote")]
-        public void DeleteReceivableForQuote(IEnumerable<AuthenticationCredentialsProvider> authenticationCredentialsProviders, [ActionParameter] string quoteId, int receivableId)
+        public void DeleteReceivableForQuote(IEnumerable<AuthenticationCredentialsProvider> authenticationCredentialsProviders, [ActionParameter] string quoteId, [ActionParameter] int receivableId)
         {
             var client = new XtrfClient(authenticationCredentialsProviders);
             var request = new XtrfRequest("/v2/quotes/" + quoteId + "/finance/receivables/" + receivableId, Method.Delete, authenticationCredentialsProviders);

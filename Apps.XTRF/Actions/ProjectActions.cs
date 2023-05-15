@@ -143,7 +143,7 @@ namespace Apps.XTRF.Actions
         }
 
         [Action("Delete a payable for a project", Description = "Delete a payable for a specific project")]
-        public void DeletePayableForProject(IEnumerable<AuthenticationCredentialsProvider> authenticationCredentialsProviders, [ActionParameter] string projectId, int payableId)
+        public void DeletePayableForProject(IEnumerable<AuthenticationCredentialsProvider> authenticationCredentialsProviders, [ActionParameter] string projectId, [ActionParameter] int payableId)
         {
             var client = new XtrfClient(authenticationCredentialsProviders);
             var request = new XtrfRequest("/v2/projects/" + projectId + "/finance/payables/" + payableId, Method.Delete, authenticationCredentialsProviders);
@@ -151,12 +151,39 @@ namespace Apps.XTRF.Actions
         }
 
         [Action("Delete a receivable for a project", Description = "Delete a receivable for a specific project")]
-        public void DeleteReceivableForProject(IEnumerable<AuthenticationCredentialsProvider> authenticationCredentialsProviders, [ActionParameter] string projectId, int receivableId)
+        public void DeleteReceivableForProject(IEnumerable<AuthenticationCredentialsProvider> authenticationCredentialsProviders, [ActionParameter] string projectId, [ActionParameter] int receivableId)
         {
             var client = new XtrfClient(authenticationCredentialsProviders);
             var request = new XtrfRequest("/v2/projects/" + projectId + "/finance/receivables/" + receivableId, Method.Delete, authenticationCredentialsProviders);
             client.Execute(request);
         }
+
+        //[Action("Add a receivable to a project", Description = "Add a receivable to a specific project")]
+        //public Receivable AddReceivableToProject(IEnumerable<AuthenticationCredentialsProvider> authenticationCredentialsProviders, [ActionParameter] AddPayableToProjectRequest input)
+        //{
+        //    var client = new XtrfClient(authenticationCredentialsProviders);
+
+        //    //var getJobRequest = new XtrfRequest("/v2/jobs/" + input.JobId, Method.Get, authenticationCredentialsProviders);
+        //    //var job = client.Get<Job>(getJobRequest);
+
+        //    var request = new XtrfRequest("/v2/projects/" + input.ProjectId + "/finance/receivables", Method.Post, authenticationCredentialsProviders);
+        //    request.AddJsonBody(new
+        //    {
+        //        jobTypeId = 2, //job.StepType.JobTypeId,
+        //        languageCombination = new { sourceLanguageId = 61, targetLanguageId = 40 },
+        //        rateOrigin = "FILLED_MANUALLY",
+        //        currencyId = 1, //input.CurrencyId
+        //        type = "SIMPLE",
+        //        calculationUnitId = 1,
+        //        ignoreMinimumCharge = false,
+        //        minimumCharge = 13,
+        //        dedescription = "Test Receivable",
+        //        rate = 0.05,
+        //        quantity = 6,
+        //    });
+
+        //    return client.Post<Receivable>(request);
+        //}
 
         //[Action("Add a payable to a project", Description = "Add a payable to a specific project")]
         //public Payable AddPayableToProject(IEnumerable<AuthenticationCredentialsProvider> authenticationCredentialsProviders, [ActionParameter] AddPayableToProjectRequest input)
