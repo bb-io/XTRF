@@ -7,6 +7,7 @@ using RestSharp;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.Cryptography;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -89,6 +90,18 @@ namespace Apps.XTRF.Actions
             request.AddJsonBody(new
             {
                 vendorPriceProfileId = vendorId
+            });
+            client.Execute(request);
+        }
+
+        [Action("Update instructions for a job", Description = "Update instructions for a specific job")]
+        public void UpdateInstructionsForJob(IEnumerable<AuthenticationCredentialsProvider> authenticationCredentialsProviders, [ActionParameter] string jobId, [ActionParameter] string instructions)
+        {
+            var client = new XtrfClient(authenticationCredentialsProviders);
+            var request = new XtrfRequest("/v2/jobs/" + jobId + "/instructions", Method.Put, authenticationCredentialsProviders);
+            request.AddJsonBody(new
+            {
+                value = instructions
             });
             client.Execute(request);
         }
