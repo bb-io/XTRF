@@ -6,6 +6,7 @@ using Blackbird.Applications.Sdk.Common.Authentication;
 using RestSharp;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Security.Cryptography;
 using System.Text;
@@ -104,6 +105,65 @@ namespace Apps.XTRF.Actions
                 value = instructions
             });
             client.Execute(request);
+        }
+
+        [Action("Update dates of a job", Description = "Update dates of a given job")]
+        public void UpdateDatesOfJob(IEnumerable<AuthenticationCredentialsProvider> authenticationCredentialsProviders, [ActionParameter] UpdateJobDatesRequest input)
+        {
+
+            var client = new XtrfClient(authenticationCredentialsProviders);
+            var request = new XtrfRequest("/v2/jobs/" + input.JobId + "/dates", Method.Put, authenticationCredentialsProviders);
+            request.AddJsonBody(new
+            {
+                startDate = ConvertStringToUnixTime(input.StartDate),
+                deadline = ConvertStringToUnixTime(input.Deadline)
+            });
+            client.Execute(request);
+        }
+
+        [Action("Share files as referenced with a job", Description = "Share files as referenced with a specific job")]
+        public SharedFilesResponse ShareReferencedFilesWithJob(IEnumerable<AuthenticationCredentialsProvider> authenticationCredentialsProviders, ShareFilesWithJobRequest input)
+        {
+            var client = new XtrfClient(authenticationCredentialsProviders);
+            var request = new XtrfRequest("/v2/jobs/" + input.JobId + "/files/sharedReferenceFiles/share", Method.Put, authenticationCredentialsProviders);
+            request.AddJsonBody(new
+            {
+                files = input.Files.ToArray()
+            });
+            return client.Execute<SharedFilesResponse>(request).Data;
+        }
+
+        [Action("Share files as work files with a job", Description = "Share files as work files with a specific job")]
+        public SharedFilesResponse ShareWorkFilesWithJob(IEnumerable<AuthenticationCredentialsProvider> authenticationCredentialsProviders, ShareFilesWithJobRequest input)
+        {
+            var client = new XtrfClient(authenticationCredentialsProviders);
+            var request = new XtrfRequest("/v2/jobs/" + input.JobId + "/files/sharedWorkFiles/share", Method.Put, authenticationCredentialsProviders);
+            request.AddJsonBody(new
+            {
+                files = input.Files.ToArray()
+            });
+            return client.Execute<SharedFilesResponse>(request).Data;
+
+        }
+
+        [Action("Stop sharing files with a job", Description = "Stop sharing files with a specific job")]
+        public SharedFilesResponse StopSharingFilesWithJob(IEnumerable<AuthenticationCredentialsProvider> authenticationCredentialsProviders, ShareFilesWithJobRequest input)
+        {
+            var client = new XtrfClient(authenticationCredentialsProviders);
+            var request = new XtrfRequest("/v2/jobs/" + input.JobId + "/files/stopSharing", Method.Put, authenticationCredentialsProviders);
+            request.AddJsonBody(new
+            {
+                files = input.Files.ToArray()
+            });
+            return client.Execute<SharedFilesResponse>(request).Data;
+
+        }
+
+        public long ConvertStringToUnixTime(string inputDate)
+        {
+            DateTime date = DateTime.Parse(inputDate).ToUniversalTime();
+            long unixTime = ((DateTimeOffset)date).ToUnixTimeMilliseconds();
+            return unixTime;
         }
     }
 }
