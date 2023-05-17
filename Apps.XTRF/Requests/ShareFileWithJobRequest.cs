@@ -7,9 +7,9 @@ using System.Threading.Tasks;
 
 namespace Apps.XTRF.Requests
 {
-    public class ShareFilesWithJobRequest
+    public class ShareFileWithJobRequest
     {
         public string JobId { get; set; }
-        public IEnumerable<string> Files { get; set; }
+        public string FileId { get; set; }
     }
 }
