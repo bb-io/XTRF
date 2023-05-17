@@ -1,5 +1,6 @@
 ﻿using Apps.XTRF.Requests;
 using Apps.XTRF.Responses;
+using Apps.XTRF.Responses.Models;
 using Blackbird.Applications.Sdk.Common;
 using Blackbird.Applications.Sdk.Common.Actions;
 using Blackbird.Applications.Sdk.Common.Authentication;
@@ -166,7 +167,6 @@ namespace Apps.XTRF.Actions
 
             DateTimeOffset offset = new DateTimeOffset(unspecifiedDateKind);
             long unixTime = offset.ToUnixTimeMilliseconds();            
-            //long unixTime = ((DateTimeOffset)date).ToUnixTimeMilliseconds();
 
             return unixTime;
         }

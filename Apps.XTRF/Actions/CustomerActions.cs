@@ -1,5 +1,6 @@
 ﻿using Apps.XTRF.InputParameters;
 using Apps.XTRF.Responses;
+using Apps.XTRF.Responses.Models;
 using Blackbird.Applications.Sdk.Common;
 using Blackbird.Applications.Sdk.Common.Actions;
 using Blackbird.Applications.Sdk.Common.Authentication;

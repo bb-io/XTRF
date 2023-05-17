@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Apps.XTRF.Responses
+namespace Apps.XTRF.Responses.Models
 {
     public class Job
     {
@@ -16,7 +16,7 @@ namespace Apps.XTRF.Responses
         public int? VendorId { get; set; }
         public int? VendorPriceProfileId { get; set; }
         public StepType StepType { get; set; }
-        public IEnumerable<Language> Languages { get; set; } 
+        public IEnumerable<Language> Languages { get; set; }
 
     }
 

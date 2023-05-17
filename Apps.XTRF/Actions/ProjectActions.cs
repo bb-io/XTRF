@@ -1,5 +1,6 @@
 ﻿using Apps.XTRF.Requests;
 using Apps.XTRF.Responses;
+using Apps.XTRF.Responses.Models;
 using Blackbird.Applications.Sdk.Common;
 using Blackbird.Applications.Sdk.Common.Actions;
 using Blackbird.Applications.Sdk.Common.Authentication;
@@ -158,59 +159,5 @@ namespace Apps.XTRF.Actions
             client.Execute(request);
         }
 
-        //[Action("Add a receivable to a project", Description = "Add a receivable to a specific project")]
-        //public Receivable AddReceivableToProject(IEnumerable<AuthenticationCredentialsProvider> authenticationCredentialsProviders, [ActionParameter] AddPayableToProjectRequest input)
-        //{
-        //    var client = new XtrfClient(authenticationCredentialsProviders);
-
-        //    //var getJobRequest = new XtrfRequest("/v2/jobs/" + input.JobId, Method.Get, authenticationCredentialsProviders);
-        //    //var job = client.Get<Job>(getJobRequest);
-
-        //    var request = new XtrfRequest("/v2/projects/" + input.ProjectId + "/finance/receivables", Method.Post, authenticationCredentialsProviders);
-        //    request.AddJsonBody(new
-        //    {
-        //        jobTypeId = 2, //job.StepType.JobTypeId,
-        //        languageCombination = new { sourceLanguageId = 61, targetLanguageId = 40 },
-        //        rateOrigin = "FILLED_MANUALLY",
-        //        currencyId = 1, //input.CurrencyId
-        //        type = "SIMPLE",
-        //        calculationUnitId = 1,
-        //        ignoreMinimumCharge = false,
-        //        minimumCharge = 13,
-        //        dedescription = "Test Receivable",
-        //        rate = 0.05,
-        //        quantity = 6,
-        //    });
-
-        //    return client.Post<Receivable>(request);
-        //}
-
-        //[Action("Add a payable to a project", Description = "Add a payable to a specific project")]
-        //public Payable AddPayableToProject(IEnumerable<AuthenticationCredentialsProvider> authenticationCredentialsProviders, [ActionParameter] AddPayableToProjectRequest input)
-        //{
-        //    var client = new XtrfClient(authenticationCredentialsProviders);
-
-        //    //var getJobRequest = new XtrfRequest("/v2/jobs/" + input.JobId, Method.Get, authenticationCredentialsProviders);
-        //    //var job = client.Get<Job>(getJobRequest);
-
-        //    var request = new XtrfRequest("/v2/projects/" + input.ProjectId + "/finance/payables", Method.Post, authenticationCredentialsProviders);
-        //    request.AddJsonBody(new
-        //    {
-        //        jobTypeId = 2, //job.StepType.JobTypeId,
-        //        languageCombination = new { sourceLanguageId = 61, targetLanguageId = 40 },
-        //        rateOrigin = "FILLED_MANUALLY",
-        //        currencyId = 1, //input.CurrencyId
-        //        type = "SIMPLE",
-        //        calculationUnitId = 1,
-        //        ignoreMinimumCharge = false,
-        //        minimumCharge = 12,
-        //        dedescription = "Test POST",
-        //        rate = 0.05,
-        //        quantity = 1,
-        //        jobId = "L2GBVMJUI5DPHOOAT45PVF5CDE" //job.Id
-        //    });
-
-        //    return client.Post<Payable>(request);
-        //}
     }
 }

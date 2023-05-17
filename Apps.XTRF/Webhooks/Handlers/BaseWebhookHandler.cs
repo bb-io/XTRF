@@ -1,4 +1,4 @@
-﻿using Apps.XTRF.Responses;
+﻿using Apps.XTRF.Responses.Models;
 using Blackbird.Applications.Sdk.Common.Authentication;
 using Blackbird.Applications.Sdk.Common.Webhooks;
 using RestSharp;
