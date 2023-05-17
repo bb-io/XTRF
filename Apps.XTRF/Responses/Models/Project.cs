@@ -18,12 +18,12 @@ namespace Apps.XTRF.Responses.Models
         public int? ClientId { get; set; }
         public int? ServiceId { get; set; }
         public string? Origin { get; set; }
-        public int? ClientDeadline { get; set; }
+        public long? ClientDeadline { get; set; }
         public string? ClientReferenceNumber { get; set; }
         public string? ClientNotes { get; set; }
         public string? InternalNotes { get; set; }
         public string? ProjectIdNumber { get; set; }
         public string? InstructionsForAllJobs { get; set; }
-        public int? OrderedOn { get; set; }
+        public long? OrderedOn { get; set; }
     }
 }

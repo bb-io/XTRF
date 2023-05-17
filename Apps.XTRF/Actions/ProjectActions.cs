@@ -18,10 +18,10 @@ namespace Apps.XTRF.Actions
     public class ProjectActions
     {
         [Action("Get project details", Description = "Get all information of a specific project")]
-        public Project GetProject(IEnumerable<AuthenticationCredentialsProvider> authenticationCredentialsProviders, [ActionParameter] int id)
+        public Project GetProject(IEnumerable<AuthenticationCredentialsProvider> authenticationCredentialsProviders, [ActionParameter] string projectId)
         {
             var client = new XtrfClient(authenticationCredentialsProviders);
-            var request = new XtrfRequest("/v2/projects/" + id, Method.Get, authenticationCredentialsProviders);
+            var request = new XtrfRequest("/v2/projects/" + projectId, Method.Get, authenticationCredentialsProviders);
             return client.Get<Project>(request);
         }
 
@@ -127,8 +127,8 @@ namespace Apps.XTRF.Actions
             return client.Get<FinanceInformation>(request);
         }
 
-        [Action("Get file details", Description = "Get details of a specific file")]
-        public FileXTRF GetFileDetails(IEnumerable<AuthenticationCredentialsProvider> authenticationCredentialsProviders, [ActionParameter] string fileId)
+        [Action("Get project file details", Description = "Get details of a specific file in a project")]
+        public FileXTRF GetProjectFileDetails(IEnumerable<AuthenticationCredentialsProvider> authenticationCredentialsProviders, [ActionParameter] string fileId)
         {
             var client = new XtrfClient(authenticationCredentialsProviders);
             var request = new XtrfRequest("/v2/projects/files/" + fileId, Method.Get, authenticationCredentialsProviders);
@@ -157,6 +157,125 @@ namespace Apps.XTRF.Actions
             var client = new XtrfClient(authenticationCredentialsProviders);
             var request = new XtrfRequest("/v2/projects/" + projectId + "/finance/receivables/" + receivableId, Method.Delete, authenticationCredentialsProviders);
             client.Execute(request);
+        }
+
+        [Action("Update client deadline for a project", Description = "Update client deadline for a specific project")]
+        public void UpdateDeadlineForProject(IEnumerable<AuthenticationCredentialsProvider> authenticationCredentialsProviders, [ActionParameter] string projectId, [ActionParameter] string deadlineDate)
+        {
+            var client = new XtrfClient(authenticationCredentialsProviders);
+            var request = new XtrfRequest("/v2/projects/" + projectId + "/clientDeadline", Method.Put, authenticationCredentialsProviders);
+            request.AddJsonBody(new
+            {
+                value = ConvertStringToUnixTime(deadlineDate)
+            });
+            client.Execute(request);
+        }
+
+        [Action("Update client notes for a project", Description = "Update client notes for a specific project")]
+        public void UpdateClientNotesForProject(IEnumerable<AuthenticationCredentialsProvider> authenticationCredentialsProviders, [ActionParameter] string projectId, [ActionParameter] string clientNotes)
+        {
+            var client = new XtrfClient(authenticationCredentialsProviders);
+            var request = new XtrfRequest("/v2/projects/" + projectId + "/clientNotes", Method.Put, authenticationCredentialsProviders);
+            request.AddJsonBody(new
+            {
+                value = clientNotes
+            });
+            client.Execute(request);
+        }
+
+        [Action("Update internal notes for a project", Description = "Update internal notes for a specific project")]
+        public void UpdateInternalNotesForProject(IEnumerable<AuthenticationCredentialsProvider> authenticationCredentialsProviders, [ActionParameter] string projectId, [ActionParameter] string internalNotes)
+        {
+            var client = new XtrfClient(authenticationCredentialsProviders);
+            var request = new XtrfRequest("/v2/projects/" + projectId + "/internalNotes", Method.Put, authenticationCredentialsProviders);
+            request.AddJsonBody(new
+            {
+                value = internalNotes
+            });
+            client.Execute(request);
+        }
+
+        [Action("Update client reference number for a project", Description = "Update client reference number for a specific project")]
+        public void UpdateClientReferenceNumberForProject(IEnumerable<AuthenticationCredentialsProvider> authenticationCredentialsProviders, [ActionParameter] string projectId, [ActionParameter] string referenceNumber)
+        {
+            var client = new XtrfClient(authenticationCredentialsProviders);
+            var request = new XtrfRequest("/v2/projects/" + projectId + "/clientReferenceNumber", Method.Put, authenticationCredentialsProviders);
+            request.AddJsonBody(new
+            {
+                value = referenceNumber
+            });
+            client.Execute(request);
+        }
+
+        [Action("Update order date for a project", Description = "Update order date for a specific project")]
+        public void UpdateOrderDateForProject(IEnumerable<AuthenticationCredentialsProvider> authenticationCredentialsProviders, [ActionParameter] string projectId, [ActionParameter] string orderDate)
+        {
+            var client = new XtrfClient(authenticationCredentialsProviders);
+            var request = new XtrfRequest("/v2/projects/" + projectId + "/orderDate", Method.Put, authenticationCredentialsProviders);
+            request.AddJsonBody(new
+            {
+                value = ConvertStringToUnixTime(orderDate)
+            });
+            client.Execute(request);
+        }
+
+        [Action("Update source language for a project", Description = "Update source language for a specific project")]
+        public void UpdateSourceLanguageForProject(IEnumerable<AuthenticationCredentialsProvider> authenticationCredentialsProviders, [ActionParameter] string projectId, [ActionParameter] int sourceLanguageId)
+        {
+            var client = new XtrfClient(authenticationCredentialsProviders);
+            var request = new XtrfRequest("/v2/projects/" + projectId + "/sourceLanguage", Method.Put, authenticationCredentialsProviders);
+            request.AddJsonBody(new
+            {
+                sourceLanguageId = sourceLanguageId
+            });
+            client.Execute(request);
+        }
+
+        [Action("Update specialization for a project", Description = "Update specialization for a specific project")]
+        public void UpdateSpecializationForProject(IEnumerable<AuthenticationCredentialsProvider> authenticationCredentialsProviders, [ActionParameter] string projectId, [ActionParameter] int specializationId)
+        {
+            var client = new XtrfClient(authenticationCredentialsProviders);
+            var request = new XtrfRequest("/v2/projects/" + projectId + "/specialization", Method.Put, authenticationCredentialsProviders);
+            request.AddJsonBody(new
+            {
+                specializationId = specializationId
+            });
+            client.Execute(request);
+        }
+
+        [Action("Update vendor instructions for a project", Description = "Update vendor instructions for a specific project")]
+        public void UpdateVendorInstructionsForProject(IEnumerable<AuthenticationCredentialsProvider> authenticationCredentialsProviders, [ActionParameter] string projectId, [ActionParameter] string vendorInstructions)
+        {
+            var client = new XtrfClient(authenticationCredentialsProviders);
+            var request = new XtrfRequest("/v2/projects/" + projectId + "/vendorInstructions", Method.Put, authenticationCredentialsProviders);
+            request.AddJsonBody(new
+            {
+                value = vendorInstructions
+            });
+            client.Execute(request);
+        }
+
+        [Action("Update volume for a project", Description = "Update volume for a specific project")]
+        public void UpdateVolumeForProject(IEnumerable<AuthenticationCredentialsProvider> authenticationCredentialsProviders, [ActionParameter] string projectId, [ActionParameter] int volume)
+        {
+            var client = new XtrfClient(authenticationCredentialsProviders);
+            var request = new XtrfRequest("/v2/projects/" + projectId + "/volume", Method.Put, authenticationCredentialsProviders);
+            request.AddJsonBody(new
+            {
+                value = volume
+            });
+            client.Execute(request);
+        }
+
+        public long ConvertStringToUnixTime(string inputDate)
+        {
+            DateTime date = DateTime.Parse(inputDate).ToUniversalTime();
+            var unspecifiedDateKind = DateTime.SpecifyKind(date, DateTimeKind.Unspecified);
+
+            DateTimeOffset offset = new DateTimeOffset(unspecifiedDateKind);
+            long unixTime = offset.ToUnixTimeMilliseconds();
+
+            return unixTime;
         }
 
     }
