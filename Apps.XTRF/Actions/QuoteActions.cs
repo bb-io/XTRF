@@ -21,7 +21,7 @@ namespace Apps.XTRF.Actions
         {
             var client = new XtrfClient(authenticationCredentialsProviders);
             var request = new XtrfRequest("/v2/quotes/" + quoteId, Method.Get, authenticationCredentialsProviders);
-            return client.Get<Quote>(request);
+            return client.ExecuteRequest<Quote>(request);
         }
 
         [Action("Create new quote", Description = "Create a new quote")]
@@ -30,7 +30,7 @@ namespace Apps.XTRF.Actions
             var client = new XtrfClient(authenticationCredentialsProviders);
             var request = new XtrfRequest("/v2/quotes", Method.Post, authenticationCredentialsProviders);
             request.AddJsonBody(quote);
-            return client.Post<Quote>(request);
+            return client.ExecuteRequest<Quote>(request);
         }
 
         [Action("Get jobs in a quote", Description = "Get all jobs of a specific quote")]
@@ -40,7 +40,7 @@ namespace Apps.XTRF.Actions
             var request = new XtrfRequest("/v2/quotes/" + quoteId + "/jobs", Method.Get, authenticationCredentialsProviders);
             return new GetJobsResponse()
             {
-                Jobs = client.Get<List<Job>>(request)
+                Jobs = client.ExecuteRequest<List<Job>>(request)
             };
         }
 
@@ -51,7 +51,7 @@ namespace Apps.XTRF.Actions
             var request = new XtrfRequest("/v2/quotes/" + quoteId + "/files", Method.Get, authenticationCredentialsProviders);
             return new GetFilesResponse()
             {
-                Files = client.Get<List<FileXTRF>>(request)
+                Files = client.ExecuteRequest<List<FileXTRF>>(request)
             };
         }
 
@@ -61,7 +61,7 @@ namespace Apps.XTRF.Actions
             var client = new XtrfClient(authenticationCredentialsProviders);
             var uploadRequest = new XtrfRequest("/v2/quotes/" + input.QuoteId + "/files/upload", Method.Post, authenticationCredentialsProviders);
             uploadRequest.AddFile("file", input.File, input.FileName);
-            var outputFileId = client.Post<UploadFileResponse>(uploadRequest).FileId;
+            var outputFileId = client.ExecuteRequest<UploadFileResponse>(uploadRequest).FileId;
 
             var addRequest = new XtrfRequest("/v2/quotes/" + input.QuoteId + "/files/add", Method.Put, authenticationCredentialsProviders);
             addRequest.AddJsonBody(new
@@ -76,8 +76,7 @@ namespace Apps.XTRF.Actions
                 }
             });
 
-            client.Execute(addRequest);
-
+            client.ExecuteRequest<object>(addRequest);
         }
 
         [Action("Get quote file details", Description = "Get details of a specific file in a quote")]
@@ -85,7 +84,7 @@ namespace Apps.XTRF.Actions
         {
             var client = new XtrfClient(authenticationCredentialsProviders);
             var request = new XtrfRequest("/v2/quotes/files/" + fileId, Method.Get, authenticationCredentialsProviders);
-            return client.Get<FileXTRF>(request);
+            return client.ExecuteRequest<FileXTRF>(request);
         }
 
         [Action("Get finance information for a quote", Description = "Get finance information for a specific quote")]
@@ -93,7 +92,7 @@ namespace Apps.XTRF.Actions
         {
             var client = new XtrfClient(authenticationCredentialsProviders);
             var request = new XtrfRequest("/v2/quotes/" + quoteId + "/finance", Method.Get, authenticationCredentialsProviders);
-            return client.Get<FinanceInformation>(request);
+            return client.ExecuteRequest<FinanceInformation>(request);
         }
 
         [Action("Delete a payable for a quote", Description = "Delete a payable for a specific quote")]
@@ -101,7 +100,7 @@ namespace Apps.XTRF.Actions
         {
             var client = new XtrfClient(authenticationCredentialsProviders);
             var request = new XtrfRequest("/v2/quotes/" + quoteId + "/finance/payables/" + payableId, Method.Delete, authenticationCredentialsProviders);
-            client.Execute(request);
+            client.ExecuteRequest<object>(request);
         }
 
         [Action("Delete a receivable for a quote", Description = "Delete a receivable for a specific quote")]
@@ -109,7 +108,7 @@ namespace Apps.XTRF.Actions
         {
             var client = new XtrfClient(authenticationCredentialsProviders);
             var request = new XtrfRequest("/v2/quotes/" + quoteId + "/finance/receivables/" + receivableId, Method.Delete, authenticationCredentialsProviders);
-            client.Execute(request);
+            client.ExecuteRequest<object>(request);
         }
 
         [Action("Update business days for a quote", Description = "Update business days for a specific quote")]
@@ -121,7 +120,7 @@ namespace Apps.XTRF.Actions
             {
                 value = businessDays
             });
-            client.Execute(request);
+            client.ExecuteRequest<object>(request);
         }
 
         [Action("Update client notes for a quote", Description = "Update client notes for a specific quote")]
@@ -133,7 +132,7 @@ namespace Apps.XTRF.Actions
             {
                 value = clientNotes
             });
-            client.Execute(request);
+            client.ExecuteRequest<object>(request);
         }
 
         [Action("Update client reference number for a quote", Description = "Update client reference number for a specific quote")]
@@ -145,7 +144,7 @@ namespace Apps.XTRF.Actions
             {
                 value = referenceNumber
             });
-            client.Execute(request);
+            client.ExecuteRequest<object>(request);
         }
 
         [Action("Update expected delivery date for a quote", Description = "Update expected delivery date for a specific quote")]
@@ -155,9 +154,9 @@ namespace Apps.XTRF.Actions
             var request = new XtrfRequest("/v2/quotes/" + quoteId + "/expectedDeliveryDate", Method.Put, authenticationCredentialsProviders);
             request.AddJsonBody(new
             {
-                value = ConvertStringToUnixTime(deliveryDate)
+                value = deliveryDate.ConvertToUnixTime()
             });
-            client.Execute(request);
+            client.ExecuteRequest<object>(request);
         }
 
         [Action("Update internal notes for a quote", Description = "Update internal notes for a specific quote")]
@@ -169,7 +168,7 @@ namespace Apps.XTRF.Actions
             {
                 value = internalNotes
             });
-            client.Execute(request);
+            client.ExecuteRequest<object>(request);
         }
 
         [Action("Update expiry date for a quote", Description = "Update expiry date for a specific quote")]
@@ -179,9 +178,9 @@ namespace Apps.XTRF.Actions
             var request = new XtrfRequest("/v2/quotes/" + quoteId + "/quoteExpiry", Method.Put, authenticationCredentialsProviders);
             request.AddJsonBody(new
             {
-                value = ConvertStringToUnixTime(expiryDate)
+                value = expiryDate.ConvertToUnixTime()
             });
-            client.Execute(request);
+            client.ExecuteRequest<object>(request);
         }
 
         [Action("Update source language for a quote", Description = "Update source language for a specific quote")]
@@ -193,7 +192,7 @@ namespace Apps.XTRF.Actions
             {
                 sourceLanguageId = sourceLanguageId
             });
-            client.Execute(request);
+            client.ExecuteRequest<object>(request);
         }
 
         [Action("Update vendor instructions for a quote", Description = "Update vendor instructions for a specific quote")]
@@ -205,7 +204,7 @@ namespace Apps.XTRF.Actions
             {
                 value = vendorInstructions
             });
-            client.Execute(request);
+            client.ExecuteRequest<object>(request);
         }
 
         [Action("Update volume for a quote", Description = "Update volume for a specific quote")]
@@ -217,18 +216,7 @@ namespace Apps.XTRF.Actions
             {
                 value = volume
             });
-            client.Execute(request);
-        }
-
-        public long ConvertStringToUnixTime(string inputDate)
-        {
-            DateTime date = DateTime.Parse(inputDate).ToUniversalTime();
-            var unspecifiedDateKind = DateTime.SpecifyKind(date, DateTimeKind.Unspecified);
-
-            DateTimeOffset offset = new DateTimeOffset(unspecifiedDateKind);
-            long unixTime = offset.ToUnixTimeMilliseconds();
-
-            return unixTime;
+            client.ExecuteRequest<object>(request);
         }
     }
 }

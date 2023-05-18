@@ -18,7 +18,7 @@ namespace Apps.XTRF.Actions
             var request = new XtrfRequest("/customers", Method.Get, authenticationCredentialsProviders);
             return new GetCustomersResponse()
             {
-                SimpleCustomers = client.Get<List<SimpleCustomer>>(request)
+                SimpleCustomers = client.ExecuteRequest<List<SimpleCustomer>>(request)
             };
         }
 
@@ -27,7 +27,7 @@ namespace Apps.XTRF.Actions
         {
             var client = new XtrfClient(authenticationCredentialsProviders);
             var request = new XtrfRequest("/customers/" + id, Method.Get, authenticationCredentialsProviders);
-            return client.Get<Customer>(request);
+            return client.ExecuteRequest<Customer>(request);
         }
 
         [Action("Create customer", Description = "Create a new customer")]
@@ -47,7 +47,7 @@ namespace Apps.XTRF.Actions
                     }
                 }
             });
-            return client.Post<SimpleCustomer>(request);
+            return client.ExecuteRequest<SimpleCustomer>(request);
         }
     }
 }

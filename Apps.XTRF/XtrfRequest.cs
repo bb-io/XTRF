@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace Apps.XTRF
 {
-    internal class XtrfRequest : RestRequest
+    public class XtrfRequest : RestRequest
     {
         public XtrfRequest(string endpoint, Method method, IEnumerable<AuthenticationCredentialsProvider> authenticationCredentialsProviders) : base(endpoint, method)
         {

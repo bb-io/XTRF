@@ -23,7 +23,7 @@ namespace Apps.XTRF.Actions
         {
             var client = new XtrfClient(authenticationCredentialsProviders);
             var request = new XtrfRequest("/v2/jobs/" + jobId, Method.Get, authenticationCredentialsProviders);
-            return client.Get<Job>(request);
+            return client.ExecuteRequest<Job>(request);
         }
 
         [Action("Get work files shared with a job", Description = "Get all work files shared with a specific job")]
@@ -33,7 +33,7 @@ namespace Apps.XTRF.Actions
             var request = new XtrfRequest("/v2/jobs/" + jobId + "/files/sharedWorkFiles", Method.Get, authenticationCredentialsProviders);
             return new GetFilesResponse()
             {
-                Files = client.Get<List<FileXTRF>>(request)
+                Files = client.ExecuteRequest<List<FileXTRF>>(request)
             };
         }
 
@@ -44,7 +44,7 @@ namespace Apps.XTRF.Actions
             var request = new XtrfRequest("/v2/jobs/" + jobId + "/files/sharedReferenceFiles", Method.Get, authenticationCredentialsProviders);
             return new GetFilesResponse()
             {
-                Files = client.Get<List<FileXTRF>>(request)
+                Files = client.ExecuteRequest<List<FileXTRF>>(request)
             };
         }
 
@@ -55,7 +55,7 @@ namespace Apps.XTRF.Actions
             var request = new XtrfRequest("/v2/jobs/" + jobId + "/files/delivered", Method.Get, authenticationCredentialsProviders);
             return new GetFilesResponse()
             {
-                Files = client.Get<List<FileXTRF>>(request)
+                Files = client.ExecuteRequest<List<FileXTRF>>(request)
             };
         }
 
@@ -65,7 +65,7 @@ namespace Apps.XTRF.Actions
             var client = new XtrfClient(authenticationCredentialsProviders);
             var uploadRequest = new XtrfRequest("/v2/jobs/" + input.JobId + "/files/delivered/upload", Method.Post, authenticationCredentialsProviders);
             uploadRequest.AddFile("file", input.File, input.FileName);
-            var outputFileId = client.Post<UploadFileResponse>(uploadRequest).FileId;
+            var outputFileId = client.ExecuteRequest<UploadFileResponse>(uploadRequest).FileId;
 
             var addRequest = new XtrfRequest("/v2/jobs/" + input.JobId + "/files/delivered/add", Method.Put, authenticationCredentialsProviders);
             addRequest.AddJsonBody(new
@@ -80,8 +80,7 @@ namespace Apps.XTRF.Actions
                 }
             });
 
-            client.Execute(addRequest);
-
+            client.ExecuteRequest<object>(addRequest);
         }
 
         [Action("Assign vendor to a job", Description = "Assign vendor to a specific job")]
@@ -93,7 +92,7 @@ namespace Apps.XTRF.Actions
             {
                 vendorPriceProfileId = vendorId
             });
-            client.Execute(request);
+            client.ExecuteRequest<object>(request);
         }
 
         [Action("Update instructions for a job", Description = "Update instructions for a specific job")]
@@ -105,7 +104,7 @@ namespace Apps.XTRF.Actions
             {
                 value = instructions
             });
-            client.Execute(request);
+            client.ExecuteRequest<object>(request);
         }
 
         [Action("Update dates of a job", Description = "Update dates of a given job")]
@@ -116,10 +115,10 @@ namespace Apps.XTRF.Actions
             var request = new XtrfRequest("/v2/jobs/" + input.JobId + "/dates", Method.Put, authenticationCredentialsProviders);
             request.AddJsonBody(new
             {
-                startDate = ConvertStringToUnixTime(input.StartDate),
-                deadline = ConvertStringToUnixTime(input.Deadline)
+                startDate =input.StartDate.ConvertToUnixTime(),
+                deadline = input.Deadline.ConvertToUnixTime()
             });
-            client.Execute(request);
+            client.ExecuteRequest<object>(request);
         }
 
         [Action("Share file as referenced with a job", Description = "Share file as referenced with a specific job")]
@@ -131,7 +130,7 @@ namespace Apps.XTRF.Actions
             {
                 files = new[] { input.FileId }
             });
-            return client.Execute<SharedFilesResponse>(request).Data;
+            return client.ExecuteRequest<SharedFilesResponse>(request);
         }
 
         [Action("Share file as work files with a job", Description = "Share file as work files with a specific job")]
@@ -143,7 +142,7 @@ namespace Apps.XTRF.Actions
             {
                 files = new[] { input.FileId }
             });
-            return client.Execute<SharedFilesResponse>(request).Data;
+            return client.ExecuteRequest<SharedFilesResponse>(request);
 
         }
 
@@ -156,19 +155,8 @@ namespace Apps.XTRF.Actions
             {
                 files = new[] { input.FileId }
             });
-            return client.Execute<SharedFilesResponse>(request).Data;
+            return client.ExecuteRequest<SharedFilesResponse>(request);
 
-        }
-
-        public long ConvertStringToUnixTime(string inputDate)
-        {
-            DateTime date = DateTime.Parse(inputDate).ToUniversalTime();
-            var unspecifiedDateKind = DateTime.SpecifyKind(date, DateTimeKind.Unspecified);
-
-            DateTimeOffset offset = new DateTimeOffset(unspecifiedDateKind);
-            long unixTime = offset.ToUnixTimeMilliseconds();            
-
-            return unixTime;
         }
     }
 }

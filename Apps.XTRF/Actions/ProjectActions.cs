@@ -5,12 +5,6 @@ using Blackbird.Applications.Sdk.Common;
 using Blackbird.Applications.Sdk.Common.Actions;
 using Blackbird.Applications.Sdk.Common.Authentication;
 using RestSharp;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Security.Cryptography;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Apps.XTRF.Actions
 {
@@ -22,7 +16,7 @@ namespace Apps.XTRF.Actions
         {
             var client = new XtrfClient(authenticationCredentialsProviders);
             var request = new XtrfRequest("/v2/projects/" + projectId, Method.Get, authenticationCredentialsProviders);
-            return client.Get<Project>(request);
+            return client.ExecuteRequest<Project>(request);
         }
 
         [Action("Create new project", Description = "Create a new project")]
@@ -31,7 +25,7 @@ namespace Apps.XTRF.Actions
             var client = new XtrfClient(authenticationCredentialsProviders);
             var request = new XtrfRequest("/v2/projects", Method.Post, authenticationCredentialsProviders);
             request.AddJsonBody(project);
-            return client.Post<Project>(request);
+            return client.ExecuteRequest<Project>(request);
         }
 
         [Action("Get jobs in a project", Description = "Get all jobs of a specific project")]
@@ -41,7 +35,7 @@ namespace Apps.XTRF.Actions
             var request = new XtrfRequest("/v2/projects/" + projectId + "/jobs", Method.Get, authenticationCredentialsProviders);
             return new GetJobsResponse()
             {
-                Jobs = client.Get<List<Job>>(request)
+                Jobs = client.ExecuteRequest<List<Job>>(request)
             };
         }
 
@@ -52,7 +46,7 @@ namespace Apps.XTRF.Actions
             var request = new XtrfRequest("/v2/projects/" + projectId + "/files", Method.Get, authenticationCredentialsProviders);
             return new GetFilesResponse()
             {
-                Files = client.Get<List<FileXTRF>>(request)
+                Files = client.ExecuteRequest<List<FileXTRF>>(request)
             };
         }
 
@@ -63,7 +57,7 @@ namespace Apps.XTRF.Actions
             var request = new XtrfRequest("/v2/projects/files/" + fileId + "/download/" + fileName, Method.Get, authenticationCredentialsProviders);
             return new DownloadFileResponse()
             {
-                FileContent = client.Execute(request).RawBytes
+                FileContent = client.Execute<object>(request).RawBytes
             };
         }
 
@@ -75,7 +69,7 @@ namespace Apps.XTRF.Actions
             request.AddJsonBody(new {
                 status = projectStatus
             });
-            client.Execute(request);
+            client.ExecuteRequest<object>(request);
         }
 
         [Action("Upload a file to a project", Description = "Upload a file to a specific project")]
@@ -99,7 +93,7 @@ namespace Apps.XTRF.Actions
                 }
             });
 
-            client.Execute(addRequest);
+            client.ExecuteRequest<object>(addRequest);
 
         }
 
@@ -116,7 +110,7 @@ namespace Apps.XTRF.Actions
         {
             var client = new XtrfClient(authenticationCredentialsProviders);
             var request = new XtrfRequest("/v2/projects/" + projectId + "/clientContacts", Method.Get, authenticationCredentialsProviders);
-            return client.Get<GetClientContactsByProjectResponse>(request);
+            return client.ExecuteRequest<GetClientContactsByProjectResponse>(request);
         }
 
         [Action("Get finance information for a project", Description = "Get finance information for a specific project")]
@@ -124,7 +118,7 @@ namespace Apps.XTRF.Actions
         {
             var client = new XtrfClient(authenticationCredentialsProviders);
             var request = new XtrfRequest("/v2/projects/" + projectId + "/finance", Method.Get, authenticationCredentialsProviders);
-            return client.Get<FinanceInformation>(request);
+            return client.ExecuteRequest<FinanceInformation>(request);
         }
 
         [Action("Get project file details", Description = "Get details of a specific file in a project")]
@@ -132,7 +126,7 @@ namespace Apps.XTRF.Actions
         {
             var client = new XtrfClient(authenticationCredentialsProviders);
             var request = new XtrfRequest("/v2/projects/files/" + fileId, Method.Get, authenticationCredentialsProviders);
-            return client.Get<FileXTRF>(request);
+            return client.ExecuteRequest<FileXTRF>(request);
         }
 
         [Action("Get process id for a project", Description = "Get process id for a specific project")]
@@ -140,7 +134,7 @@ namespace Apps.XTRF.Actions
         {
             var client = new XtrfClient(authenticationCredentialsProviders);
             var request = new XtrfRequest("/v2/projects/" + projectId + "/process", Method.Get, authenticationCredentialsProviders);
-            return client.Get<GetProcessIdByProjectResponse>(request);
+            return client.ExecuteRequest<GetProcessIdByProjectResponse>(request);
         }
 
         [Action("Delete a payable for a project", Description = "Delete a payable for a specific project")]
@@ -148,7 +142,7 @@ namespace Apps.XTRF.Actions
         {
             var client = new XtrfClient(authenticationCredentialsProviders);
             var request = new XtrfRequest("/v2/projects/" + projectId + "/finance/payables/" + payableId, Method.Delete, authenticationCredentialsProviders);
-            client.Execute(request);
+            client.ExecuteRequest<object>(request);
         }
 
         [Action("Delete a receivable for a project", Description = "Delete a receivable for a specific project")]
@@ -156,7 +150,7 @@ namespace Apps.XTRF.Actions
         {
             var client = new XtrfClient(authenticationCredentialsProviders);
             var request = new XtrfRequest("/v2/projects/" + projectId + "/finance/receivables/" + receivableId, Method.Delete, authenticationCredentialsProviders);
-            client.Execute(request);
+            client.ExecuteRequest<object>(request);
         }
 
         [Action("Update client deadline for a project", Description = "Update client deadline for a specific project")]
@@ -166,9 +160,9 @@ namespace Apps.XTRF.Actions
             var request = new XtrfRequest("/v2/projects/" + projectId + "/clientDeadline", Method.Put, authenticationCredentialsProviders);
             request.AddJsonBody(new
             {
-                value = ConvertStringToUnixTime(deadlineDate)
+                value = deadlineDate.ConvertToUnixTime()
             });
-            client.Execute(request);
+            client.ExecuteRequest<object>(request);
         }
 
         [Action("Update client notes for a project", Description = "Update client notes for a specific project")]
@@ -180,7 +174,7 @@ namespace Apps.XTRF.Actions
             {
                 value = clientNotes
             });
-            client.Execute(request);
+            client.ExecuteRequest<object>(request);
         }
 
         [Action("Update internal notes for a project", Description = "Update internal notes for a specific project")]
@@ -192,7 +186,7 @@ namespace Apps.XTRF.Actions
             {
                 value = internalNotes
             });
-            client.Execute(request);
+            client.ExecuteRequest<object>(request);
         }
 
         [Action("Update client reference number for a project", Description = "Update client reference number for a specific project")]
@@ -204,7 +198,7 @@ namespace Apps.XTRF.Actions
             {
                 value = referenceNumber
             });
-            client.Execute(request);
+            client.ExecuteRequest<object>(request);
         }
 
         [Action("Update order date for a project", Description = "Update order date for a specific project")]
@@ -214,9 +208,9 @@ namespace Apps.XTRF.Actions
             var request = new XtrfRequest("/v2/projects/" + projectId + "/orderDate", Method.Put, authenticationCredentialsProviders);
             request.AddJsonBody(new
             {
-                value = ConvertStringToUnixTime(orderDate)
+                value = orderDate.ConvertToUnixTime()
             });
-            client.Execute(request);
+            client.ExecuteRequest<object>(request);
         }
 
         [Action("Update source language for a project", Description = "Update source language for a specific project")]
@@ -240,7 +234,7 @@ namespace Apps.XTRF.Actions
             {
                 specializationId = specializationId
             });
-            client.Execute(request);
+            client.ExecuteRequest<object>(request);
         }
 
         [Action("Update vendor instructions for a project", Description = "Update vendor instructions for a specific project")]
@@ -252,7 +246,7 @@ namespace Apps.XTRF.Actions
             {
                 value = vendorInstructions
             });
-            client.Execute(request);
+            client.ExecuteRequest<object>(request);
         }
 
         [Action("Update volume for a project", Description = "Update volume for a specific project")]
@@ -264,18 +258,7 @@ namespace Apps.XTRF.Actions
             {
                 value = volume
             });
-            client.Execute(request);
-        }
-
-        public long ConvertStringToUnixTime(string inputDate)
-        {
-            DateTime date = DateTime.Parse(inputDate).ToUniversalTime();
-            var unspecifiedDateKind = DateTime.SpecifyKind(date, DateTimeKind.Unspecified);
-
-            DateTimeOffset offset = new DateTimeOffset(unspecifiedDateKind);
-            long unixTime = offset.ToUnixTimeMilliseconds();
-
-            return unixTime;
+            client.ExecuteRequest<object>(request);
         }
 
     }
