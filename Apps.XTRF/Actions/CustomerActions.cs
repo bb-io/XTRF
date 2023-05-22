@@ -49,5 +49,37 @@ namespace Apps.XTRF.Actions
             });
             return client.ExecuteRequest<SimpleCustomer>(request);
         }
+
+        [Action("Create customer contact", Description = "Create a new contact person for a customer")]
+        public SimpleCustomer CreateCustomerContact(IEnumerable<AuthenticationCredentialsProvider> authenticationCredentialsProviders, [ActionParameter] CreateContact newContact)
+        {
+            var client = new XtrfClient(authenticationCredentialsProviders);
+            var request = new XtrfRequest("/customers/persons", Method.Post, authenticationCredentialsProviders);
+            request.AddJsonBody(new
+            {
+                name = newContact.Name,
+                lastName = newContact.LastName,
+                contact = new
+                {
+                    emails = new
+                    {
+                        primary = newContact.Email
+                    }
+                },
+                customerId = newContact.CustomerId
+            });
+            return client.ExecuteRequest<SimpleCustomer>(request);
+        }
+
+        [Action("Set contact phone number", Description = "Sets a new phone number for the contact")]
+        public void SetContactPhoneNumber(IEnumerable<AuthenticationCredentialsProvider> authenticationCredentialsProviders, [ActionParameter] SetPhoneNumber input)
+        {
+            var client = new XtrfClient(authenticationCredentialsProviders);
+            var request = new XtrfRequest($"/customers/persons/{input.ContactId}/contact", Method.Put, authenticationCredentialsProviders);
+            request.AddJsonBody(new
+            {
+                phones = new List<string>() { input.PhoneNumber }
+            });
+        }
     }
 }
