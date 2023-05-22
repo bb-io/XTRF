@@ -1,4 +1,5 @@
-﻿using Newtonsoft.Json;
+﻿using Apps.XTRF.Responses.Models;
+using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -57,11 +58,9 @@ namespace Apps.XTRF.Webhooks.Payloads
         [JsonProperty("deadline")]
         public DateTime Deadline { get; set; }
 
-        [JsonProperty("language combination")]
-        public string LanguageCombination { get; set; }
-
         [JsonProperty("external system in task")]
         public string ExternalSystemInTask { get; set; }
 
     }
+
 }
