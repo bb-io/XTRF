@@ -33,8 +33,8 @@ namespace Apps.XTRF.Webhooks.Payloads
         [JsonProperty("client price profile")]
         public string ClientPriceProfile { get; set; }
 
-        [JsonProperty("instructions from customer")]
-        public string InstructionsFromCustomer { get; set; }
+        [JsonProperty("instructions from client")]
+        public string InstructionsFromClient { get; set; }
 
         [JsonProperty("quote manager")]
         public string QuoteManager { get; set; }

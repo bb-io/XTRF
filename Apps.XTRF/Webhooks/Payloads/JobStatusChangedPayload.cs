@@ -16,12 +16,6 @@ namespace Apps.XTRF.Webhooks.Payloads
         [JsonProperty("project internal id")]
         public string ProjectInternalId { get; set; }
 
-        [JsonProperty("quote id")]
-        public string QuoteId { get; set; }
-
-        [JsonProperty("quote internal id")]
-        public string QuoteInternalId { get; set; }
-
         [JsonProperty("task id")]
         public string TaskId { get; set; }
 
@@ -45,9 +39,6 @@ namespace Apps.XTRF.Webhooks.Payloads
 
         [JsonProperty("vendor")]
         public string Vendor { get; set; }
-
-        [JsonProperty("assignee")]
-        public string Assignee { get; set; }
 
         [JsonProperty("actual start date and time")]
         public DateTime ActualStartDateAndTime { get; set; }

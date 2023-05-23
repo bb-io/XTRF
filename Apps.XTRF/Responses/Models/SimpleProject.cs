@@ -11,6 +11,6 @@ namespace Apps.XTRF.Responses.Models
         public string Name { get; set; }
         public int ClientId { get; set; }
         public int ServiceId { get; set; }
-        public string ExternalId { get; set; }
+        //public string ExternalId { get; set; }
     }
 }
