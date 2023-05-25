@@ -9,7 +9,6 @@ namespace Apps.XTRF.Responses.Models
     public class Quote
     {
         public string Id { get; set; }
-        public string QuoteId { get; set; }
         public bool IsClassicProject { get; set; }
         public string QuoteIdNumber { get; set; }
         public string Name { get; set; }
