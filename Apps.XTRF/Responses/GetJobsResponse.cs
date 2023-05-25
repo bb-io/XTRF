@@ -9,6 +9,6 @@ namespace Apps.XTRF.Responses
 {
     public class GetJobsResponse
     {
-        public IEnumerable<Job> Jobs { get; set; }
+        public IEnumerable<JobDTO> Jobs { get; set; }
     }
 }

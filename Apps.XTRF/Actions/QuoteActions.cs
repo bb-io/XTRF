@@ -38,9 +38,18 @@ namespace Apps.XTRF.Actions
         {
             var client = new XtrfClient(authenticationCredentialsProviders);
             var request = new XtrfRequest("/v2/quotes/" + quoteId + "/jobs", Method.Get, authenticationCredentialsProviders);
+            var responseJobs = client.ExecuteRequest<List<JobResponse>>(request);
+
+            List<JobDTO> dtoJobs = new List<JobDTO>();
+
+            foreach (var job in responseJobs)
+            {
+                dtoJobs.Add(ExtensionMethods.MapJobResponseToDTO(job));
+            }
+
             return new GetJobsResponse()
             {
-                Jobs = client.ExecuteRequest<List<Job>>(request)
+                Jobs = dtoJobs
             };
         }
 

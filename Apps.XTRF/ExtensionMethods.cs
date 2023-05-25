@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Apps.XTRF.Responses.Models;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -17,6 +18,26 @@ namespace Apps.XTRF
             long unixTime = offset.ToUnixTimeMilliseconds();
 
             return unixTime;
+        }
+
+        public static JobDTO MapJobResponseToDTO(JobResponse response)
+        {
+            var jobDTO = new JobDTO()
+            {
+                Id = response.Id,
+                IdNumber = response.IdNumber,
+                Name = response.Name,
+                Status = response.Status,
+                StepNumber = response.StepNumber,
+                VendorId = response.VendorId,
+                VendorPriceProfileId = response.VendorPriceProfileId,
+                StepTypeId = response.StepType.Id,
+                StepTypeName = response.StepType.Name,
+                JobTypeId = response.StepType.JobTypeId,
+                Languages = response.Languages
+            };
+
+            return jobDTO;
         }
     }
 }

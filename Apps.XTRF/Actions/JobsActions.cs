@@ -19,11 +19,12 @@ namespace Apps.XTRF.Actions
     public class JobsActions
     {
         [Action("Get job details", Description = "Get all information of a specific job")]
-        public Job GetJob(IEnumerable<AuthenticationCredentialsProvider> authenticationCredentialsProviders, [ActionParameter] string jobId)
+        public JobDTO GetJob(IEnumerable<AuthenticationCredentialsProvider> authenticationCredentialsProviders, [ActionParameter] string jobId)
         {
             var client = new XtrfClient(authenticationCredentialsProviders);
             var request = new XtrfRequest("/v2/jobs/" + jobId, Method.Get, authenticationCredentialsProviders);
-            return client.ExecuteRequest<Job>(request);
+            var jobResult = client.ExecuteRequest<JobResponse>(request);
+            return ExtensionMethods.MapJobResponseToDTO(jobResult);
         }
 
         [Action("Get work files shared with a job", Description = "Get all work files shared with a specific job")]
