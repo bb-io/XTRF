@@ -80,6 +80,7 @@ namespace Apps.XTRF.Actions
             {
                 phones = new List<string>() { input.PhoneNumber }
             });
+            client.ExecuteRequest<object>(request);
         }
     }
 }
