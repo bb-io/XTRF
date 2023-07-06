@@ -1,7 +1,9 @@
-﻿namespace Apps.XTRF.Responses
+﻿using Blackbird.Applications.Sdk.Common;
+
+namespace Apps.XTRF.Responses
 {
     public class GetProcessIdByProjectResponse
     {
-        public string ProcessId { get; set; }
+        [Display("Proccess id")] public string ProcessId { get; set; }
     }
 }

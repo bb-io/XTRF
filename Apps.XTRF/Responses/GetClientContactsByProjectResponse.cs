@@ -1,8 +1,10 @@
-﻿namespace Apps.XTRF.Responses
+﻿using Blackbird.Applications.Sdk.Common;
+
+namespace Apps.XTRF.Responses
 {
     public class GetClientContactsByProjectResponse
     {
-        public int PrimaryId { get; set; }
-        public IEnumerable<int> AdditionalIds { get; set; }
+        [Display("Primary id")]  public int PrimaryId { get; set; }
+        [Display("Additional ids")]  public IEnumerable<int> AdditionalIds { get; set; }
     }
 }

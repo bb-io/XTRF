@@ -1,7 +1,9 @@
-﻿namespace Apps.XTRF.Responses
+﻿using Blackbird.Applications.Sdk.Common;
+
+namespace Apps.XTRF.Responses
 {
     public class DownloadFileResponse
     {
-        public byte[] FileContent { get; set; }
+        [Display("File content")]  public byte[] FileContent { get; set; }
     }
 }
