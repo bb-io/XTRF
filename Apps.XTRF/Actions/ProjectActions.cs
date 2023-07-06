@@ -12,20 +12,20 @@ namespace Apps.XTRF.Actions
     public class ProjectActions
     {
         [Action("Get project details", Description = "Get all information of a specific project")]
-        public Project GetProject(IEnumerable<AuthenticationCredentialsProvider> authenticationCredentialsProviders, [ActionParameter] string projectId)
+        public async Task<ProjectResponse> GetProject(IEnumerable<AuthenticationCredentialsProvider> authenticationCredentialsProviders, [ActionParameter] string projectId)
         {
             var client = new XtrfClient(authenticationCredentialsProviders);
             var request = new XtrfRequest("/v2/projects/" + projectId, Method.Get, authenticationCredentialsProviders);
-            return client.ExecuteRequest<Project>(request);
+            return new(await client.ExecuteRequestAsync<Project>(request));
         }
 
         [Action("Create new project", Description = "Create a new project")]
-        public Project CreateProject(IEnumerable<AuthenticationCredentialsProvider> authenticationCredentialsProviders, [ActionParameter] SimpleProject project)
+        public async Task<ProjectResponse> CreateProject(IEnumerable<AuthenticationCredentialsProvider> authenticationCredentialsProviders, [ActionParameter] SimpleProject project)
         {
             var client = new XtrfClient(authenticationCredentialsProviders);
             var request = new XtrfRequest("/v2/projects", Method.Post, authenticationCredentialsProviders);
             request.AddJsonBody(project);
-            return client.ExecuteRequest<Project>(request);
+            return new(await client.ExecuteRequestAsync<Project>(request));
         }
 
         [Action("Get jobs in a project", Description = "Get all jobs of a specific project")]

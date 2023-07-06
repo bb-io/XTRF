@@ -2,11 +2,6 @@
 using Blackbird.Applications.Sdk.Common.Authentication;
 using Newtonsoft.Json;
 using RestSharp;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Apps.XTRF
 {
@@ -28,6 +23,19 @@ namespace Apps.XTRF
                 ErrorResponse? errorResponse = JsonConvert.DeserializeObject<ErrorResponse>(response.Content);
                 throw new Exception(errorResponse.ErrorMessage);
             }
+            return JsonConvert.DeserializeObject<T>(response.Content);
+        }    
+        
+        public async Task<T> ExecuteRequestAsync<T>(XtrfRequest request)
+        { 
+            var response = await ExecuteAsync(request);
+            
+            if (!response.IsSuccessful)
+            {
+                var errorResponse = JsonConvert.DeserializeObject<ErrorResponse>(response.Content);
+                throw new Exception(errorResponse.ErrorMessage);
+            }
+            
             return JsonConvert.DeserializeObject<T>(response.Content);
         }
     }
