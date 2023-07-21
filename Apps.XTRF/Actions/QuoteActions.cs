@@ -12,7 +12,9 @@ namespace Apps.XTRF.Actions
     public class QuoteActions
     {
         [Action("Get quote details", Description = "Get all information of a specific quote")]
-        public Quote GetQuote(IEnumerable<AuthenticationCredentialsProvider> authenticationCredentialsProviders, [ActionParameter] string quoteId)
+        public Quote GetQuote(
+            IEnumerable<AuthenticationCredentialsProvider> authenticationCredentialsProviders,
+            [ActionParameter] [Display("Quote ID")] string quoteId)
         {
             var client = new XtrfClient(authenticationCredentialsProviders);
             var request = new XtrfRequest("/v2/quotes/" + quoteId, Method.Get, authenticationCredentialsProviders);
@@ -20,16 +22,20 @@ namespace Apps.XTRF.Actions
         }
 
         [Action("Create new quote", Description = "Create a new quote")]
-        public Quote CreateQuote(IEnumerable<AuthenticationCredentialsProvider> authenticationCredentialsProviders, [ActionParameter] SimpleQuote quote)
+        public Quote CreateQuote(
+            IEnumerable<AuthenticationCredentialsProvider> authenticationCredentialsProviders,
+            [ActionParameter] CreateQouteInput quote)
         {
             var client = new XtrfClient(authenticationCredentialsProviders);
             var request = new XtrfRequest("/v2/quotes", Method.Post, authenticationCredentialsProviders);
-            request.AddJsonBody(quote);
+            request.AddJsonBody(new CreateQouteRequest(quote));
             return client.ExecuteRequest<Quote>(request);
         }
 
         [Action("Get jobs in a quote", Description = "Get all jobs of a specific quote")]
-        public GetJobsResponse GetJobsByQuote(IEnumerable<AuthenticationCredentialsProvider> authenticationCredentialsProviders, [ActionParameter] string quoteId)
+        public GetJobsResponse GetJobsByQuote(
+            IEnumerable<AuthenticationCredentialsProvider> authenticationCredentialsProviders,
+            [ActionParameter] [Display("Quote ID")] string quoteId)
         {
             var client = new XtrfClient(authenticationCredentialsProviders);
             var request = new XtrfRequest("/v2/quotes/" + quoteId + "/jobs", Method.Get, authenticationCredentialsProviders);
@@ -49,7 +55,9 @@ namespace Apps.XTRF.Actions
         }
 
         [Action("Get files in a quote", Description = "Get all files of a specific quote")]
-        public GetFilesResponse GetFilesByQuote(IEnumerable<AuthenticationCredentialsProvider> authenticationCredentialsProviders, [ActionParameter] string quoteId)
+        public GetFilesResponse GetFilesByQuote(
+            IEnumerable<AuthenticationCredentialsProvider> authenticationCredentialsProviders,
+            [ActionParameter] [Display("Quote ID")] string quoteId)
         {
             var client = new XtrfClient(authenticationCredentialsProviders);
             var request = new XtrfRequest("/v2/quotes/" + quoteId + "/files", Method.Get, authenticationCredentialsProviders);
@@ -60,7 +68,9 @@ namespace Apps.XTRF.Actions
         }
 
         [Action("Upload a file to a quote", Description = "Upload a file to a specific quote")]
-        public void UploadFileToQuote(IEnumerable<AuthenticationCredentialsProvider> authenticationCredentialsProviders, [ActionParameter] UploadFileToQuoteRequest input)
+        public void UploadFileToQuote(
+            IEnumerable<AuthenticationCredentialsProvider> authenticationCredentialsProviders,
+            [ActionParameter] UploadFileToQuoteRequest input)
         {
             var client = new XtrfClient(authenticationCredentialsProviders);
             var uploadRequest = new XtrfRequest("/v2/quotes/" + input.QuoteId + "/files/upload", Method.Post, authenticationCredentialsProviders);
@@ -84,7 +94,9 @@ namespace Apps.XTRF.Actions
         }
 
         [Action("Get quote file details", Description = "Get details of a specific file in a quote")]
-        public FileXTRF GetQuoteFileDetails(IEnumerable<AuthenticationCredentialsProvider> authenticationCredentialsProviders, [ActionParameter] string fileId)
+        public FileXTRF GetQuoteFileDetails(
+            IEnumerable<AuthenticationCredentialsProvider> authenticationCredentialsProviders,
+            [ActionParameter] [Display("File ID")] string fileId)
         {
             var client = new XtrfClient(authenticationCredentialsProviders);
             var request = new XtrfRequest("/v2/quotes/files/" + fileId, Method.Get, authenticationCredentialsProviders);
@@ -92,7 +104,9 @@ namespace Apps.XTRF.Actions
         }
 
         [Action("Get finance information for a quote", Description = "Get finance information for a specific quote")]
-        public FinanceInformation GetFinanceInfoForQuote(IEnumerable<AuthenticationCredentialsProvider> authenticationCredentialsProviders, [ActionParameter] string quoteId)
+        public FinanceInformation GetFinanceInfoForQuote(
+            IEnumerable<AuthenticationCredentialsProvider> authenticationCredentialsProviders,
+            [ActionParameter] [Display("Quote ID")] string quoteId)
         {
             var client = new XtrfClient(authenticationCredentialsProviders);
             var request = new XtrfRequest("/v2/quotes/" + quoteId + "/finance", Method.Get, authenticationCredentialsProviders);
@@ -100,7 +114,10 @@ namespace Apps.XTRF.Actions
         }
 
         [Action("Delete a payable for a quote", Description = "Delete a payable for a specific quote")]
-        public void DeletePayableForQuote(IEnumerable<AuthenticationCredentialsProvider> authenticationCredentialsProviders, [ActionParameter] string quoteId, [ActionParameter] int payableId)
+        public void DeletePayableForQuote(
+            IEnumerable<AuthenticationCredentialsProvider> authenticationCredentialsProviders,
+            [ActionParameter] [Display("Quote ID")] string quoteId,
+            [ActionParameter] [Display("Payable ID")] string payableId)
         {
             var client = new XtrfClient(authenticationCredentialsProviders);
             var request = new XtrfRequest("/v2/quotes/" + quoteId + "/finance/payables/" + payableId, Method.Delete, authenticationCredentialsProviders);
@@ -108,7 +125,10 @@ namespace Apps.XTRF.Actions
         }
 
         [Action("Delete a receivable for a quote", Description = "Delete a receivable for a specific quote")]
-        public void DeleteReceivableForQuote(IEnumerable<AuthenticationCredentialsProvider> authenticationCredentialsProviders, [ActionParameter] string quoteId, [ActionParameter] int receivableId)
+        public void DeleteReceivableForQuote(
+            IEnumerable<AuthenticationCredentialsProvider> authenticationCredentialsProviders,
+            [ActionParameter] [Display("Quote ID")] string quoteId,
+            [ActionParameter] [Display("Receivable ID")] string receivableId)
         {
             var client = new XtrfClient(authenticationCredentialsProviders);
             var request = new XtrfRequest("/v2/quotes/" + quoteId + "/finance/receivables/" + receivableId, Method.Delete, authenticationCredentialsProviders);
@@ -116,7 +136,10 @@ namespace Apps.XTRF.Actions
         }
 
         [Action("Update business days for a quote", Description = "Update business days for a specific quote")]
-        public void UpdateBusinessDaysForQuote(IEnumerable<AuthenticationCredentialsProvider> authenticationCredentialsProviders, [ActionParameter] string quoteId, [ActionParameter] int businessDays)
+        public void UpdateBusinessDaysForQuote(
+            IEnumerable<AuthenticationCredentialsProvider> authenticationCredentialsProviders,
+            [ActionParameter] [Display("Quote ID")] string quoteId,
+            [ActionParameter] [Display("Business days")] int businessDays)
         {
             var client = new XtrfClient(authenticationCredentialsProviders);
             var request = new XtrfRequest("/v2/quotes/" + quoteId + "/businessDays", Method.Put, authenticationCredentialsProviders);
@@ -128,7 +151,10 @@ namespace Apps.XTRF.Actions
         }
 
         [Action("Update client notes for a quote", Description = "Update client notes for a specific quote")]
-        public void UpdateClientNotesForQuote(IEnumerable<AuthenticationCredentialsProvider> authenticationCredentialsProviders, [ActionParameter] string quoteId, [ActionParameter] string clientNotes)
+        public void UpdateClientNotesForQuote(
+            IEnumerable<AuthenticationCredentialsProvider> authenticationCredentialsProviders,
+            [ActionParameter] [Display("Quote ID")] string quoteId,
+            [ActionParameter] [Display("Client notes")] string clientNotes)
         {
             var client = new XtrfClient(authenticationCredentialsProviders);
             var request = new XtrfRequest("/v2/quotes/" + quoteId + "/clientNotes", Method.Put, authenticationCredentialsProviders);
@@ -140,7 +166,10 @@ namespace Apps.XTRF.Actions
         }
 
         [Action("Update client reference number for a quote", Description = "Update client reference number for a specific quote")]
-        public void UpdateClientReferenceNumberForQuote(IEnumerable<AuthenticationCredentialsProvider> authenticationCredentialsProviders, [ActionParameter] string quoteId, [ActionParameter] string referenceNumber)
+        public void UpdateClientReferenceNumberForQuote(
+            IEnumerable<AuthenticationCredentialsProvider> authenticationCredentialsProviders,
+            [ActionParameter] [Display("Quote ID")] string quoteId,
+            [ActionParameter] [Display("Reference number")] string referenceNumber)
         {
             var client = new XtrfClient(authenticationCredentialsProviders);
             var request = new XtrfRequest("/v2/quotes/" + quoteId + "/clientReferenceNumber", Method.Put, authenticationCredentialsProviders);
@@ -152,7 +181,10 @@ namespace Apps.XTRF.Actions
         }
 
         [Action("Update expected delivery date for a quote", Description = "Update expected delivery date for a specific quote")]
-        public void UpdateDeliveryDateForQuote(IEnumerable<AuthenticationCredentialsProvider> authenticationCredentialsProviders, [ActionParameter] string quoteId, [ActionParameter] string deliveryDate)
+        public void UpdateDeliveryDateForQuote(
+            IEnumerable<AuthenticationCredentialsProvider> authenticationCredentialsProviders,
+            [ActionParameter] [Display("Quote ID")] string quoteId,
+            [ActionParameter] [Display("Delivery date")] string deliveryDate)
         {
             var client = new XtrfClient(authenticationCredentialsProviders);
             var request = new XtrfRequest("/v2/quotes/" + quoteId + "/expectedDeliveryDate", Method.Put, authenticationCredentialsProviders);
@@ -164,7 +196,10 @@ namespace Apps.XTRF.Actions
         }
 
         [Action("Update internal notes for a quote", Description = "Update internal notes for a specific quote")]
-        public void UpdateInternalNotesForQuote(IEnumerable<AuthenticationCredentialsProvider> authenticationCredentialsProviders, [ActionParameter] string quoteId, [ActionParameter] string internalNotes)
+        public void UpdateInternalNotesForQuote(
+            IEnumerable<AuthenticationCredentialsProvider> authenticationCredentialsProviders,
+            [ActionParameter] [Display("Quote ID")] string quoteId,
+            [ActionParameter] [Display("Internal notes")] string internalNotes)
         {
             var client = new XtrfClient(authenticationCredentialsProviders);
             var request = new XtrfRequest("/v2/quotes/" + quoteId + "/internalNotes", Method.Put, authenticationCredentialsProviders);
@@ -176,7 +211,10 @@ namespace Apps.XTRF.Actions
         }
 
         [Action("Update expiry date for a quote", Description = "Update expiry date for a specific quote")]
-        public void UpdateExpiryDateForQuote(IEnumerable<AuthenticationCredentialsProvider> authenticationCredentialsProviders, [ActionParameter] string quoteId, [ActionParameter] string expiryDate)
+        public void UpdateExpiryDateForQuote(
+            IEnumerable<AuthenticationCredentialsProvider> authenticationCredentialsProviders,
+            [ActionParameter] [Display("Quote ID")] string quoteId,
+            [ActionParameter] [Display("Expiry date")] string expiryDate)
         {
             var client = new XtrfClient(authenticationCredentialsProviders);
             var request = new XtrfRequest("/v2/quotes/" + quoteId + "/quoteExpiry", Method.Put, authenticationCredentialsProviders);
@@ -188,19 +226,28 @@ namespace Apps.XTRF.Actions
         }
 
         [Action("Update source language for a quote", Description = "Update source language for a specific quote")]
-        public void UpdateSourceLanguageForQuote(IEnumerable<AuthenticationCredentialsProvider> authenticationCredentialsProviders, [ActionParameter] string quoteId, [ActionParameter] int sourceLanguageId)
+        public void UpdateSourceLanguageForQuote(
+            IEnumerable<AuthenticationCredentialsProvider> authenticationCredentialsProviders,
+            [ActionParameter] [Display("Quote ID")] string quoteId,
+            [ActionParameter] [Display("Source language ID")] string sourceLanguageId)
         {
+            if (!int.TryParse(sourceLanguageId, out var intSourceLangId))
+                throw new("Source language ID must be a number");
+            
             var client = new XtrfClient(authenticationCredentialsProviders);
             var request = new XtrfRequest("/v2/quotes/" + quoteId + "/sourceLanguage", Method.Put, authenticationCredentialsProviders);
             request.AddJsonBody(new
             {
-                sourceLanguageId = sourceLanguageId
+                sourceLanguageId = intSourceLangId
             });
             client.ExecuteRequest<object>(request);
         }
 
         [Action("Update vendor instructions for a quote", Description = "Update vendor instructions for a specific quote")]
-        public void UpdateVendorInstructionsForQuote(IEnumerable<AuthenticationCredentialsProvider> authenticationCredentialsProviders, [ActionParameter] string quoteId, [ActionParameter] string vendorInstructions)
+        public void UpdateVendorInstructionsForQuote(
+            IEnumerable<AuthenticationCredentialsProvider> authenticationCredentialsProviders,
+            [ActionParameter] [Display("Quote ID")] string quoteId, 
+            [ActionParameter] [Display("Vendor instructions")] string vendorInstructions)
         {
             var client = new XtrfClient(authenticationCredentialsProviders);
             var request = new XtrfRequest("/v2/quotes/" + quoteId + "/vendorInstructions", Method.Put, authenticationCredentialsProviders);
@@ -212,7 +259,10 @@ namespace Apps.XTRF.Actions
         }
 
         [Action("Update volume for a quote", Description = "Update volume for a specific quote")]
-        public void UpdateVolumeForQuote(IEnumerable<AuthenticationCredentialsProvider> authenticationCredentialsProviders, [ActionParameter] string quoteId, [ActionParameter] int volume)
+        public void UpdateVolumeForQuote(
+            IEnumerable<AuthenticationCredentialsProvider> authenticationCredentialsProviders,
+            [ActionParameter] [Display("Quote ID")] string quoteId, 
+            [ActionParameter] [Display("Volume")] int volume)
         {
             var client = new XtrfClient(authenticationCredentialsProviders);
             var request = new XtrfRequest("/v2/quotes/" + quoteId + "/volume", Method.Put, authenticationCredentialsProviders);

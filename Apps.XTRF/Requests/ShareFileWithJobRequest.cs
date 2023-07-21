@@ -1,8 +1,10 @@
-﻿namespace Apps.XTRF.Requests
+﻿using Blackbird.Applications.Sdk.Common;
+
+namespace Apps.XTRF.Requests
 {
     public class ShareFileWithJobRequest
     {
-        public string JobId { get; set; }
-        public string FileId { get; set; }
+        [Display("Job ID")] public string JobId { get; set; }
+        [Display("File ID")] public string FileId { get; set; }
     }
 }

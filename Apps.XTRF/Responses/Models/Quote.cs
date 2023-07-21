@@ -1,17 +1,26 @@
-﻿using Blackbird.Applications.Sdk.Common;
+﻿using Apps.XTRF.Utils.Converters;
+using Blackbird.Applications.Sdk.Common;
+using Newtonsoft.Json;
 
 namespace Apps.XTRF.Responses.Models
 {
     public class Quote
     {
-        public string Id { get; set; }
+        [Display("ID")] public string Id { get; set; }
         [Display("Is classic project")] public bool IsClassicProject { get; set; }
-        [Display("Quote id number")]  public string QuoteIdNumber { get; set; }
+        [Display("Quote ID number")] public string QuoteIdNumber { get; set; }
         public string Name { get; set; }
         public string Status { get; set; }
-        [Display("Budget code")]  public string BudgetCode { get; set; }
-        [Display("Client id")] public int ClientId { get; set; }
-        [Display("Service id")] public int ServiceId { get; set; }
+        [Display("Budget code")] public string BudgetCode { get; set; }
+
+        [Display("Client ID")]
+        [JsonConverter(typeof(IntToStringConverter))]
+        public string ClientId { get; set; }
+
+        [Display("Service ID")]
+        [JsonConverter(typeof(IntToStringConverter))]
+        public string ServiceId { get; set; }
+
         public string Origin { get; set; }
         [Display("Client deadline")] public long? ClientDeadline { get; set; }
         [Display("Client reference number")] public string ClientReferenceNumber { get; set; }

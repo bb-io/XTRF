@@ -1,4 +1,6 @@
-﻿namespace Apps.XTRF.Responses
+﻿using Apps.XTRF.Responses.Models;
+
+namespace Apps.XTRF.Responses
 {
     public class GetFilesResponse
     {

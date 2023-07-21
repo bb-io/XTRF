@@ -12,7 +12,7 @@ namespace Apps.XTRF.Webhooks.Payloads
         public string Id { get; set; }
 
         [JsonProperty("internal id")]
-        [Display("Internal id")]
+        [Display("Internal ID")]
         public string InternalId { get; set; }
 
         [JsonProperty("service")]

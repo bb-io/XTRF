@@ -1,8 +1,13 @@
-﻿namespace Apps.XTRF.InputParameters
+﻿using Blackbird.Applications.Sdk.Common;
+
+namespace Apps.XTRF.InputParameters
 {
     public class SetPhoneNumber
     {
-        public int ContactId { get; set; }
+        [Display("Contact ID")]
+        public string ContactId { get; set; }
+        
+        [Display("Phone number")]
         public string PhoneNumber { get; set; }
     }
 }

@@ -16,14 +16,19 @@ namespace Apps.XTRF
         public XtrfClient(IEnumerable<AuthenticationCredentialsProvider> authenticationCredentialsProviders) : base(new RestClientOptions() { ThrowOnAnyError = false, BaseUrl = GetUri(authenticationCredentialsProviders) }) { }
     
         public T ExecuteRequest<T>(XtrfRequest request)
+        {
+            var response = ExecuteRequest(request);
+            return JsonConvert.DeserializeObject<T>(response.Content);
+        }        
+        
+        public RestResponse ExecuteRequest(XtrfRequest request)
         { 
             var response = this.Execute(request);
-            if (!response.IsSuccessful)
-            {
-                ErrorResponse? errorResponse = JsonConvert.DeserializeObject<ErrorResponse>(response.Content);
-                throw new Exception(errorResponse.ErrorMessage);
-            }
-            return JsonConvert.DeserializeObject<T>(response.Content);
+            if (response.IsSuccessStatusCode)
+                return response;
+            
+            var errorResponse = JsonConvert.DeserializeObject<ErrorResponse>(response.Content);
+            throw new Exception(errorResponse.ErrorMessage);
         }    
         
         public async Task<T> ExecuteRequestAsync<T>(XtrfRequest request)
