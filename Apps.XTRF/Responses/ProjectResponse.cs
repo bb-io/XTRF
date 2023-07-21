@@ -23,7 +23,7 @@ public class ProjectResponse
         ProjectIdNumber = project.ProjectIdNumber;
         InstructionsForAllJobs = project.InstructionsForAllJobs;
         OrderedOnUnix = project.OrderedOn;
-        OrderedOn = project.OrderedOn is not null ? DateTimeOffset.FromUnixTimeSeconds((long)project.OrderedOn) : null;
+        OrderedOn = project.OrderedOn is not null ? DateTimeOffset.FromUnixTimeMilliseconds((long)project.OrderedOn) : null;
     }
 
     [Display("ID")]
