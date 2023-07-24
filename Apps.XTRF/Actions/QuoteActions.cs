@@ -1,4 +1,5 @@
-﻿using Apps.XTRF.Requests;
+﻿using Apps.XTRF.InputParameters;
+using Apps.XTRF.Requests;
 using Apps.XTRF.Responses;
 using Apps.XTRF.Responses.Models;
 using Blackbird.Applications.Sdk.Common;

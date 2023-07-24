@@ -1,4 +1,6 @@
-﻿using Apps.XTRF.InputParameters;
+﻿using Apps.XTRF.Extensions;
+using Apps.XTRF.InputParameters;
+using Apps.XTRF.Requests.ManageCustomer;
 using Apps.XTRF.Responses;
 using Apps.XTRF.Responses.Models;
 using Blackbird.Applications.Sdk.Common;
@@ -50,19 +52,36 @@ namespace Apps.XTRF.Actions
         {
             var client = new XtrfClient(authenticationCredentialsProviders);
             var request = new XtrfRequest("/customers", Method.Post, authenticationCredentialsProviders);
-            request.AddJsonBody(new
-            {
-                name = newCustomer.Name,
-                fullName = newCustomer.FullName,
-                contact = new
-                {
-                    emails = new
-                    {
-                        primary = newCustomer.Email
-                    }
-                }
-            });
+            request.WithJsonBody(new CreateCustomerRequest(newCustomer));
+            
             return client.ExecuteRequest<SimpleCustomer>(request);
+        }
+        
+        [Action("Update customer", Description = "Update specific customer")]
+        public SimpleCustomer UpdateCustomer(
+            IEnumerable<AuthenticationCredentialsProvider> authenticationCredentialsProviders,
+            [ActionParameter] UpdateCustomer input)
+        {
+            var client = new XtrfClient(authenticationCredentialsProviders);
+
+            var endpoint = $"/customers/{input.Id}";
+            var request = new XtrfRequest(endpoint, Method.Put, authenticationCredentialsProviders);
+            request.WithJsonBody(new UpdateCustomerRequest(input));
+            
+            return client.ExecuteRequest<SimpleCustomer>(request);
+        }        
+        
+        [Action("Delete customer", Description = "Delete specific customer")]
+        public void DeleteCustomer(
+            IEnumerable<AuthenticationCredentialsProvider> authenticationCredentialsProviders,
+            [ActionParameter] [Display("Customer ID")] string id)
+        {
+            var client = new XtrfClient(authenticationCredentialsProviders);
+
+            var endpoint = $"/customers/{id}";
+            var request = new XtrfRequest(endpoint, Method.Delete, authenticationCredentialsProviders);
+            
+            client.ExecuteRequest(request);
         }
 
         [Action("Create customer contact", Description = "Create a new contact person for a customer")]

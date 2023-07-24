@@ -1,4 +1,4 @@
-﻿using Apps.XTRF.Responses.Models;
+﻿using Apps.XTRF.InputParameters;
 
 namespace Apps.XTRF.Requests;
 

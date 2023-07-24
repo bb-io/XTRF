@@ -1,6 +1,6 @@
 ﻿using Blackbird.Applications.Sdk.Common;
 
-namespace Apps.XTRF.Responses.Models
+namespace Apps.XTRF.InputParameters
 {
     public class CreateQouteInput
     {
