@@ -11,7 +11,7 @@ public class UpdateCustomerRequest
 
     public UpdateCustomerRequest(UpdateCustomer input)
     {
-        if (!long.TryParse(input.Id, out var customerId))
+        if (!long.TryParse(input.CustomerId, out var customerId))
             throw new("Customer ID should be a number");
 
         Id = customerId;

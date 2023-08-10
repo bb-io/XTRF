@@ -1,11 +1,10 @@
-﻿using Blackbird.Applications.Sdk.Common;
+﻿using Apps.XTRF.Requests.ManageCustomer;
+using Blackbird.Applications.Sdk.Common;
 
 namespace Apps.XTRF.InputParameters;
 
-public class UpdateCustomer
+public class UpdateCustomer : CustomerRequest
 {
-    [Display("Customer ID")]
-    public string Id { get; set; }
     public string? Name { get; set; }
         
     [Display("Full name")]

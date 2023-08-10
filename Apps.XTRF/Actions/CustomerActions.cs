@@ -33,10 +33,10 @@ namespace Apps.XTRF.Actions
         [Action("Get customer details", Description = "Get all information of a specific customer")]
         public Customer GetCustomer(
             IEnumerable<AuthenticationCredentialsProvider> authenticationCredentialsProviders,
-            [ActionParameter] [Display("Customer ID")] string id,
+            [ActionParameter] CustomerRequest customer,
             [ActionParameter] [Display("Additional fields")] string? embed)
         {
-            var endpoint = "/customers/" + id;
+            var endpoint = "/customers/" + customer.CustomerId;
             if (embed is not null)
                 endpoint += $"?embed={embed}";
             
@@ -64,7 +64,7 @@ namespace Apps.XTRF.Actions
         {
             var client = new XtrfClient(authenticationCredentialsProviders);
 
-            var endpoint = $"/customers/{input.Id}";
+            var endpoint = $"/customers/{input.CustomerId}";
             var request = new XtrfRequest(endpoint, Method.Put, authenticationCredentialsProviders);
             request.WithJsonBody(new UpdateCustomerRequest(input));
             
@@ -74,11 +74,11 @@ namespace Apps.XTRF.Actions
         [Action("Delete customer", Description = "Delete specific customer")]
         public void DeleteCustomer(
             IEnumerable<AuthenticationCredentialsProvider> authenticationCredentialsProviders,
-            [ActionParameter] [Display("Customer ID")] string id)
+            [ActionParameter] CustomerRequest customer)
         {
             var client = new XtrfClient(authenticationCredentialsProviders);
 
-            var endpoint = $"/customers/{id}";
+            var endpoint = $"/customers/{customer.CustomerId}";
             var request = new XtrfRequest(endpoint, Method.Delete, authenticationCredentialsProviders);
             
             client.ExecuteRequest(request);

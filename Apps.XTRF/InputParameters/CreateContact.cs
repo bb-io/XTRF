@@ -1,11 +1,10 @@
-﻿using Blackbird.Applications.Sdk.Common;
+﻿using Apps.XTRF.Requests.ManageCustomer;
+using Blackbird.Applications.Sdk.Common;
 
 namespace Apps.XTRF.InputParameters
 {
-    public class CreateContact
+    public class CreateContact : CustomerRequest
     {
-        [Display("Customer ID")]
-        public string CustomerId { get; set; }
         public string Name { get; set; }
         
         [Display("Last name")]
