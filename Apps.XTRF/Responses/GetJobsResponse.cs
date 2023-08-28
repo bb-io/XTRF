@@ -1,9 +1,8 @@
 ﻿using Apps.XTRF.Responses.Models;
 
-namespace Apps.XTRF.Responses
+namespace Apps.XTRF.Responses;
+
+public class GetJobsResponse
 {
-    public class GetJobsResponse
-    {
-        public IEnumerable<JobDTO> Jobs { get; set; }
-    }
+    public IEnumerable<JobDTO> Jobs { get; set; }
 }

@@ -1,11 +1,10 @@
-﻿namespace Apps.XTRF.Responses.Models
+﻿namespace Apps.XTRF.Responses.Models;
+
+public class Subscription
 {
-    public class Subscription
-    {
-        public string Url { get; set; }
-        public string Event { get; set; }
-        public string SubscriptionId { get; set; }
-        //public string Filter { get; set; }
-        //public string Embed { get; set; }
-    }
+    public string Url { get; set; }
+    public string Event { get; set; }
+    public string SubscriptionId { get; set; }
+    //public string Filter { get; set; }
+    //public string Embed { get; set; }
 }

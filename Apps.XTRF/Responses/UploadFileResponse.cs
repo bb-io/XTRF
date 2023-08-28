@@ -1,7 +1,6 @@
-﻿namespace Apps.XTRF.Responses
+﻿namespace Apps.XTRF.Responses;
+
+public class UploadFileResponse
 {
-    public class UploadFileResponse
-    {
-        public string FileId { get; set; }
-    }
+    public string FileId { get; set; }
 }

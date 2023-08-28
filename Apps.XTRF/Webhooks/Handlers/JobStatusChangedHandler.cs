@@ -1,8 +1,7 @@
-﻿namespace Apps.XTRF.Webhooks.Handlers
+﻿namespace Apps.XTRF.Webhooks.Handlers;
+
+public class JobStatusChangedHandler : BaseWebhookHandler
 {
-    public class JobStatusChangedHandler : BaseWebhookHandler
-    {
-        const string SubscriptionEvent = "job_status_changed";
-        public JobStatusChangedHandler() : base(SubscriptionEvent) { }
-    }
+    const string SubscriptionEvent = "job_status_changed";
+    public JobStatusChangedHandler() : base(SubscriptionEvent) { }
 }

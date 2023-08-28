@@ -1,7 +1,6 @@
-﻿namespace Apps.XTRF.Responses.Models
+﻿namespace Apps.XTRF.Responses.Models;
+
+public class Emails
 {
-    public class Emails
-    {
-        public string Primary { get; set;  }
-    }
+    public string Primary { get; set;  }
 }

@@ -1,23 +1,22 @@
 ﻿using Blackbird.Applications.Sdk.Common;
 using Newtonsoft.Json;
 
-namespace Apps.XTRF.Webhooks.Payloads
+namespace Apps.XTRF.Webhooks.Payloads;
+
+public class CustomerPayload
 {
-    public class CustomerPayload
-    {
-        [JsonProperty("id")]
-        public string Id { get; set; }
+    [JsonProperty("id")]
+    public string Id { get; set; }
 
-        [JsonProperty("idNumber")]
-        [Display("Id number")] 
-        public string IdNumber { get; set; }
+    [JsonProperty("idNumber")]
+    [Display("Id number")] 
+    public string IdNumber { get; set; }
 
-        [JsonProperty("name")]
-        public string Name { get; set; }
+    [JsonProperty("name")]
+    public string Name { get; set; }
 
-        [JsonProperty("fullName")]
-        [Display("Full name")] 
-        public string FullName { get; set; }
+    [JsonProperty("fullName")]
+    [Display("Full name")] 
+    public string FullName { get; set; }
 
-    }
 }

@@ -1,10 +1,9 @@
 ﻿using Blackbird.Applications.Sdk.Common;
 
-namespace Apps.XTRF.Responses
+namespace Apps.XTRF.Responses;
+
+public class CheckForCatToolResponse
 {
-    public class CheckForCatToolResponse
-    {
-        [Display("Project created int cat tool or creation is queued")]
-        public bool ProjectCreatedInCatToolOrCreationIsQueued { get; set; }
-    }
+    [Display("Project created int cat tool or creation is queued")]
+    public bool ProjectCreatedInCatToolOrCreationIsQueued { get; set; }
 }

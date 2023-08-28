@@ -1,9 +1,8 @@
-﻿using Blackbird.Applications.Sdk.Common;
+﻿using File = Blackbird.Applications.Sdk.Common.Files.File;
 
-namespace Apps.XTRF.Responses
+namespace Apps.XTRF.Responses;
+
+public class DownloadFileResponse
 {
-    public class DownloadFileResponse
-    {
-        [Display("File content")]  public byte[] FileContent { get; set; }
-    }
+    public File File { get; set; }
 }

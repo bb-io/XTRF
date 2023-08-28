@@ -1,9 +1,8 @@
-﻿namespace Apps.XTRF.Responses.Models
+﻿namespace Apps.XTRF.Responses.Models;
+
+public class Contact
 {
-    public class Contact
-    {
-        public string Sms { get; set; }
-        public string Fax { get; set; }
-        public Emails Emails { get; set; }
-    }
+    public string Sms { get; set; }
+    public string Fax { get; set; }
+    public Emails Emails { get; set; }
 }

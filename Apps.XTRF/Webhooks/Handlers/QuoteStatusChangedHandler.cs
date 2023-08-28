@@ -1,8 +1,7 @@
-﻿namespace Apps.XTRF.Webhooks.Handlers
+﻿namespace Apps.XTRF.Webhooks.Handlers;
+
+public class QuoteStatusChangedHandler : BaseWebhookHandler
 {
-    public class QuoteStatusChangedHandler : BaseWebhookHandler
-    {
-        const string SubscriptionEvent = "quote_status_changed";
-        public QuoteStatusChangedHandler() : base(SubscriptionEvent) { }
-    }
+    const string SubscriptionEvent = "quote_status_changed";
+    public QuoteStatusChangedHandler() : base(SubscriptionEvent) { }
 }
