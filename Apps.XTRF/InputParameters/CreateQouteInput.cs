@@ -13,5 +13,5 @@ public class CreateQouteInput
     public string ServiceId { get; set; }
         
     [Display("Opportunity offer ID")]
-    public string OpportunityOfferId { get; set; }
+    public string? OpportunityOfferId { get; set; }
 }

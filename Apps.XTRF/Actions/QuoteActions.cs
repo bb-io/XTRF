@@ -243,6 +243,21 @@ public class QuoteActions
         });
         client.ExecuteRequest<object>(request);
     }
+    
+    [Action("Update target languages for a quote", Description = "Update target languages for a specific quote")]
+    public void UpdateTargetLanguagesForQuote(
+        IEnumerable<AuthenticationCredentialsProvider> authenticationCredentialsProviders,
+        [ActionParameter] [Display("Quote ID")] string quoteId,
+        [ActionParameter] [Display("Target language IDs")] int[] targetLanguageIds)
+    {
+        var client = new XtrfClient(authenticationCredentialsProviders);
+        var request = new XtrfRequest("/v2/quotes/" + quoteId + "/targetLanguages", Method.Put, authenticationCredentialsProviders);
+        request.AddJsonBody(new
+        {
+            targetLanguageIds
+        });
+        client.ExecuteRequest<object>(request);
+    }
 
     [Action("Update vendor instructions for a quote", Description = "Update vendor instructions for a specific quote")]
     public void UpdateVendorInstructionsForQuote(

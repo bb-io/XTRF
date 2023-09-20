@@ -1,4 +1,5 @@
 ﻿using Apps.XTRF.InputParameters;
+using Blackbird.Applications.Sdk.Utils.Parsers;
 
 namespace Apps.XTRF.Requests;
 
@@ -7,22 +8,13 @@ public class CreateQouteRequest
     public string Name { get; set; }
     public int ClientId { get; set; }
     public int ServiceId { get; set; }
-    public int OpportunityOfferId { get; set; }
+    public int? OpportunityOfferId { get; set; }
 
     public CreateQouteRequest(CreateQouteInput input)
     {
-        if (!int.TryParse(input.ClientId, out var clientId))
-            throw new("Client ID should be a number");
-        
-        if (!int.TryParse(input.ServiceId, out var serviceId))
-            throw new("Service ID should be a number");
-        
-        if (!int.TryParse(input.OpportunityOfferId, out var opportunityOfferId))
-            throw new("Opportunity offer ID should be a number");
-        
         Name = input.Name;
-        ClientId = clientId;
-        ServiceId = serviceId;
-        OpportunityOfferId = opportunityOfferId;
+        ClientId = IntParser.Parse(input.ClientId, nameof(input.ClientId))!.Value;
+        ServiceId = IntParser.Parse(input.ServiceId, nameof(input.ServiceId))!.Value;
+        OpportunityOfferId = IntParser.Parse(input.OpportunityOfferId, nameof(input.OpportunityOfferId));
     }
 }
