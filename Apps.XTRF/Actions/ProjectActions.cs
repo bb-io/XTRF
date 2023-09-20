@@ -1,6 +1,8 @@
 ﻿using System.Net.Mime;
+using Apps.XTRF.Extensions;
 using Apps.XTRF.InputParameters;
 using Apps.XTRF.Requests;
+using Apps.XTRF.Requests.Project;
 using Apps.XTRF.Responses;
 using Apps.XTRF.Responses.Models;
 using Blackbird.Applications.Sdk.Common;
@@ -341,21 +343,19 @@ public class ProjectActions
     }
 
     [Action("Update target languages for a project", Description = "Update target languages for a specific project")]
-    public void UpdateTargetLanguagesForProject(
+    public Task UpdateTargetLanguagesForProject(
         IEnumerable<AuthenticationCredentialsProvider> authenticationCredentialsProviders,
-        [ActionParameter] [Display("Project ID")]
-        string projectId,
-        [ActionParameter] [Display("Target language IDs")]
-        IEnumerable<int> targetLanguageIds)
+        [ActionParameter] UpdateProjectTargetLanguagesRequest input)
     {
         var client = new XtrfClient(authenticationCredentialsProviders);
-        var request = new XtrfRequest("/v2/projects/" + projectId + "/targetLanguages", Method.Put,
+        var request = new XtrfRequest("/v2/projects/" + input.ProjectId + "/targetLanguages", Method.Put,
             authenticationCredentialsProviders);
         request.AddJsonBody(new
         {
-            targetLanguageIds
+            targetLanguageIds = input.TargetLanguageIds
         });
-        client.Execute(request);
+        
+        return client.ExecuteRequestAsync(request);
     }
 
     [Action("Update specialization for a project", Description = "Update specialization for a specific project")]

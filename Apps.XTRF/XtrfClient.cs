@@ -33,14 +33,18 @@ public class XtrfClient : RestClient
         
     public async Task<T> ExecuteRequestAsync<T>(XtrfRequest request)
     { 
-        var response = await ExecuteAsync(request);
-            
-        if (!response.IsSuccessful)
-        {
-            var errorResponse = JsonConvert.DeserializeObject<ErrorResponse>(response.Content);
-            throw new Exception(errorResponse.ErrorMessage);
-        }
+        var response = await ExecuteRequestAsync(request);
             
         return JsonConvert.DeserializeObject<T>(response.Content);
+    }        
+    public async Task<RestResponse> ExecuteRequestAsync(XtrfRequest request)
+    { 
+        var response = await ExecuteAsync(request);
+
+        if (response.IsSuccessStatusCode)
+            return response;
+        
+        var errorResponse = JsonConvert.DeserializeObject<ErrorResponse>(response.Content);
+        throw new Exception(errorResponse.ErrorMessage);
     }
 }
