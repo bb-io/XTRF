@@ -346,7 +346,7 @@ public class ProjectActions
         [ActionParameter] [Display("Project ID")]
         string projectId,
         [ActionParameter] [Display("Target language IDs")]
-        int[] targetLanguageIds)
+        IEnumerable<int> targetLanguageIds)
     {
         var client = new XtrfClient(authenticationCredentialsProviders);
         var request = new XtrfRequest("/v2/projects/" + projectId + "/targetLanguages", Method.Put,

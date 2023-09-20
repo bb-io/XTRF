@@ -248,7 +248,7 @@ public class QuoteActions
     public void UpdateTargetLanguagesForQuote(
         IEnumerable<AuthenticationCredentialsProvider> authenticationCredentialsProviders,
         [ActionParameter] [Display("Quote ID")] string quoteId,
-        [ActionParameter] [Display("Target language IDs")] int[] targetLanguageIds)
+        [ActionParameter] [Display("Target language IDs")] IEnumerable<int> targetLanguageIds)
     {
         var client = new XtrfClient(authenticationCredentialsProviders);
         var request = new XtrfRequest("/v2/quotes/" + quoteId + "/targetLanguages", Method.Put, authenticationCredentialsProviders);
