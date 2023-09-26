@@ -1,4 +1,5 @@
 ﻿using Apps.XTRF.Requests;
+using Apps.XTRF.Requests.Job;
 using Apps.XTRF.Responses;
 using Apps.XTRF.Responses.Models;
 using Blackbird.Applications.Sdk.Common;
@@ -54,19 +55,18 @@ public class JobsActions
     [Action("Get delivered files in a job", Description = "Get all delivered files in a specific job")]
     public GetFilesResponse GetDeliveredFilesByJob(
         IEnumerable<AuthenticationCredentialsProvider> authenticationCredentialsProviders,
-        [ActionParameter] [Display("Job ID")] string jobId,
-        [ActionParameter] [Display("Filter language ID")]
-        int? languageId)
+        [ActionParameter] GetDeliveredJobFilesRequest input)
     {
         var client = new XtrfClient(authenticationCredentialsProviders);
-        var request = new XtrfRequest("/v2/jobs/" + jobId + "/files/delivered", Method.Get,
+        var request = new XtrfRequest("/v2/jobs/" + input.JobId + "/files/delivered", Method.Get,
             authenticationCredentialsProviders);
 
         var files = client.ExecuteRequest<List<FileXTRF>>(request);
 
         return new()
         {
-            Files = languageId is null ? files : files.Where(x => x.Languages.Contains(languageId!.Value))
+            Files = files.Where(x => input.LanguageId is null || x.Languages.Contains(int.Parse(input.LanguageId)))
+                .Where(x => input.Category is null || x.CategoryKey == input.Category)
         };
     }
 

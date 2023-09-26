@@ -10,7 +10,7 @@ public class JobResponse
     public int? VendorId { get; set; }
     public int? VendorPriceProfileId { get; set; }
     public StepType StepType { get; set; }
-    public List<Language> Languages { get; set; }
+    public List<JobLanguage> Languages { get; set; }
 
 }
 
@@ -21,7 +21,7 @@ public class StepType
     public int JobTypeId { get; set; }
 }
 
-public class Language
+public class JobLanguage
 {
     public int SourceLanguageId { get; set; }
     public int TargetLanguageId { get; set; }

@@ -8,7 +8,6 @@ using Apps.XTRF.Responses.Models;
 using Blackbird.Applications.Sdk.Common;
 using Blackbird.Applications.Sdk.Common.Actions;
 using Blackbird.Applications.Sdk.Common.Authentication;
-using Newtonsoft.Json;
 using RestSharp;
 
 namespace Apps.XTRF.Actions;
@@ -63,19 +62,17 @@ public class ProjectActions
     [Action("Get files in a project", Description = "Get all files of a specific project")]
     public GetFilesResponse GetFilesByProject(
         IEnumerable<AuthenticationCredentialsProvider> authenticationCredentialsProviders,
-        [ActionParameter] [Display("Project ID")]
-        string projectId,
-        [ActionParameter] [Display("Filter language ID")]
-        int? languageId)
+        [ActionParameter] GetFilesInProjectRequest input)
     {
         var client = new XtrfClient(authenticationCredentialsProviders);
-        var request = new XtrfRequest("/v2/projects/" + projectId + "/files", Method.Get,
+        var request = new XtrfRequest("/v2/projects/" + input.ProjectId + "/files", Method.Get,
             authenticationCredentialsProviders);
 
         var files = client.ExecuteRequest<List<FileXTRF>>(request);
         return new()
         {
-            Files = languageId is null ? files : files.Where(x => x.Languages.Contains(languageId!.Value))
+            Files = files.Where(x => input.LanguageId is null || x.Languages.Contains(int.Parse(input.LanguageId)))
+                .Where(x => input.Category is null || x.CategoryKey == input.Category)
         };
     }
 

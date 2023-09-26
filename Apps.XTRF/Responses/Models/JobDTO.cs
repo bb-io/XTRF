@@ -15,6 +15,6 @@ public class JobDTO
     [Display("Step type ID")] public string StepTypeId { get; set; }
     [Display("Step type name")] public string StepTypeName { get; set; }
     [Display("Job type ID")] public string JobTypeId { get; set; }
-    public List<Language> Languages { get; set; }
+    public List<JobLanguage> Languages { get; set; }
 
 }
