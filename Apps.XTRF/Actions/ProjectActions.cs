@@ -1,4 +1,5 @@
 ﻿using System.Net.Mime;
+using Apps.XTRF.Extensions;
 using Apps.XTRF.InputParameters;
 using Apps.XTRF.Requests;
 using Apps.XTRF.Requests.Project;
@@ -7,6 +8,7 @@ using Apps.XTRF.Responses.Models;
 using Blackbird.Applications.Sdk.Common;
 using Blackbird.Applications.Sdk.Common.Actions;
 using Blackbird.Applications.Sdk.Common.Authentication;
+using Newtonsoft.Json;
 using RestSharp;
 
 namespace Apps.XTRF.Actions;
@@ -33,7 +35,7 @@ public class ProjectActions
     {
         var client = new XtrfClient(authenticationCredentialsProviders);
         var request = new XtrfRequest("/v2/projects", Method.Post, authenticationCredentialsProviders);
-        request.AddJsonBody(new CreateProjectRequest(project));
+        request.WithJsonBody(new CreateProjectRequest(project));
         return new(await client.ExecuteRequestAsync<Project>(request));
     }
 
@@ -62,14 +64,18 @@ public class ProjectActions
     public GetFilesResponse GetFilesByProject(
         IEnumerable<AuthenticationCredentialsProvider> authenticationCredentialsProviders,
         [ActionParameter] [Display("Project ID")]
-        string projectId)
+        string projectId,
+        [ActionParameter] [Display("Filter language ID")]
+        int? languageId)
     {
         var client = new XtrfClient(authenticationCredentialsProviders);
         var request = new XtrfRequest("/v2/projects/" + projectId + "/files", Method.Get,
             authenticationCredentialsProviders);
-        return new GetFilesResponse()
+
+        var files = client.ExecuteRequest<List<FileXTRF>>(request);
+        return new()
         {
-            Files = client.ExecuteRequest<List<FileXTRF>>(request)
+            Files = languageId is null ? files : files.Where(x => x.Languages.Contains(languageId!.Value))
         };
     }
 
@@ -353,10 +359,10 @@ public class ProjectActions
         {
             targetLanguageIds = input.TargetLanguageIds
         });
-        
+
         return client.ExecuteRequestAsync(request);
     }
-    
+
     [Action("Add target language to project", Description = "Add one more target language to a specific project")]
     public async Task AddTargetLanguageToProject(
         IEnumerable<AuthenticationCredentialsProvider> creds,

@@ -28,20 +28,23 @@ public class JobsActions
         [ActionParameter] [Display("Job ID")] string jobId)
     {
         var client = new XtrfClient(authenticationCredentialsProviders);
-        var request = new XtrfRequest("/v2/jobs/" + jobId + "/files/sharedWorkFiles", Method.Get, authenticationCredentialsProviders);
+        var request = new XtrfRequest("/v2/jobs/" + jobId + "/files/sharedWorkFiles", Method.Get,
+            authenticationCredentialsProviders);
         return new GetFilesResponse()
         {
             Files = client.ExecuteRequest<List<FileXTRF>>(request)
         };
     }
 
-    [Action("Get reference files shared with a job", Description = "Get all reference files shared with a specific job")]
+    [Action("Get reference files shared with a job",
+        Description = "Get all reference files shared with a specific job")]
     public GetFilesResponse GetReferenceFilesByJob(
         IEnumerable<AuthenticationCredentialsProvider> authenticationCredentialsProviders,
         [ActionParameter] [Display("Job ID")] string jobId)
     {
         var client = new XtrfClient(authenticationCredentialsProviders);
-        var request = new XtrfRequest("/v2/jobs/" + jobId + "/files/sharedReferenceFiles", Method.Get, authenticationCredentialsProviders);
+        var request = new XtrfRequest("/v2/jobs/" + jobId + "/files/sharedReferenceFiles", Method.Get,
+            authenticationCredentialsProviders);
         return new GetFilesResponse()
         {
             Files = client.ExecuteRequest<List<FileXTRF>>(request)
@@ -51,13 +54,19 @@ public class JobsActions
     [Action("Get delivered files in a job", Description = "Get all delivered files in a specific job")]
     public GetFilesResponse GetDeliveredFilesByJob(
         IEnumerable<AuthenticationCredentialsProvider> authenticationCredentialsProviders,
-        [ActionParameter] [Display("Job ID")] string jobId)
+        [ActionParameter] [Display("Job ID")] string jobId,
+        [ActionParameter] [Display("Filter language ID")]
+        int? languageId)
     {
         var client = new XtrfClient(authenticationCredentialsProviders);
-        var request = new XtrfRequest("/v2/jobs/" + jobId + "/files/delivered", Method.Get, authenticationCredentialsProviders);
-        return new GetFilesResponse()
+        var request = new XtrfRequest("/v2/jobs/" + jobId + "/files/delivered", Method.Get,
+            authenticationCredentialsProviders);
+
+        var files = client.ExecuteRequest<List<FileXTRF>>(request);
+
+        return new()
         {
-            Files = client.ExecuteRequest<List<FileXTRF>>(request)
+            Files = languageId is null ? files : files.Where(x => x.Languages.Contains(languageId!.Value))
         };
     }
 
@@ -67,11 +76,13 @@ public class JobsActions
         [ActionParameter] UploadFileToJobRequest input)
     {
         var client = new XtrfClient(authenticationCredentialsProviders);
-        var uploadRequest = new XtrfRequest("/v2/jobs/" + input.JobId + "/files/delivered/upload", Method.Post, authenticationCredentialsProviders);
+        var uploadRequest = new XtrfRequest("/v2/jobs/" + input.JobId + "/files/delivered/upload", Method.Post,
+            authenticationCredentialsProviders);
         uploadRequest.AddFile("file", input.File.Bytes, input.FileName ?? input.File.Name);
         var outputFileId = client.ExecuteRequest<UploadFileResponse>(uploadRequest).FileId;
 
-        var addRequest = new XtrfRequest("/v2/jobs/" + input.JobId + "/files/delivered/add", Method.Put, authenticationCredentialsProviders);
+        var addRequest = new XtrfRequest("/v2/jobs/" + input.JobId + "/files/delivered/add", Method.Put,
+            authenticationCredentialsProviders);
         addRequest.AddJsonBody(new
         {
             files = new[]
@@ -91,11 +102,12 @@ public class JobsActions
     public void AssignVendorToJob(
         IEnumerable<AuthenticationCredentialsProvider> authenticationCredentialsProviders,
         [ActionParameter] [Display("Job ID")] string jobId,
-        [ActionParameter] [Display("Vendor ID")] string vendorId)
+        [ActionParameter] [Display("Vendor ID")]
+        string vendorId)
     {
         if (!int.TryParse(vendorId, out var intVendorId))
             throw new("Vendor ID must be a number");
-            
+
         var client = new XtrfClient(authenticationCredentialsProviders);
         var request = new XtrfRequest("/v2/jobs/" + jobId + "/vendor", Method.Put, authenticationCredentialsProviders);
         request.AddJsonBody(new
@@ -107,12 +119,14 @@ public class JobsActions
 
     [Action("Update instructions for a job", Description = "Update instructions for a specific job")]
     public void UpdateInstructionsForJob(
-        IEnumerable<AuthenticationCredentialsProvider> authenticationCredentialsProviders, 
+        IEnumerable<AuthenticationCredentialsProvider> authenticationCredentialsProviders,
         [ActionParameter] [Display("Job ID")] string jobId,
-        [ActionParameter] [Display("Instructions")] string instructions)
+        [ActionParameter] [Display("Instructions")]
+        string instructions)
     {
         var client = new XtrfClient(authenticationCredentialsProviders);
-        var request = new XtrfRequest("/v2/jobs/" + jobId + "/instructions", Method.Put, authenticationCredentialsProviders);
+        var request = new XtrfRequest("/v2/jobs/" + jobId + "/instructions", Method.Put,
+            authenticationCredentialsProviders);
         request.AddJsonBody(new
         {
             value = instructions
@@ -125,9 +139,9 @@ public class JobsActions
         IEnumerable<AuthenticationCredentialsProvider> authenticationCredentialsProviders,
         [ActionParameter] UpdateJobDatesRequest input)
     {
-
         var client = new XtrfClient(authenticationCredentialsProviders);
-        var request = new XtrfRequest("/v2/jobs/" + input.JobId + "/dates", Method.Put, authenticationCredentialsProviders);
+        var request = new XtrfRequest("/v2/jobs/" + input.JobId + "/dates", Method.Put,
+            authenticationCredentialsProviders);
         request.AddJsonBody(new
         {
             startDate = input.StartDate.ConvertToUnixTime(),
@@ -142,7 +156,8 @@ public class JobsActions
         [ActionParameter] ShareFileWithJobRequest input)
     {
         var client = new XtrfClient(authenticationCredentialsProviders);
-        var request = new XtrfRequest("/v2/jobs/" + input.JobId + "/files/sharedReferenceFiles/share", Method.Put, authenticationCredentialsProviders);
+        var request = new XtrfRequest("/v2/jobs/" + input.JobId + "/files/sharedReferenceFiles/share", Method.Put,
+            authenticationCredentialsProviders);
         request.AddJsonBody(new
         {
             files = new[] { input.FileId }
@@ -156,13 +171,13 @@ public class JobsActions
         [ActionParameter] ShareFileWithJobRequest input)
     {
         var client = new XtrfClient(authenticationCredentialsProviders);
-        var request = new XtrfRequest("/v2/jobs/" + input.JobId + "/files/sharedWorkFiles/share", Method.Put, authenticationCredentialsProviders);
+        var request = new XtrfRequest("/v2/jobs/" + input.JobId + "/files/sharedWorkFiles/share", Method.Put,
+            authenticationCredentialsProviders);
         request.AddJsonBody(new
         {
             files = new[] { input.FileId }
         });
         return client.ExecuteRequest<SharedFilesResponse>(request);
-
     }
 
     [Action("Stop sharing file with a job", Description = "Stop sharing file with a specific job")]
@@ -171,12 +186,12 @@ public class JobsActions
         [ActionParameter] ShareFileWithJobRequest input)
     {
         var client = new XtrfClient(authenticationCredentialsProviders);
-        var request = new XtrfRequest("/v2/jobs/" + input.JobId + "/files/stopSharing", Method.Put, authenticationCredentialsProviders);
+        var request = new XtrfRequest("/v2/jobs/" + input.JobId + "/files/stopSharing", Method.Put,
+            authenticationCredentialsProviders);
         request.AddJsonBody(new
         {
             files = new[] { input.FileId }
         });
         return client.ExecuteRequest<SharedFilesResponse>(request);
-
     }
 }
