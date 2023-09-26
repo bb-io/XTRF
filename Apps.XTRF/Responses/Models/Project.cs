@@ -18,4 +18,6 @@ public class Project
     public string? ProjectIdNumber { get; set; }
     public string? InstructionsForAllJobs { get; set; }
     public long? OrderedOn { get; set; }
+    
+    public Languages Languages { get; set; }
 }

@@ -24,6 +24,8 @@ public class ProjectResponse
         InstructionsForAllJobs = project.InstructionsForAllJobs;
         OrderedOnUnix = project.OrderedOn;
         OrderedOn = project.OrderedOn is not null ? DateTimeOffset.FromUnixTimeMilliseconds((long)project.OrderedOn) : null;
+        SourceLanguageId = project.Languages.SourceLanguageId;
+        TargetLanguageIds = project.Languages.TargetLanguageIds;
     }
 
     [Display("ID")]
@@ -44,4 +46,10 @@ public class ProjectResponse
     [Display("Instructions for all jobs")] public string? InstructionsForAllJobs { get; set; }
     [Display("Ordered on in UNIX")] public long? OrderedOnUnix { get; set; }
     [Display("Ordered on")] public DateTimeOffset? OrderedOn { get; set; }
+    
+    [Display("Source language ID")]
+    public int? SourceLanguageId { get; set; }
+    
+    [Display("Target language IDs")]
+    public IEnumerable<int>? TargetLanguageIds { get; set; }
 }

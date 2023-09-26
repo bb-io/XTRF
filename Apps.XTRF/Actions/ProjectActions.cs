@@ -1,5 +1,4 @@
 ﻿using System.Net.Mime;
-using Apps.XTRF.Extensions;
 using Apps.XTRF.InputParameters;
 using Apps.XTRF.Requests;
 using Apps.XTRF.Requests.Project;
@@ -356,6 +355,23 @@ public class ProjectActions
         });
         
         return client.ExecuteRequestAsync(request);
+    }
+    
+    [Action("Add target language to project", Description = "Add one more target language to a specific project")]
+    public async Task AddTargetLanguageToProject(
+        IEnumerable<AuthenticationCredentialsProvider> creds,
+        [ActionParameter] AddTargetLanguagesToProjectRequest input)
+    {
+        var project = await GetProject(creds, input.ProjectId);
+
+        var projectTargLangs = project.TargetLanguageIds ?? Enumerable.Empty<int>();
+        var request = new UpdateProjectTargetLanguagesRequest()
+        {
+            ProjectId = input.ProjectId,
+            TargetLanguageIds = projectTargLangs.Append(input.TargetLanguageId)
+        };
+
+        await UpdateTargetLanguagesForProject(creds, request);
     }
 
     [Action("Update specialization for a project", Description = "Update specialization for a specific project")]
