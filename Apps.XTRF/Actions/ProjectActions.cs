@@ -137,7 +137,21 @@ public class ProjectActions
                 new
                 {
                     category = input.Category,
-                    fileId = outputFileId
+                    fileId = outputFileId,
+                    languageIds = input.LanguageIds?.Select(x => IntParser.Parse(x, "languageId")),
+                    languageCombinationIds = input.SourceLanguageId is not null
+                                             && input.TargetLanguageId is not null
+                        ? new[]
+                        {
+                            new
+                            {
+                                sourceLanguageId =
+                                    IntParser.Parse(input.SourceLanguageId, nameof(input.SourceLanguageId)),
+                                targetLanguageId = IntParser.Parse(input.TargetLanguageId,
+                                    nameof(input.TargetLanguageId))
+                            }
+                        }
+                        : null
                 }
             }
         });
