@@ -1,4 +1,5 @@
-﻿using Apps.XTRF.InputParameters;
+﻿using Apps.XTRF.DataSourceHandlers;
+using Apps.XTRF.InputParameters;
 using Apps.XTRF.Requests;
 using Apps.XTRF.Requests.Quote;
 using Apps.XTRF.Responses;
@@ -6,6 +7,7 @@ using Apps.XTRF.Responses.Models;
 using Blackbird.Applications.Sdk.Common;
 using Blackbird.Applications.Sdk.Common.Actions;
 using Blackbird.Applications.Sdk.Common.Authentication;
+using Blackbird.Applications.Sdk.Common.Dynamic;
 using RestSharp;
 
 namespace Apps.XTRF.Actions;
@@ -231,7 +233,7 @@ public class QuoteActions
     public void UpdateSourceLanguageForQuote(
         IEnumerable<AuthenticationCredentialsProvider> authenticationCredentialsProviders,
         [ActionParameter] [Display("Quote ID")] string quoteId,
-        [ActionParameter] [Display("Source language ID")] string sourceLanguageId)
+        [ActionParameter]  [DataSource(typeof(LanguageDataHandler))] [Display("Source language")] string sourceLanguageId)
     {
         if (!int.TryParse(sourceLanguageId, out var intSourceLangId))
             throw new("Source language ID must be a number");

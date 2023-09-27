@@ -8,5 +8,5 @@ public class UpdateProjectTargetLanguagesRequest
     public string ProjectId { get; set; }
     
     [Display("Target language IDs")]
-    public IEnumerable<int> TargetLanguageIds { get; set; }
+    public IEnumerable<string> TargetLanguageIds { get; set; }
 }

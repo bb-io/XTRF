@@ -8,6 +8,7 @@ using Apps.XTRF.Responses.Models;
 using Blackbird.Applications.Sdk.Common;
 using Blackbird.Applications.Sdk.Common.Actions;
 using Blackbird.Applications.Sdk.Common.Authentication;
+using Blackbird.Applications.Sdk.Utils.Parsers;
 using RestSharp;
 
 namespace Apps.XTRF.Actions;
@@ -354,7 +355,7 @@ public class ProjectActions
             authenticationCredentialsProviders);
         request.AddJsonBody(new
         {
-            targetLanguageIds = input.TargetLanguageIds
+            targetLanguageIds = input.TargetLanguageIds.Select(x => IntParser.Parse(x, "targetLanguageId"))
         });
 
         return client.ExecuteRequestAsync(request);
@@ -367,7 +368,7 @@ public class ProjectActions
     {
         var project = await GetProject(creds, input.ProjectId);
 
-        var projectTargLangs = project.TargetLanguageIds ?? Enumerable.Empty<int>();
+        var projectTargLangs = project.TargetLanguageIds ?? Enumerable.Empty<string>();
         var request = new UpdateProjectTargetLanguagesRequest()
         {
             ProjectId = input.ProjectId,

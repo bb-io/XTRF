@@ -51,5 +51,5 @@ public class ProjectResponse
     public int? SourceLanguageId { get; set; }
     
     [Display("Target language IDs")]
-    public IEnumerable<int>? TargetLanguageIds { get; set; }
+    public IEnumerable<string>? TargetLanguageIds { get; set; }
 }
