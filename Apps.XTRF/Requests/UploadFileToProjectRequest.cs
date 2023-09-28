@@ -19,8 +19,9 @@ public class UploadFileToProjectRequest
     [DataSource(typeof(FileCategoryDataHandler))]
     public string Category { get; set; }  
     
-    [Display("Language IDs")]
-    public IEnumerable<string> LanguageIds { get; set; }
+    [Display("Language")]
+    [DataSource(typeof(LanguageDataHandler))]
+    public string? LanguageId { get; set; }
     
     [Display("Source language of language combination")]
     [DataSource(typeof(LanguageDataHandler))]

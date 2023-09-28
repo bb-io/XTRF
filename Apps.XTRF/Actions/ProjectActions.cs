@@ -138,7 +138,9 @@ public class ProjectActions
                 {
                     category = input.Category,
                     fileId = outputFileId,
-                    languageIds = input.LanguageIds?.Select(x => IntParser.Parse(x, "languageId")),
+                    languageIds = input.LanguageId is not null
+                        ? new[] { IntParser.Parse(input.LanguageId, nameof(input.LanguageId))!.Value }
+                        : null,
                     languageCombinationIds = input.SourceLanguageId is not null
                                              && input.TargetLanguageId is not null
                         ? new[]
