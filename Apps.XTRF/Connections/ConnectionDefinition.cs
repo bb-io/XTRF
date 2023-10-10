@@ -1,39 +1,39 @@
-﻿using Blackbird.Applications.Sdk.Common.Authentication;
+﻿using Apps.XTRF.Constants;
+using Blackbird.Applications.Sdk.Common.Authentication;
 using Blackbird.Applications.Sdk.Common.Connections;
 
 namespace Apps.XTRF.Connections;
 
 public class ConnectionDefinition : IConnectionDefinition
 {
-    public IEnumerable<ConnectionPropertyGroup> ConnectionPropertyGroups => new List<ConnectionPropertyGroup>() 
+    public IEnumerable<ConnectionPropertyGroup> ConnectionPropertyGroups => new List<ConnectionPropertyGroup>()
     {
-        new ConnectionPropertyGroup
+        new()
         {
             Name = "API Token",
             AuthenticationType = ConnectionAuthenticationType.Undefined,
             ConnectionUsage = ConnectionUsage.Webhooks,
             ConnectionProperties = new List<ConnectionProperty>()
             {
-                new ConnectionProperty("url") {DisplayName = "Url"},
-                new ConnectionProperty("token") {DisplayName= "Token"},
+                new(CredsNames.Url) { DisplayName = "Url" },
+                new(CredsNames.ApiToken) { DisplayName = "Token", Sensitive = true },
             }
         }
     };
 
-    public IEnumerable<AuthenticationCredentialsProvider> CreateAuthorizationCredentialsProviders(Dictionary<string, string> values)
+    public IEnumerable<AuthenticationCredentialsProvider> CreateAuthorizationCredentialsProviders(
+        Dictionary<string, string> values)
     {
-        var url = values.First(v => v.Key == "url");
         yield return new AuthenticationCredentialsProvider(
             AuthenticationCredentialsRequestLocation.None,
-            url.Key,
-            url.Value
+            CredsNames.Url,
+           values[CredsNames.Url]
         );
 
-        var token = values.First(v => v.Key == "token");
         yield return new AuthenticationCredentialsProvider(
             AuthenticationCredentialsRequestLocation.None,
-            token.Key,
-            token.Value
+            CredsNames.ApiToken,
+            values[CredsNames.ApiToken]
         );
     }
 }

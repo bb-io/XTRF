@@ -3,5 +3,8 @@
 public class QuoteStatusChangedHandler : BaseWebhookHandler
 {
     const string SubscriptionEvent = "quote_status_changed";
-    public QuoteStatusChangedHandler() : base(SubscriptionEvent) { }
+
+    public QuoteStatusChangedHandler() : base(SubscriptionEvent)
+    {
+    }
 }

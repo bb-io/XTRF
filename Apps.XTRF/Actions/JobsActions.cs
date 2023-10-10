@@ -1,67 +1,68 @@
-﻿using Apps.XTRF.Requests;
-using Apps.XTRF.Requests.Job;
-using Apps.XTRF.Responses;
-using Apps.XTRF.Responses.Models;
+﻿using Apps.XTRF.Api;
+using Apps.XTRF.Extensions;
+using Apps.XTRF.Invocables;
+using Apps.XTRF.Models.Requests;
+using Apps.XTRF.Models.Requests.Job;
+using Apps.XTRF.Models.Responses;
+using Apps.XTRF.Models.Responses.Models;
 using Blackbird.Applications.Sdk.Common;
 using Blackbird.Applications.Sdk.Common.Actions;
 using Blackbird.Applications.Sdk.Common.Authentication;
+using Blackbird.Applications.Sdk.Common.Invocation;
 using RestSharp;
 
 namespace Apps.XTRF.Actions;
 
 [ActionList]
-public class JobsActions
+public class JobsActions : XtrfInvocable
 {
+    public JobsActions(InvocationContext invocationContext) : base(invocationContext)
+    {
+    }
+
     [Action("Get job details", Description = "Get all information of a specific job")]
-    public JobDTO GetJob(
-        IEnumerable<AuthenticationCredentialsProvider> authenticationCredentialsProviders,
+    public async Task<JobDTO> GetJob(
+        IEnumerable<AuthenticationCredentialsProvider> Creds,
         [ActionParameter] [Display("Job ID")] string jobId)
     {
-        var client = new XtrfClient(authenticationCredentialsProviders);
-        var request = new XtrfRequest("/v2/jobs/" + jobId, Method.Get, authenticationCredentialsProviders);
-        var jobResult = client.ExecuteRequest<JobResponse>(request);
-        return ExtensionMethods.MapJobResponseToDTO(jobResult);
+        var request = new XtrfRequest("/v2/jobs/" + jobId, Method.Get, Creds);
+        var jobResult = await Client.ExecuteWithErrorHandling<JobResponse>(request);
+
+        return new(jobResult);
     }
 
     [Action("Get work files shared with a job", Description = "Get all work files shared with a specific job")]
-    public GetFilesResponse GetWorkFilesByJob(
-        IEnumerable<AuthenticationCredentialsProvider> authenticationCredentialsProviders,
-        [ActionParameter] [Display("Job ID")] string jobId)
+    public async Task<GetFilesResponse> GetWorkFilesByJob([ActionParameter] [Display("Job ID")] string jobId)
     {
-        var client = new XtrfClient(authenticationCredentialsProviders);
-        var request = new XtrfRequest("/v2/jobs/" + jobId + "/files/sharedWorkFiles", Method.Get,
-            authenticationCredentialsProviders);
-        return new GetFilesResponse()
+        var endpoint = "/v2/jobs/" + jobId + "/files/sharedWorkFiles";
+        var request = new XtrfRequest(endpoint, Method.Get, Creds);
+
+        return new()
         {
-            Files = client.ExecuteRequest<List<FileXTRF>>(request)
+            Files = await Client.ExecuteWithErrorHandling<List<FileXTRF>>(request)
         };
     }
 
     [Action("Get reference files shared with a job",
         Description = "Get all reference files shared with a specific job")]
-    public GetFilesResponse GetReferenceFilesByJob(
-        IEnumerable<AuthenticationCredentialsProvider> authenticationCredentialsProviders,
-        [ActionParameter] [Display("Job ID")] string jobId)
+    public async Task<GetFilesResponse> GetReferenceFilesByJob([ActionParameter] [Display("Job ID")] string jobId)
     {
-        var client = new XtrfClient(authenticationCredentialsProviders);
-        var request = new XtrfRequest("/v2/jobs/" + jobId + "/files/sharedReferenceFiles", Method.Get,
-            authenticationCredentialsProviders);
-        return new GetFilesResponse()
+        var endpoint = "/v2/jobs/" + jobId + "/files/sharedReferenceFiles";
+        var request = new XtrfRequest(endpoint, Method.Get, Creds);
+
+        return new()
         {
-            Files = client.ExecuteRequest<List<FileXTRF>>(request)
+            Files = await Client.ExecuteWithErrorHandling<List<FileXTRF>>(request)
         };
     }
 
     [Action("Get delivered files in a job", Description = "Get all delivered files in a specific job")]
-    public GetFilesResponse GetDeliveredFilesByJob(
-        IEnumerable<AuthenticationCredentialsProvider> authenticationCredentialsProviders,
-        [ActionParameter] GetDeliveredJobFilesRequest input)
+    public async Task<GetFilesResponse> GetDeliveredFilesByJob([ActionParameter] GetDeliveredJobFilesRequest input)
     {
-        var client = new XtrfClient(authenticationCredentialsProviders);
-        var request = new XtrfRequest("/v2/jobs/" + input.JobId + "/files/delivered", Method.Get,
-            authenticationCredentialsProviders);
+        var endpoint = "/v2/jobs/" + input.JobId + "/files/delivered";
+        var request = new XtrfRequest(endpoint, Method.Get, Creds);
 
-        var files = client.ExecuteRequest<List<FileXTRF>>(request);
+        var files = await Client.ExecuteWithErrorHandling<List<FileXTRF>>(request);
 
         return new()
         {
@@ -71,18 +72,16 @@ public class JobsActions
     }
 
     [Action("Upload a delivered file to a job", Description = "Upload a delivered file to a specific job")]
-    public void UploadDeliveredFileToJob(
-        IEnumerable<AuthenticationCredentialsProvider> authenticationCredentialsProviders,
-        [ActionParameter] UploadFileToJobRequest input)
+    public async Task UploadDeliveredFileToJob([ActionParameter] UploadFileToJobRequest input)
     {
-        var client = new XtrfClient(authenticationCredentialsProviders);
-        var uploadRequest = new XtrfRequest("/v2/jobs/" + input.JobId + "/files/delivered/upload", Method.Post,
-            authenticationCredentialsProviders);
+        var uploadEndpoint = "/v2/jobs/" + input.JobId + "/files/delivered/upload";
+        var uploadRequest = new XtrfRequest(uploadEndpoint, Method.Post, Creds);
         uploadRequest.AddFile("file", input.File.Bytes, input.FileName ?? input.File.Name);
-        var outputFileId = client.ExecuteRequest<UploadFileResponse>(uploadRequest).FileId;
 
-        var addRequest = new XtrfRequest("/v2/jobs/" + input.JobId + "/files/delivered/add", Method.Put,
-            authenticationCredentialsProviders);
+        var outputFileId = (await Client.ExecuteWithErrorHandling<UploadFileResponse>(uploadRequest)).FileId;
+
+        var addEndpoint = "/v2/jobs/" + input.JobId + "/files/delivered/add";
+        var addRequest = new XtrfRequest(addEndpoint, Method.Put, Creds);
         addRequest.AddJsonBody(new
         {
             files = new[]
@@ -95,12 +94,11 @@ public class JobsActions
             }
         });
 
-        client.ExecuteRequest<object>(addRequest);
+        await Client.ExecuteWithErrorHandling(addRequest);
     }
 
     [Action("Assign vendor to a job", Description = "Assign vendor to a specific job")]
-    public void AssignVendorToJob(
-        IEnumerable<AuthenticationCredentialsProvider> authenticationCredentialsProviders,
+    public Task AssignVendorToJob(
         [ActionParameter] [Display("Job ID")] string jobId,
         [ActionParameter] [Display("Vendor ID")]
         string vendorId)
@@ -108,90 +106,82 @@ public class JobsActions
         if (!int.TryParse(vendorId, out var intVendorId))
             throw new("Vendor ID must be a number");
 
-        var client = new XtrfClient(authenticationCredentialsProviders);
-        var request = new XtrfRequest("/v2/jobs/" + jobId + "/vendor", Method.Put, authenticationCredentialsProviders);
+        var endpoint = "/v2/jobs/" + jobId + "/vendor";
+        var request = new XtrfRequest(endpoint, Method.Put, Creds);
         request.AddJsonBody(new
         {
             vendorPriceProfileId = intVendorId
         });
-        client.ExecuteRequest<object>(request);
+
+        return Client.ExecuteWithErrorHandling(request);
     }
 
     [Action("Update instructions for a job", Description = "Update instructions for a specific job")]
-    public void UpdateInstructionsForJob(
-        IEnumerable<AuthenticationCredentialsProvider> authenticationCredentialsProviders,
+    public Task UpdateInstructionsForJob(
         [ActionParameter] [Display("Job ID")] string jobId,
         [ActionParameter] [Display("Instructions")]
         string instructions)
     {
-        var client = new XtrfClient(authenticationCredentialsProviders);
-        var request = new XtrfRequest("/v2/jobs/" + jobId + "/instructions", Method.Put,
-            authenticationCredentialsProviders);
+        var endpoint = "/v2/jobs/" + jobId + "/instructions";
+        var request = new XtrfRequest(endpoint, Method.Put, Creds);
         request.AddJsonBody(new
         {
             value = instructions
         });
-        client.ExecuteRequest<object>(request);
+
+        return Client.ExecuteWithErrorHandling(request);
     }
 
     [Action("Update dates of a job", Description = "Update dates of a given job")]
-    public void UpdateDatesOfJob(
-        IEnumerable<AuthenticationCredentialsProvider> authenticationCredentialsProviders,
-        [ActionParameter] UpdateJobDatesRequest input)
+    public Task UpdateDatesOfJob([ActionParameter] UpdateJobDatesRequest input)
     {
-        var client = new XtrfClient(authenticationCredentialsProviders);
-        var request = new XtrfRequest("/v2/jobs/" + input.JobId + "/dates", Method.Put,
-            authenticationCredentialsProviders);
+        var endpoint = "/v2/jobs/" + input.JobId + "/dates";
+        var request = new XtrfRequest(endpoint, Method.Put, Creds);
         request.AddJsonBody(new
         {
             startDate = input.StartDate.ConvertToUnixTime(),
             deadline = input.Deadline.ConvertToUnixTime()
         });
-        client.ExecuteRequest<object>(request);
+
+        return Client.ExecuteWithErrorHandling(request);
     }
 
     [Action("Share file as referenced with a job", Description = "Share file as referenced with a specific job")]
-    public SharedFilesResponse ShareReferencedFileWithJob(
-        IEnumerable<AuthenticationCredentialsProvider> authenticationCredentialsProviders,
-        [ActionParameter] ShareFileWithJobRequest input)
+    public Task<SharedFilesResponse> ShareReferencedFileWithJob([ActionParameter] ShareFileWithJobRequest input)
     {
-        var client = new XtrfClient(authenticationCredentialsProviders);
-        var request = new XtrfRequest("/v2/jobs/" + input.JobId + "/files/sharedReferenceFiles/share", Method.Put,
-            authenticationCredentialsProviders);
+        var endpoint = "/v2/jobs/" + input.JobId + "/files/sharedReferenceFiles/share";
+        var request = new XtrfRequest(endpoint, Method.Put, Creds);
         request.AddJsonBody(new
         {
             files = new[] { input.FileId }
         });
-        return client.ExecuteRequest<SharedFilesResponse>(request);
+
+        return Client.ExecuteWithErrorHandling<SharedFilesResponse>(request);
     }
 
     [Action("Share file as work files with a job", Description = "Share file as work files with a specific job")]
-    public SharedFilesResponse ShareWorkFileWithJob(
-        IEnumerable<AuthenticationCredentialsProvider> authenticationCredentialsProviders,
-        [ActionParameter] ShareFileWithJobRequest input)
+    public Task<SharedFilesResponse> ShareWorkFileWithJob([ActionParameter] ShareFileWithJobRequest input)
     {
-        var client = new XtrfClient(authenticationCredentialsProviders);
-        var request = new XtrfRequest("/v2/jobs/" + input.JobId + "/files/sharedWorkFiles/share", Method.Put,
-            authenticationCredentialsProviders);
+        var endpoint = "/v2/jobs/" + input.JobId + "/files/sharedWorkFiles/share";
+        var request = new XtrfRequest(endpoint, Method.Put, Creds);
         request.AddJsonBody(new
         {
             files = new[] { input.FileId }
         });
-        return client.ExecuteRequest<SharedFilesResponse>(request);
+
+        return Client.ExecuteWithErrorHandling<SharedFilesResponse>(request);
     }
 
     [Action("Stop sharing file with a job", Description = "Stop sharing file with a specific job")]
-    public SharedFilesResponse StopSharingFileWithJob(
-        IEnumerable<AuthenticationCredentialsProvider> authenticationCredentialsProviders,
-        [ActionParameter] ShareFileWithJobRequest input)
+    public Task<SharedFilesResponse> StopSharingFileWithJob([ActionParameter] ShareFileWithJobRequest input)
     {
-        var client = new XtrfClient(authenticationCredentialsProviders);
-        var request = new XtrfRequest("/v2/jobs/" + input.JobId + "/files/stopSharing", Method.Put,
-            authenticationCredentialsProviders);
+        var endpoint = "/v2/jobs/" + input.JobId + "/files/stopSharing";
+        var request = new XtrfRequest(endpoint, Method.Put, Creds);
         request.AddJsonBody(new
         {
             files = new[] { input.FileId }
         });
-        return client.ExecuteRequest<SharedFilesResponse>(request);
+
+        return Client.ExecuteWithErrorHandling<SharedFilesResponse>(request);
     }
 }

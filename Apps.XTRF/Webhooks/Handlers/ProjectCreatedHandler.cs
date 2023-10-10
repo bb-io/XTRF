@@ -3,5 +3,8 @@
 public class ProjectCreatedHandler : BaseWebhookHandler
 {
     const string SubscriptionEvent = "project_created";
-    public ProjectCreatedHandler() : base(SubscriptionEvent) { }
+
+    public ProjectCreatedHandler() : base(SubscriptionEvent)
+    {
+    }
 }

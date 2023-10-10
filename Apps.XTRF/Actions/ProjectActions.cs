@@ -1,58 +1,56 @@
 ﻿using System.Net.Mime;
+using Apps.XTRF.Api;
+using Apps.XTRF.Constants;
 using Apps.XTRF.Extensions;
-using Apps.XTRF.InputParameters;
-using Apps.XTRF.Requests;
-using Apps.XTRF.Requests.Project;
-using Apps.XTRF.Responses;
-using Apps.XTRF.Responses.Models;
+using Apps.XTRF.Invocables;
+using Apps.XTRF.Models.InputParameters;
+using Apps.XTRF.Models.Requests;
+using Apps.XTRF.Models.Requests.Project;
+using Apps.XTRF.Models.Responses;
+using Apps.XTRF.Models.Responses.Models;
 using Blackbird.Applications.Sdk.Common;
 using Blackbird.Applications.Sdk.Common.Actions;
-using Blackbird.Applications.Sdk.Common.Authentication;
+using Blackbird.Applications.Sdk.Common.Invocation;
+using Blackbird.Applications.Sdk.Utils.Extensions.Http;
 using Blackbird.Applications.Sdk.Utils.Parsers;
 using RestSharp;
 
 namespace Apps.XTRF.Actions;
 
 [ActionList]
-public class ProjectActions
+public class ProjectActions : XtrfInvocable
 {
-    [Action("Get project details", Description = "Get all information of a specific project")]
-    public async Task<ProjectResponse> GetProject(
-        IEnumerable<AuthenticationCredentialsProvider> authenticationCredentialsProviders,
-        [ActionParameter] [Display("Project ID")]
-        string projectId)
+    public ProjectActions(InvocationContext invocationContext) : base(invocationContext)
     {
-        var client = new XtrfClient(authenticationCredentialsProviders);
-        var request = new XtrfRequest("/v2/projects/" + projectId, Method.Get, authenticationCredentialsProviders);
+    }
 
-        return new(await client.ExecuteRequestAsync<Project>(request));
+    [Action("Get project details", Description = "Get all information of a specific project")]
+    public async Task<ProjectResponse> GetProject([ActionParameter] [Display("Project ID")] string projectId)
+    {
+        var request = new XtrfRequest("/v2/projects/" + projectId, Method.Get, Creds);
+        return new(await Client.ExecuteWithErrorHandling<Project>(request));
     }
 
     [Action("Create new project", Description = "Create a new project")]
-    public async Task<ProjectResponse> CreateProject(
-        IEnumerable<AuthenticationCredentialsProvider> authenticationCredentialsProviders,
-        [ActionParameter] CreateProjectInput project)
+    public async Task<ProjectResponse> CreateProject([ActionParameter] CreateProjectInput project)
     {
-        var client = new XtrfClient(authenticationCredentialsProviders);
-        var request = new XtrfRequest("/v2/projects", Method.Post, authenticationCredentialsProviders);
-        request.WithJsonBody(new CreateProjectRequest(project));
-        return new(await client.ExecuteRequestAsync<Project>(request));
+        var request = new XtrfRequest("/v2/projects", Method.Post, Creds)
+            .WithJsonBody(new CreateProjectRequest(project), JsonConfig.Settings);
+
+        return new(await Client.ExecuteWithErrorHandling<Project>(request));
     }
 
     [Action("Get jobs in a project", Description = "Get all jobs of a specific project")]
-    public GetJobsResponse GetJobsByProject(
-        IEnumerable<AuthenticationCredentialsProvider> authenticationCredentialsProviders,
-        [ActionParameter] [Display("Project ID")]
-        string projectId)
+    public async Task<GetJobsResponse> GetJobsByProject([ActionParameter] [Display("Project ID")] string projectId)
     {
-        var client = new XtrfClient(authenticationCredentialsProviders);
-        var request = new XtrfRequest("/v2/projects/" + projectId + "/jobs", Method.Get,
-            authenticationCredentialsProviders);
-        var responseJobs = client.ExecuteRequest<List<JobResponse>>(request);
+        var endpoint = "/v2/projects/" + projectId + "/jobs";
+        var request = new XtrfRequest(endpoint, Method.Get, Creds);
+
+        var responseJobs = await Client.ExecuteWithErrorHandling<List<JobResponse>>(request);
         var dtoJobs = new List<JobDTO>();
 
         foreach (var job in responseJobs)
-            dtoJobs.Add(ExtensionMethods.MapJobResponseToDTO(job));
+            dtoJobs.Add(new(job));
 
         return new()
         {
@@ -61,15 +59,13 @@ public class ProjectActions
     }
 
     [Action("Get files in a project", Description = "Get all files of a specific project")]
-    public GetFilesResponse GetFilesByProject(
-        IEnumerable<AuthenticationCredentialsProvider> authenticationCredentialsProviders,
-        [ActionParameter] GetFilesInProjectRequest input)
+    public async Task<GetFilesResponse> GetFilesByProject([ActionParameter] GetFilesInProjectRequest input)
     {
-        var client = new XtrfClient(authenticationCredentialsProviders);
-        var request = new XtrfRequest("/v2/projects/" + input.ProjectId + "/files", Method.Get,
-            authenticationCredentialsProviders);
+        var endpoint = "/v2/projects/" + input.ProjectId + "/files";
+        var request = new XtrfRequest(endpoint, Method.Get, Creds);
 
-        var files = client.ExecuteRequest<List<FileXTRF>>(request);
+        var files = await Client.ExecuteWithErrorHandling<List<FileXTRF>>(request);
+
         return new()
         {
             Files = files.Where(x => input.LanguageId is null || x.Languages.Contains(int.Parse(input.LanguageId)))
@@ -78,17 +74,16 @@ public class ProjectActions
     }
 
     [Action("Download file content", Description = "Download the content of a specific file")]
-    public DownloadFileResponse DownloadFile(
-        IEnumerable<AuthenticationCredentialsProvider> authenticationCredentialsProviders,
+    public async Task<DownloadFileResponse> DownloadFile(
         [ActionParameter] [Display("File ID")] string fileId,
         [ActionParameter] [Display("File name")]
         string fileName)
     {
-        var client = new XtrfClient(authenticationCredentialsProviders);
-        var request = new XtrfRequest("/v2/projects/files/" + fileId + "/download/" + fileName, Method.Get,
-            authenticationCredentialsProviders);
+        var endpoint = "/v2/projects/files/" + fileId + "/download/" + fileName;
+        var request = new XtrfRequest(endpoint, Method.Get, Creds);
 
-        var response = client.ExecuteRequest(request);
+        var response = await Client.ExecuteWithErrorHandling(request);
+
         return new()
         {
             File = new(response.RawBytes)
@@ -100,36 +95,31 @@ public class ProjectActions
     }
 
     [Action("Change project status", Description = "Change the status of a project")]
-    public void ChangeProjectStatus(
-        IEnumerable<AuthenticationCredentialsProvider> authenticationCredentialsProviders,
-        [ActionParameter] [Display("Project ID")]
-        string projectId,
+    public Task ChangeProjectStatus([ActionParameter] [Display("Project ID")] string projectId,
         [ActionParameter] [Display("Project status")]
         string projectStatus)
     {
-        var client = new XtrfClient(authenticationCredentialsProviders);
-        var request = new XtrfRequest("/v2/projects/" + projectId + "/status", Method.Put,
-            authenticationCredentialsProviders);
+        var endpoint = "/v2/projects/" + projectId + "/status";
+        var request = new XtrfRequest(endpoint, Method.Put, Creds);
         request.AddJsonBody(new
         {
             status = projectStatus
         });
-        client.ExecuteRequest<object>(request);
+
+        return Client.ExecuteWithErrorHandling(request);
     }
 
     [Action("Upload a file to a project", Description = "Upload a file to a specific project")]
-    public void UploadFileToProject(
-        IEnumerable<AuthenticationCredentialsProvider> authenticationCredentialsProviders,
-        [ActionParameter] UploadFileToProjectRequest input)
+    public async Task UploadFileToProject([ActionParameter] UploadFileToProjectRequest input)
     {
-        var client = new XtrfClient(authenticationCredentialsProviders);
-        var uploadRequest = new XtrfRequest("/v2/projects/" + input.ProjectId + "/files/upload", Method.Post,
-            authenticationCredentialsProviders);
+        var uploadEndpoint = "/v2/projects/" + input.ProjectId + "/files/upload";
+        var uploadRequest = new XtrfRequest(uploadEndpoint, Method.Post, Creds);
         uploadRequest.AddFile("file", input.File.Bytes, input.FileName ?? input.File.Name);
-        var outputFileId = client.Post<UploadFileResponse>(uploadRequest).FileId;
 
-        var addRequest = new XtrfRequest("/v2/projects/" + input.ProjectId + "/files/add", Method.Put,
-            authenticationCredentialsProviders);
+        var outputFileId = (await Client.ExecuteWithErrorHandling<UploadFileResponse>(uploadRequest)).FileId;
+
+        var addEndpoint = "/v2/projects/" + input.ProjectId + "/files/add";
+        var addRequest = new XtrfRequest(addEndpoint, Method.Put, Creds);
         addRequest.AddJsonBody(new
         {
             files = new[]
@@ -158,231 +148,194 @@ public class ProjectActions
             }
         });
 
-        client.ExecuteRequest<object>(addRequest);
+        await Client.ExecuteWithErrorHandling(addRequest);
     }
 
     [Action("Check for created or queued cat tool project",
         Description = "Check for created or queued cat tool project")]
-    public CheckForCatToolResponse CheckForCatTool(
-        IEnumerable<AuthenticationCredentialsProvider> authenticationCredentialsProviders,
-        [ActionParameter] [Display("Project ID")]
-        string projectId)
+    public Task<CheckForCatToolResponse> CheckForCatTool([ActionParameter] [Display("Project ID")] string projectId)
     {
-        var client = new XtrfClient(authenticationCredentialsProviders);
-        var request = new XtrfRequest("/v2/projects/" + projectId + "/catToolProject", Method.Get,
-            authenticationCredentialsProviders);
-        return client.Get<CheckForCatToolResponse>(request);
+        var endpoint = "/v2/projects/" + projectId + "/catToolProject";
+        var request = new XtrfRequest(endpoint, Method.Get, Creds);
+
+        return Client.ExecuteWithErrorHandling<CheckForCatToolResponse>(request)!;
     }
 
     [Action("Get client contacts information for a project",
         Description = "Get client contacts information for a specific project")]
-    public GetClientContactsByProjectResponse GetClientContactsByProject(
-        IEnumerable<AuthenticationCredentialsProvider> authenticationCredentialsProviders,
+    public Task<GetClientContactsByProjectResponse> GetClientContactsByProject(
         [ActionParameter] [Display("Project ID")]
         string projectId)
     {
-        var client = new XtrfClient(authenticationCredentialsProviders);
-        var request = new XtrfRequest("/v2/projects/" + projectId + "/clientContacts", Method.Get,
-            authenticationCredentialsProviders);
-        return client.ExecuteRequest<GetClientContactsByProjectResponse>(request);
+        var endpoint = "/v2/projects/" + projectId + "/clientContacts";
+        var request = new XtrfRequest(endpoint, Method.Get, Creds);
+
+        return Client.ExecuteWithErrorHandling<GetClientContactsByProjectResponse>(request);
     }
 
     [Action("Get finance information for a project", Description = "Get finance information for a specific project")]
-    public FinanceInformation GetFinanceInfo(
-        IEnumerable<AuthenticationCredentialsProvider> authenticationCredentialsProviders,
-        [ActionParameter] [Display("Project ID")]
-        string projectId)
+    public Task<FinanceInformation> GetFinanceInfo([ActionParameter] [Display("Project ID")] string projectId)
     {
-        var client = new XtrfClient(authenticationCredentialsProviders);
-        var request = new XtrfRequest("/v2/projects/" + projectId + "/finance", Method.Get,
-            authenticationCredentialsProviders);
-        return client.ExecuteRequest<FinanceInformation>(request);
+        var endpoint = "/v2/projects/" + projectId + "/finance";
+        var request = new XtrfRequest(endpoint, Method.Get, Creds);
+
+        return Client.ExecuteWithErrorHandling<FinanceInformation>(request);
     }
 
     [Action("Get project file details", Description = "Get details of a specific file in a project")]
-    public FileXTRF GetProjectFileDetails(
-        IEnumerable<AuthenticationCredentialsProvider> authenticationCredentialsProviders,
-        [ActionParameter] [Display("File ID")] string fileId)
+    public Task<FileXTRF> GetProjectFileDetails([ActionParameter] [Display("File ID")] string fileId)
     {
-        var client = new XtrfClient(authenticationCredentialsProviders);
-        var request = new XtrfRequest("/v2/projects/files/" + fileId, Method.Get, authenticationCredentialsProviders);
-        return client.ExecuteRequest<FileXTRF>(request);
+        var endpoint = "/v2/projects/files/" + fileId;
+        var request = new XtrfRequest(endpoint, Method.Get, Creds);
+
+        return Client.ExecuteWithErrorHandling<FileXTRF>(request);
     }
 
     [Action("Get process ID for a project", Description = "Get process ID for a specific project")]
-    public GetProcessIdByProjectResponse GetProcessIdByProject(
-        IEnumerable<AuthenticationCredentialsProvider> authenticationCredentialsProviders,
+    public Task<GetProcessIdByProjectResponse> GetProcessIdByProject(
         [ActionParameter] [Display("Project ID")]
         string projectId)
     {
-        var client = new XtrfClient(authenticationCredentialsProviders);
-        var request = new XtrfRequest("/v2/projects/" + projectId + "/process", Method.Get,
-            authenticationCredentialsProviders);
-        return client.ExecuteRequest<GetProcessIdByProjectResponse>(request);
+        var endpoint = "/v2/projects/" + projectId + "/process";
+        var request = new XtrfRequest(endpoint, Method.Get, Creds);
+
+        return Client.ExecuteWithErrorHandling<GetProcessIdByProjectResponse>(request);
     }
 
     [Action("Delete a payable for a project", Description = "Delete a payable for a specific project")]
-    public void DeletePayableForProject(
-        IEnumerable<AuthenticationCredentialsProvider> authenticationCredentialsProviders,
-        [ActionParameter] [Display("Project ID")]
-        string projectId,
+    public Task DeletePayableForProject([ActionParameter] [Display("Project ID")] string projectId,
         [ActionParameter] [Display("Payable ID")]
         int payableId)
     {
-        var client = new XtrfClient(authenticationCredentialsProviders);
-        var request = new XtrfRequest("/v2/projects/" + projectId + "/finance/payables/" + payableId, Method.Delete,
-            authenticationCredentialsProviders);
-        client.ExecuteRequest<object>(request);
+        var endpoint = "/v2/projects/" + projectId + "/finance/payables/" + payableId;
+        var request = new XtrfRequest(endpoint, Method.Delete, Creds);
+
+        return Client.ExecuteWithErrorHandling(request);
     }
 
     [Action("Delete a receivable for a project", Description = "Delete a receivable for a specific project")]
-    public void DeleteReceivableForProject(
-        IEnumerable<AuthenticationCredentialsProvider> authenticationCredentialsProviders,
-        [ActionParameter] [Display("Project ID")]
-        string projectId,
+    public Task DeleteReceivableForProject([ActionParameter] [Display("Project ID")] string projectId,
         [ActionParameter] [Display("Receivable ID")]
         int receivableId)
     {
-        var client = new XtrfClient(authenticationCredentialsProviders);
-        var request = new XtrfRequest("/v2/projects/" + projectId + "/finance/receivables/" + receivableId,
-            Method.Delete, authenticationCredentialsProviders);
-        client.ExecuteRequest<object>(request);
+        var endpoint = "/v2/projects/" + projectId + "/finance/receivables/" + receivableId;
+        var request = new XtrfRequest(endpoint, Method.Delete, Creds);
+
+        return Client.ExecuteWithErrorHandling(request);
     }
 
     [Action("Update client deadline for a project", Description = "Update client deadline for a specific project")]
-    public void UpdateDeadlineForProject(
-        IEnumerable<AuthenticationCredentialsProvider> authenticationCredentialsProviders,
-        [ActionParameter] [Display("Project ID")]
-        string projectId,
+    public Task UpdateDeadlineForProject([ActionParameter] [Display("Project ID")] string projectId,
         [ActionParameter] [Display("Deadline date")]
         string deadlineDate)
     {
-        var client = new XtrfClient(authenticationCredentialsProviders);
-        var request = new XtrfRequest("/v2/projects/" + projectId + "/clientDeadline", Method.Put,
-            authenticationCredentialsProviders);
+        var endpoint = "/v2/projects/" + projectId + "/clientDeadline";
+        var request = new XtrfRequest(endpoint, Method.Put, Creds);
         request.AddJsonBody(new
         {
             value = deadlineDate.ConvertToUnixTime()
         });
-        client.ExecuteRequest<object>(request);
+
+        return Client.ExecuteWithErrorHandling(request);
     }
 
     [Action("Update client notes for a project", Description = "Update client notes for a specific project")]
-    public void UpdateClientNotesForProject(
-        IEnumerable<AuthenticationCredentialsProvider> authenticationCredentialsProviders,
-        [ActionParameter] [Display("Project ID")]
-        string projectId,
+    public Task UpdateClientNotesForProject([ActionParameter] [Display("Project ID")] string projectId,
         [ActionParameter] [Display("Client notes")]
         string clientNotes)
     {
-        var client = new XtrfClient(authenticationCredentialsProviders);
-        var request = new XtrfRequest("/v2/projects/" + projectId + "/clientNotes", Method.Put,
-            authenticationCredentialsProviders);
+        var endpoint = "/v2/projects/" + projectId + "/clientNotes";
+        var request = new XtrfRequest(endpoint, Method.Put,
+            Creds);
         request.AddJsonBody(new
         {
             value = clientNotes
         });
-        client.ExecuteRequest<object>(request);
+
+        return Client.ExecuteWithErrorHandling(request);
     }
 
     [Action("Update internal notes for a project", Description = "Update internal notes for a specific project")]
-    public void UpdateInternalNotesForProject(
-        IEnumerable<AuthenticationCredentialsProvider> authenticationCredentialsProviders,
-        [ActionParameter] [Display("Project ID")]
-        string projectId,
+    public Task UpdateInternalNotesForProject([ActionParameter] [Display("Project ID")] string projectId,
         [ActionParameter] [Display("Internal notes")]
         string internalNotes)
     {
-        var client = new XtrfClient(authenticationCredentialsProviders);
-        var request = new XtrfRequest("/v2/projects/" + projectId + "/internalNotes", Method.Put,
-            authenticationCredentialsProviders);
+        var endpoint = "/v2/projects/" + projectId + "/internalNotes";
+        var request = new XtrfRequest(endpoint, Method.Put, Creds);
         request.AddJsonBody(new
         {
             value = internalNotes
         });
-        client.ExecuteRequest<object>(request);
+
+        return Client.ExecuteWithErrorHandling(request);
     }
 
     [Action("Update client reference number for a project",
         Description = "Update client reference number for a specific project")]
-    public void UpdateClientReferenceNumberForProject(
-        IEnumerable<AuthenticationCredentialsProvider> authenticationCredentialsProviders,
-        [ActionParameter] [Display("Project ID")]
-        string projectId,
+    public Task UpdateClientReferenceNumberForProject([ActionParameter] [Display("Project ID")] string projectId,
         [ActionParameter] [Display("Reference number")]
         string referenceNumber)
     {
-        var client = new XtrfClient(authenticationCredentialsProviders);
-        var request = new XtrfRequest("/v2/projects/" + projectId + "/clientReferenceNumber", Method.Put,
-            authenticationCredentialsProviders);
+        var endpoint = "/v2/projects/" + projectId + "/clientReferenceNumber";
+        var request = new XtrfRequest(endpoint, Method.Put, Creds);
         request.AddJsonBody(new
         {
             value = referenceNumber
         });
-        client.ExecuteRequest<object>(request);
+
+        return Client.ExecuteWithErrorHandling(request);
     }
 
     [Action("Update order date for a project", Description = "Update order date for a specific project")]
-    public void UpdateOrderDateForProject(
-        IEnumerable<AuthenticationCredentialsProvider> authenticationCredentialsProviders,
-        [ActionParameter] [Display("Project ID")]
-        string projectId,
+    public Task UpdateOrderDateForProject([ActionParameter] [Display("Project ID")] string projectId,
         [ActionParameter] [Display("Order date")]
         string orderDate)
     {
-        var client = new XtrfClient(authenticationCredentialsProviders);
-        var request = new XtrfRequest("/v2/projects/" + projectId + "/orderDate", Method.Put,
-            authenticationCredentialsProviders);
+        var endpoint = "/v2/projects/" + projectId + "/orderDate";
+        var request = new XtrfRequest(endpoint, Method.Put, Creds);
         request.AddJsonBody(new
         {
             value = orderDate.ConvertToUnixTime()
         });
-        client.ExecuteRequest<object>(request);
+
+        return Client.ExecuteWithErrorHandling(request);
     }
 
     [Action("Update source language for a project", Description = "Update source language for a specific project")]
-    public void UpdateSourceLanguageForProject(
-        IEnumerable<AuthenticationCredentialsProvider> authenticationCredentialsProviders,
-        [ActionParameter] [Display("Project ID")]
-        string projectId,
+    public Task UpdateSourceLanguageForProject([ActionParameter] [Display("Project ID")] string projectId,
         [ActionParameter] [Display("Source language ID")]
         string sourceLanguageId)
     {
         if (!int.TryParse(sourceLanguageId, out var intLangId))
             throw new("Source language ID must be a number");
 
-        var client = new XtrfClient(authenticationCredentialsProviders);
-        var request = new XtrfRequest("/v2/projects/" + projectId + "/sourceLanguage", Method.Put,
-            authenticationCredentialsProviders);
+        var endpoint = "/v2/projects/" + projectId + "/sourceLanguage";
+        var request = new XtrfRequest(endpoint, Method.Put, Creds);
         request.AddJsonBody(new
         {
             sourceLanguageId = intLangId
         });
-        client.Execute(request);
+
+        return Client.ExecuteWithErrorHandling(request);
     }
 
     [Action("Update target languages for a project", Description = "Update target languages for a specific project")]
-    public Task UpdateTargetLanguagesForProject(
-        IEnumerable<AuthenticationCredentialsProvider> authenticationCredentialsProviders,
-        [ActionParameter] UpdateProjectTargetLanguagesRequest input)
+    public Task UpdateTargetLanguagesForProject([ActionParameter] UpdateProjectTargetLanguagesRequest input)
     {
-        var client = new XtrfClient(authenticationCredentialsProviders);
-        var request = new XtrfRequest("/v2/projects/" + input.ProjectId + "/targetLanguages", Method.Put,
-            authenticationCredentialsProviders);
+        var endpoint = "/v2/projects/" + input.ProjectId + "/targetLanguages";
+        var request = new XtrfRequest(endpoint, Method.Put, Creds);
         request.AddJsonBody(new
         {
             targetLanguageIds = input.TargetLanguageIds.Select(x => IntParser.Parse(x, "targetLanguageId"))
         });
 
-        return client.ExecuteRequestAsync(request);
+        return Client.ExecuteWithErrorHandling(request);
     }
 
     [Action("Add target language to project", Description = "Add one more target language to a specific project")]
-    public async Task AddTargetLanguageToProject(
-        IEnumerable<AuthenticationCredentialsProvider> creds,
-        [ActionParameter] AddTargetLanguagesToProjectRequest input)
+    public async Task AddTargetLanguageToProject([ActionParameter] AddTargetLanguagesToProjectRequest input)
     {
-        var project = await GetProject(creds, input.ProjectId);
+        var project = await GetProject(input.ProjectId);
 
         var projectTargLangs = project.TargetLanguageIds ?? Enumerable.Empty<string>();
         var request = new UpdateProjectTargetLanguagesRequest()
@@ -391,63 +344,54 @@ public class ProjectActions
             TargetLanguageIds = projectTargLangs.Append(input.TargetLanguageId)
         };
 
-        await UpdateTargetLanguagesForProject(creds, request);
+        await UpdateTargetLanguagesForProject(request);
     }
 
     [Action("Update specialization for a project", Description = "Update specialization for a specific project")]
-    public void UpdateSpecializationForProject(
-        IEnumerable<AuthenticationCredentialsProvider> authenticationCredentialsProviders,
-        [ActionParameter] [Display("Project ID")]
-        string projectId,
+    public Task UpdateSpecializationForProject([ActionParameter] [Display("Project ID")] string projectId,
         [ActionParameter] [Display("Specialization ID")]
         string specializationId)
     {
         if (!int.TryParse(specializationId, out var intSpecializationId))
             throw new("Specialization ID must be a number");
 
-        var client = new XtrfClient(authenticationCredentialsProviders);
-        var request = new XtrfRequest("/v2/projects/" + projectId + "/specialization", Method.Put,
-            authenticationCredentialsProviders);
+        var endpoint = "/v2/projects/" + projectId + "/specialization";
+        var request = new XtrfRequest(endpoint, Method.Put, Creds);
         request.AddJsonBody(new
         {
             specializationId = intSpecializationId
         });
-        client.ExecuteRequest<object>(request);
+
+        return Client.ExecuteWithErrorHandling(request);
     }
 
     [Action("Update vendor instructions for a project",
         Description = "Update vendor instructions for a specific project")]
-    public void UpdateVendorInstructionsForProject(
-        IEnumerable<AuthenticationCredentialsProvider> authenticationCredentialsProviders,
-        [ActionParameter] [Display("Project ID")]
-        string projectId,
+    public Task UpdateVendorInstructionsForProject([ActionParameter] [Display("Project ID")] string projectId,
         [ActionParameter] [Display("Vendor instructions")]
         string vendorInstructions)
     {
-        var client = new XtrfClient(authenticationCredentialsProviders);
-        var request = new XtrfRequest("/v2/projects/" + projectId + "/vendorInstructions", Method.Put,
-            authenticationCredentialsProviders);
+        var endpoint = "/v2/projects/" + projectId + "/vendorInstructions";
+        var request = new XtrfRequest(endpoint, Method.Put, Creds);
         request.AddJsonBody(new
         {
             value = vendorInstructions
         });
-        client.ExecuteRequest<object>(request);
+
+        return Client.ExecuteWithErrorHandling(request);
     }
 
     [Action("Update volume for a project", Description = "Update volume for a specific project")]
-    public void UpdateVolumeForProject(
-        IEnumerable<AuthenticationCredentialsProvider> authenticationCredentialsProviders,
-        [ActionParameter] [Display("Project ID")]
-        string projectId,
+    public Task UpdateVolumeForProject([ActionParameter] [Display("Project ID")] string projectId,
         [ActionParameter] [Display("Volume")] int volume)
     {
-        var client = new XtrfClient(authenticationCredentialsProviders);
-        var request = new XtrfRequest("/v2/projects/" + projectId + "/volume", Method.Put,
-            authenticationCredentialsProviders);
+        var endpoint = "/v2/projects/" + projectId + "/volume";
+        var request = new XtrfRequest(endpoint, Method.Put, Creds);
         request.AddJsonBody(new
         {
             value = volume
         });
-        client.ExecuteRequest<object>(request);
+
+        return Client.ExecuteWithErrorHandling(request);
     }
 }

@@ -1,4 +1,6 @@
-﻿using Apps.XTRF.Responses.Models;
+﻿using Apps.XTRF.Api;
+using Apps.XTRF.Models.Responses.Models;
+using Apps.XTRF.Webhooks.Models.Request;
 using Blackbird.Applications.Sdk.Common.Authentication;
 using Blackbird.Applications.Sdk.Common.Webhooks;
 using RestSharp;
@@ -7,32 +9,47 @@ namespace Apps.XTRF.Webhooks.Handlers;
 
 public class BaseWebhookHandler : IWebhookEventHandler
 {
-    private string _event;
+    private readonly string _event;
+
     public BaseWebhookHandler(string subEvent)
     {
         _event = subEvent;
     }
 
-    public async Task SubscribeAsync(IEnumerable<AuthenticationCredentialsProvider> authenticationCredentialsProvider, Dictionary<string, string> values)
+    public Task SubscribeAsync(IEnumerable<AuthenticationCredentialsProvider> creds, Dictionary<string, string> values)
     {
-        var client = new XtrfClient(authenticationCredentialsProvider);
-        var request = new XtrfRequest($"/subscription", Method.Post, authenticationCredentialsProvider);
-        request.AddJsonBody(new HandlerPayload
+        var client = new XtrfClient(creds);
+        var request = new XtrfRequest("/subscription", Method.Post, creds);
+        request.AddJsonBody(new SubscribeRequest
         {
             Url = values["payloadUrl"],
             Event = _event
         });
-        client.Execute(request);
+
+        return client.ExecuteWithErrorHandling(request);
     }
 
-    public async Task UnsubscribeAsync(IEnumerable<AuthenticationCredentialsProvider> authenticationCredentialsProvider, Dictionary<string, string> values)
+    public async Task UnsubscribeAsync(IEnumerable<AuthenticationCredentialsProvider> creds,
+        Dictionary<string, string> values)
     {
-        var client = new XtrfClient(authenticationCredentialsProvider);
-        var request = new XtrfRequest($"/subscription", Method.Get, authenticationCredentialsProvider);
-        var result = client.Get<List<Subscription>>(request);
+        var client = new XtrfClient(creds);
+
+        var result = await GetAllWebhooks(client, creds);
         var currentSubscription = result.FirstOrDefault(x => x.Url == values["payloadUrl"]);
 
-        var deleteRequest = new XtrfRequest($"/subscription/{currentSubscription?.SubscriptionId}", Method.Delete, authenticationCredentialsProvider);
-        client.Execute(request);
+        if (currentSubscription is null)
+            return;
+
+        var endpoint = $"/subscription/{currentSubscription?.SubscriptionId}";
+        var request = new XtrfRequest(endpoint, Method.Delete, creds);
+
+        await client.ExecuteWithErrorHandling(request);
+    }
+
+    private Task<List<Subscription>> GetAllWebhooks(XtrfClient client,
+        IEnumerable<AuthenticationCredentialsProvider> creds)
+    {
+        var request = new XtrfRequest("/subscription", Method.Get, creds);
+        return client.ExecuteWithErrorHandling<List<Subscription>>(request);
     }
 }

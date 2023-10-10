@@ -1,4 +1,5 @@
-﻿using Blackbird.Applications.Sdk.Common.Authentication;
+﻿using Apps.XTRF.Api;
+using Blackbird.Applications.Sdk.Common.Authentication;
 using Blackbird.Applications.Sdk.Common.Connections;
 using RestSharp;
 
@@ -14,7 +15,7 @@ public class ConnectionValidator : IConnectionValidator
 
         try
         {
-            await client.ExecuteRequestAsync(request);
+            await client.ExecuteWithErrorHandling(request);
 
             return new()
             {
