@@ -1,10 +1,13 @@
 ﻿using Apps.XTRF.Api;
 using Apps.XTRF.Constants;
 using Apps.XTRF.Invocables;
-using Apps.XTRF.Models.InputParameters;
+using Apps.XTRF.Models.Requests.Customer;
+using Apps.XTRF.Models.Requests.CustomField;
 using Apps.XTRF.Models.Requests.ManageCustomer;
 using Apps.XTRF.Models.Responses;
-using Apps.XTRF.Models.Responses.Models;
+using Apps.XTRF.Models.Responses.Customer;
+using Apps.XTRF.Models.Responses.CustomField;
+using Apps.XTRF.Models.Responses.Entities;
 using Blackbird.Applications.Sdk.Common;
 using Blackbird.Applications.Sdk.Common.Actions;
 using Blackbird.Applications.Sdk.Common.Invocation;
@@ -22,7 +25,8 @@ public class CustomerActions : XtrfInvocable
 
     [Action("Get customers", Description = "Get all customers on this XTRF instance")]
     public async Task<GetCustomersResponse> GetCustomers(
-        [ActionParameter] [Display("Updated since timestamp")] int? updatedSince)
+        [ActionParameter] [Display("Updated since timestamp")]
+        int? updatedSince)
     {
         var endpoint = "/customers";
         if (updatedSince is not null)
@@ -49,16 +53,16 @@ public class CustomerActions : XtrfInvocable
     }
 
     [Action("Create customer", Description = "Create a new customer")]
-    public Task<SimpleCustomer> CreateCustomer([ActionParameter] CreateCustomer newCustomer)
+    public Task<SimpleCustomer> CreateCustomer([ActionParameter] CreateCustomerInput newCustomerInput)
     {
         var request = new XtrfRequest("/customers", Method.Post, Creds)
-            .WithJsonBody(new CreateCustomerRequest(newCustomer), JsonConfig.Settings);
+            .WithJsonBody(new CreateCustomerRequest(newCustomerInput), JsonConfig.Settings);
 
         return Client.ExecuteWithErrorHandling<SimpleCustomer>(request);
     }
 
     [Action("Update customer", Description = "Update specific customer")]
-    public Task<SimpleCustomer> UpdateCustomer([ActionParameter] UpdateCustomer input)
+    public Task<SimpleCustomer> UpdateCustomer([ActionParameter] UpdateCustomerInput input)
     {
         var endpoint = $"/customers/{input.CustomerId}";
         var request = new XtrfRequest(endpoint, Method.Put, Creds)
@@ -77,21 +81,21 @@ public class CustomerActions : XtrfInvocable
     }
 
     [Action("Create customer contact", Description = "Create a new contact person for a customer")]
-    public Task<SimpleCustomer> CreateCustomerContact([ActionParameter] CreateContact newContact)
+    public Task<SimpleCustomer> CreateCustomerContact([ActionParameter] CreateContactInput newContactInput)
     {
-        if (!int.TryParse(newContact.CustomerId, out var customerId))
+        if (!int.TryParse(newContactInput.CustomerId, out var customerId))
             throw new("Customer ID value must be a number");
 
         var request = new XtrfRequest("/customers/persons", Method.Post, Creds);
         request.AddJsonBody(new
         {
-            name = newContact.Name,
-            lastName = newContact.LastName,
+            name = newContactInput.Name,
+            lastName = newContactInput.LastName,
             contact = new
             {
                 emails = new
                 {
-                    primary = newContact.Email
+                    primary = newContactInput.Email
                 }
             },
             customerId
@@ -100,13 +104,34 @@ public class CustomerActions : XtrfInvocable
     }
 
     [Action("Set contact phone number", Description = "Sets a new phone number for the contact")]
-    public Task SetContactPhoneNumber([ActionParameter] SetPhoneNumber input)
+    public Task SetContactPhoneNumber([ActionParameter] SetPhoneNumberInput input)
     {
         var request = new XtrfRequest($"/customers/persons/{input.ContactId}/contact", Method.Put, Creds);
         request.AddJsonBody(new
         {
             phones = new List<string>() { input.PhoneNumber }
         });
+
+        return Client.ExecuteWithErrorHandling(request);
+    }
+
+    [Action("List customer custom fields", Description = "List custom fields of a specific customer")]
+    public async Task<ListCustomFieldsResponse> ListCustomerCustomFields([ActionParameter] CustomerRequest customer)
+    {
+        var endpoint = $"/customers/{customer.CustomerId}/customFields";
+        var request = new XtrfRequest(endpoint, Method.Get, Creds);
+
+        var response = await Client.ExecuteWithErrorHandling<CustomFieldEntity[]>(request);
+        return new(response);
+    }
+
+    [Action("Update customer custom field", Description = "Update custom field of a specific customer")]
+    public Task UpdateCustomerCustomField([ActionParameter] CustomerRequest customer,
+        [ActionParameter] UpdateCustomFieldInput input)
+    {
+        var endpoint = $"/customers/{customer.CustomerId}/customFields/{input.Key}";
+        var request = new XtrfRequest(endpoint, Method.Put, Creds)
+            .WithJsonBody(new UpdateCustomFieldRequest(input.Value), JsonConfig.Settings);
 
         return Client.ExecuteWithErrorHandling(request);
     }

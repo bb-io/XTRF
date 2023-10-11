@@ -4,8 +4,11 @@ namespace Apps.XTRF;
 
 public class XtrfApplication : IApplication
 {
-    public string Name { get; set; }
-    public XtrfApplication() { Name = "XTRF"; }
+    public string Name
+    {
+        get => "XTRF";
+        set { }
+    }
 
     public T GetInstance<T>()
     {

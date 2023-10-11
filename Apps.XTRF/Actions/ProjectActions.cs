@@ -3,11 +3,15 @@ using Apps.XTRF.Api;
 using Apps.XTRF.Constants;
 using Apps.XTRF.Extensions;
 using Apps.XTRF.Invocables;
-using Apps.XTRF.Models.InputParameters;
 using Apps.XTRF.Models.Requests;
+using Apps.XTRF.Models.Requests.CustomField;
 using Apps.XTRF.Models.Requests.Project;
 using Apps.XTRF.Models.Responses;
-using Apps.XTRF.Models.Responses.Models;
+using Apps.XTRF.Models.Responses.CustomField;
+using Apps.XTRF.Models.Responses.Entities;
+using Apps.XTRF.Models.Responses.File;
+using Apps.XTRF.Models.Responses.Job;
+using Apps.XTRF.Models.Responses.Project;
 using Blackbird.Applications.Sdk.Common;
 using Blackbird.Applications.Sdk.Common.Actions;
 using Blackbird.Applications.Sdk.Common.Invocation;
@@ -391,6 +395,29 @@ public class ProjectActions : XtrfInvocable
         {
             value = volume
         });
+
+        return Client.ExecuteWithErrorHandling(request);
+    }
+
+    [Action("List project custom fields", Description = "List custom fields of a specific project")]
+    public async Task<ListCustomFieldsResponse> ListProjectCustomFields(
+        [ActionParameter] [Display("Project ID")]
+        string projectId)
+    {
+        var endpoint = $"/v2/projects/{projectId}/customFields";
+        var request = new XtrfRequest(endpoint, Method.Get, Creds);
+
+        var response = await Client.ExecuteWithErrorHandling<CustomFieldEntity[]>(request);
+        return new(response);
+    }
+
+    [Action("Update project custom field", Description = "Update custom field of a specific project")]
+    public Task UpdateProjectCustomField([ActionParameter] [Display("Project ID")] string projectId,
+        [ActionParameter] UpdateCustomFieldInput input)
+    {
+        var endpoint = $"/v2/projects/{projectId}/customFields/{input.Key}";
+        var request = new XtrfRequest(endpoint, Method.Put, Creds)
+            .WithJsonBody(new UpdateCustomFieldRequest(input.Value), JsonConfig.Settings);
 
         return Client.ExecuteWithErrorHandling(request);
     }

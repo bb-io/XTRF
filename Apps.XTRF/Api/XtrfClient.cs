@@ -1,5 +1,5 @@
 ﻿using Apps.XTRF.Constants;
-using Apps.XTRF.Models.Responses.Models;
+using Apps.XTRF.Models.Responses.Entities;
 using Blackbird.Applications.Sdk.Common.Authentication;
 using Blackbird.Applications.Sdk.Utils.Extensions.Sdk;
 using Blackbird.Applications.Sdk.Utils.Extensions.String;

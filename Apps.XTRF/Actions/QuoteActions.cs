@@ -1,16 +1,21 @@
 ﻿using Apps.XTRF.Api;
+using Apps.XTRF.Constants;
 using Apps.XTRF.DataSourceHandlers;
 using Apps.XTRF.Extensions;
 using Apps.XTRF.Invocables;
-using Apps.XTRF.Models.InputParameters;
 using Apps.XTRF.Models.Requests;
+using Apps.XTRF.Models.Requests.CustomField;
 using Apps.XTRF.Models.Requests.Quote;
 using Apps.XTRF.Models.Responses;
-using Apps.XTRF.Models.Responses.Models;
+using Apps.XTRF.Models.Responses.CustomField;
+using Apps.XTRF.Models.Responses.Entities;
+using Apps.XTRF.Models.Responses.File;
+using Apps.XTRF.Models.Responses.Job;
 using Blackbird.Applications.Sdk.Common;
 using Blackbird.Applications.Sdk.Common.Actions;
 using Blackbird.Applications.Sdk.Common.Dynamic;
 using Blackbird.Applications.Sdk.Common.Invocation;
+using Blackbird.Applications.Sdk.Utils.Extensions.Http;
 using Blackbird.Applications.Sdk.Utils.Parsers;
 using RestSharp;
 
@@ -302,6 +307,29 @@ public class QuoteActions : XtrfInvocable
         {
             value = volume
         });
+
+        return Client.ExecuteWithErrorHandling(request);
+    }
+    
+    [Action("List quote custom fields", Description = "List custom fields of a specific quote")]
+    public async Task<ListCustomFieldsResponse> ListQuoteCustomFields(
+        [ActionParameter] [Display("Quote ID")]
+        string quoteId)
+    {
+        var endpoint = $"/v2/quotes/{quoteId}/customFields";
+        var request = new XtrfRequest(endpoint, Method.Get, Creds);
+
+        var response = await Client.ExecuteWithErrorHandling<CustomFieldEntity[]>(request);
+        return new(response);
+    }
+
+    [Action("Update quote custom field", Description = "Update custom field of a specific quote")]
+    public Task UpdateQuoteCustomField([ActionParameter] [Display("Quote ID")] string quoteId,
+        [ActionParameter] UpdateCustomFieldInput input)
+    {
+        var endpoint = $"/v2/quotes/{quoteId}/customFields/{input.Key}";
+        var request = new XtrfRequest(endpoint, Method.Put, Creds)
+            .WithJsonBody(new UpdateCustomFieldRequest(input.Value), JsonConfig.Settings);
 
         return Client.ExecuteWithErrorHandling(request);
     }

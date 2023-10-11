@@ -1,6 +1,6 @@
 ﻿using Apps.XTRF.Api;
 using Apps.XTRF.Invocables;
-using Apps.XTRF.Models.Responses.Models;
+using Apps.XTRF.Models.Responses.Entities;
 using Blackbird.Applications.Sdk.Common.Dynamic;
 using Blackbird.Applications.Sdk.Common.Invocation;
 using RestSharp;

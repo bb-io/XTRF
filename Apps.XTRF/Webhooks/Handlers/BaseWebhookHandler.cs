@@ -1,5 +1,5 @@
 ﻿using Apps.XTRF.Api;
-using Apps.XTRF.Models.Responses.Models;
+using Apps.XTRF.Models.Responses.Entities;
 using Apps.XTRF.Webhooks.Models.Request;
 using Blackbird.Applications.Sdk.Common.Authentication;
 using Blackbird.Applications.Sdk.Common.Webhooks;

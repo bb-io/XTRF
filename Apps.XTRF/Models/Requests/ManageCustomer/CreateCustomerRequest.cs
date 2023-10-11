@@ -1,4 +1,6 @@
-﻿namespace Apps.XTRF.Models.Requests.ManageCustomer;
+﻿using Apps.XTRF.Models.Requests.Customer;
+
+namespace Apps.XTRF.Models.Requests.ManageCustomer;
 
 public class CreateCustomerRequest
 {
@@ -7,7 +9,7 @@ public class CreateCustomerRequest
     public CustomerContact Contact { get; }
     
 
-    public CreateCustomerRequest(InputParameters.CreateCustomer input)
+    public CreateCustomerRequest(CreateCustomerInput input)
     {
         Name = input.Name;
         FullName = input.FullName;
