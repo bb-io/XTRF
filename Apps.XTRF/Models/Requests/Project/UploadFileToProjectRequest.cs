@@ -8,9 +8,6 @@ namespace Apps.XTRF.Models.Requests.Project;
 
 public class UploadFileToProjectRequest
 {
-    [Display("Project ID")]
-    public string ProjectId { get; set; }
-
     public File File { get; set; }
 
     [Display("File name")]

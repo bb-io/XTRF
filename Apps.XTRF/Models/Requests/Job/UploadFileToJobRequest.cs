@@ -7,14 +7,11 @@ namespace Apps.XTRF.Models.Requests.Job;
 
 public class UploadFileToJobRequest
 {
-    [Display("Job ID")]
-    public string JobId { get; set; }
-
     public File File { get; set; }
-
-    [Display("File name")]
-    public string? FileName { get; set; }
 
     [DataSource(typeof(FileCategoryDataHandler))]
     public string Category { get; set; }    
+    
+    [Display("Filename")]
+    public string? FileName { get; set; }
 }

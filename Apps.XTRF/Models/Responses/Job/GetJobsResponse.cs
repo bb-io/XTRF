@@ -1,8 +1,6 @@
-﻿using Apps.XTRF.Models.Responses.Entities;
-
-namespace Apps.XTRF.Models.Responses.Job;
+﻿namespace Apps.XTRF.Models.Responses.Job;
 
 public class GetJobsResponse
 {
-    public IEnumerable<JobDTO> Jobs { get; set; }
+    public IEnumerable<Entities.Job> Jobs { get; set; }
 }

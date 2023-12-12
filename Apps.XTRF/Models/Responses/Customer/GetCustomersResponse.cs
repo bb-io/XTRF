@@ -5,5 +5,6 @@ namespace Apps.XTRF.Models.Responses.Customer;
 
 public class GetCustomersResponse
 {
-    [Display("Simple customers")] public IEnumerable<SimpleCustomer> SimpleCustomers { get; set; }
+    [Display("Customers")]
+    public IEnumerable<SimpleCustomer> SimpleCustomers { get; set; }
 }

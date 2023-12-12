@@ -52,16 +52,11 @@ public class QuoteActions : XtrfInvocable
         var endpoint = "/v2/quotes/" + quoteId + "/jobs";
         var request = new XtrfRequest(endpoint, Method.Get,
             Creds);
-        var responseJobs = await Client.ExecuteWithErrorHandling<List<JobResponse>>(request);
-
-        List<JobDTO> dtoJobs = new();
-
-        foreach (var job in responseJobs)
-            dtoJobs.Add(new(job));
+        var jobs = await Client.ExecuteWithErrorHandling<List<Job>>(request);
 
         return new()
         {
-            Jobs = dtoJobs
+            Jobs = jobs
         };
     }
 
@@ -208,8 +203,7 @@ public class QuoteActions : XtrfInvocable
     [Action("Update expected delivery date for a quote",
         Description = "Update expected delivery date for a specific quote")]
     public Task UpdateDeliveryDateForQuote([ActionParameter] [Display("Quote ID")] string quoteId,
-        [ActionParameter] [Display("Delivery date")]
-        string deliveryDate)
+        [ActionParameter] [Display("Delivery date")] DateTime deliveryDate)
     {
         var endpoint = "/v2/quotes/" + quoteId + "/expectedDeliveryDate";
         var request = new XtrfRequest(endpoint, Method.Put, Creds);
@@ -223,8 +217,7 @@ public class QuoteActions : XtrfInvocable
 
     [Action("Update internal notes for a quote", Description = "Update internal notes for a specific quote")]
     public Task UpdateInternalNotesForQuote([ActionParameter] [Display("Quote ID")] string quoteId,
-        [ActionParameter] [Display("Internal notes")]
-        string internalNotes)
+        [ActionParameter] [Display("Internal notes")] string internalNotes)
     {
         var endpoint = "/v2/quotes/" + quoteId + "/internalNotes";
         var request = new XtrfRequest(endpoint, Method.Put, Creds);
@@ -238,8 +231,7 @@ public class QuoteActions : XtrfInvocable
 
     [Action("Update expiry date for a quote", Description = "Update expiry date for a specific quote")]
     public Task UpdateExpiryDateForQuote([ActionParameter] [Display("Quote ID")] string quoteId,
-        [ActionParameter] [Display("Expiry date")]
-        string expiryDate)
+        [ActionParameter] [Display("Expiry date")] DateTime expiryDate)
     {
         var endpoint = "/v2/quotes/" + quoteId + "/quoteExpiry";
         var request = new XtrfRequest(endpoint, Method.Put, Creds);
@@ -284,8 +276,7 @@ public class QuoteActions : XtrfInvocable
 
     [Action("Update vendor instructions for a quote", Description = "Update vendor instructions for a specific quote")]
     public Task UpdateVendorInstructionsForQuote([ActionParameter] [Display("Quote ID")] string quoteId,
-        [ActionParameter] [Display("Vendor instructions")]
-        string vendorInstructions)
+        [ActionParameter] [Display("Vendor instructions")] string vendorInstructions)
     {
         var endpoint = "/v2/quotes/" + quoteId + "/vendorInstructions";
         var request = new XtrfRequest(endpoint, Method.Put, Creds);
@@ -313,8 +304,7 @@ public class QuoteActions : XtrfInvocable
     
     [Action("List quote custom fields", Description = "List custom fields of a specific quote")]
     public async Task<ListCustomFieldsResponse> ListQuoteCustomFields(
-        [ActionParameter] [Display("Quote ID")]
-        string quoteId)
+        [ActionParameter] [Display("Quote ID")] string quoteId)
     {
         var endpoint = $"/v2/quotes/{quoteId}/customFields";
         var request = new XtrfRequest(endpoint, Method.Get, Creds);

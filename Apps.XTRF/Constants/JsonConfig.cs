@@ -8,6 +8,7 @@ public static class JsonConfig
     public static JsonSerializerSettings Settings => new()
     {
         ContractResolver = new CamelCasePropertyNamesContractResolver(),
-        NullValueHandling = NullValueHandling.Ignore
+        NullValueHandling = NullValueHandling.Ignore,
+        MissingMemberHandling = MissingMemberHandling.Ignore
     };
 }

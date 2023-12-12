@@ -2,9 +2,9 @@
 using Blackbird.Applications.Sdk.Common;
 using Blackbird.Applications.Sdk.Common.Dynamic;
 
-namespace Apps.XTRF.Models.Requests.ManageCustomer;
+namespace Apps.XTRF.Models.Identifiers;
 
-public class CustomerRequest
+public class CustomerIdentifier
 {
     [Display("Customer")]
     [DataSource(typeof(CustomerDataHandler))]

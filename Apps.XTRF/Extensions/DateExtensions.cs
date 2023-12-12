@@ -2,13 +2,11 @@
 
 public static class DateExtensions
 {
-    public static long ConvertToUnixTime(this string inputDate)
+    public static long ConvertToUnixTime(this DateTime inputDate)
     {
-        var date = DateTime.Parse(inputDate).ToUniversalTime();
+        var date = inputDate.ToUniversalTime();
         var unspecifiedDateKind = DateTime.SpecifyKind(date, DateTimeKind.Unspecified);
-
         var offset = new DateTimeOffset(unspecifiedDateKind);
-
         return offset.ToUnixTimeMilliseconds();
     }
 }

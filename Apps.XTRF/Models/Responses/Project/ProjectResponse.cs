@@ -15,14 +15,14 @@ public class ProjectResponse
         ClientId = project.ClientId.ToString();
         ServiceId = project.ServiceId.ToString();
         Origin = project.Origin;
-        ClientDeadline = project.ClientDeadline;
+        //ClientDeadline = project.ClientDeadline;
         ClientReferenceNumber = project.ClientReferenceNumber;
         ClientNotes = project.ClientNotes;
         InternalNotes = project.InternalNotes;
         ProjectIdNumber = project.ProjectIdNumber;
         InstructionsForAllJobs = project.InstructionsForAllJobs;
-        OrderedOnUnix = project.OrderedOn;
-        OrderedOn = project.OrderedOn is not null ? DateTimeOffset.FromUnixTimeMilliseconds((long)project.OrderedOn) : null;
+        //OrderedOnUnix = project.OrderedOn;
+        //OrderedOn = project.OrderedOn is not null ? DateTimeOffset.FromUnixTimeMilliseconds((long)project.OrderedOn) : null;
         SourceLanguageId = project.Languages.SourceLanguageId;
         TargetLanguageIds = project.Languages.TargetLanguageIds;
     }

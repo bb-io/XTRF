@@ -6,8 +6,9 @@ namespace Apps.XTRF.Models.Responses.Entities;
 
 public class SimpleCustomer
 {
-    [Display("ID")]
+    [Display("Customer")]
     [JsonConverter(typeof(IntToStringConverter))]
     public string Id { get; set; }
+    
     public string Name { get; set; }
 }

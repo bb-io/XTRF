@@ -1,9 +1,8 @@
-﻿using Apps.XTRF.Models.Requests.ManageCustomer;
-using Blackbird.Applications.Sdk.Common;
+﻿using Blackbird.Applications.Sdk.Common;
 
 namespace Apps.XTRF.Models.Requests.Customer;
 
-public class UpdateCustomerInput : CustomerRequest
+public class UpdateCustomerInput
 {
     public string? Name { get; set; }
         

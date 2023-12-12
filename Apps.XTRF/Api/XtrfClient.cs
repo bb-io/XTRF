@@ -11,6 +11,8 @@ namespace Apps.XTRF.Api;
 
 public class XtrfClient : BlackBirdRestClient
 {
+    protected override JsonSerializerSettings JsonSettings => JsonConfig.Settings;
+
     public XtrfClient(IEnumerable<AuthenticationCredentialsProvider> creds) : base(
         new()
         {

@@ -7,13 +7,11 @@ namespace Apps.XTRF.Models.Requests.Job;
 
 public class GetDeliveredJobFilesRequest
 {
-    [Display("Job ID")]
-    public string JobId { get; set; }
-    
     [Display("Filter language")] 
     [DataSource(typeof(LanguageDataHandler))]
     public string? LanguageId { get; set; }
     
+    [Display("File category")]
     [DataSource(typeof(FileCategoryDataHandler))]
     public string? Category { get; set; } 
 }
