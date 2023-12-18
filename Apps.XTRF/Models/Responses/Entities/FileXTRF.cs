@@ -2,7 +2,7 @@
 
 namespace Apps.XTRF.Models.Responses.Entities;
 
-public class FileXTRF
+public class ClassicFileXTRF
 {
     [Display("File ID")] 
     public string Id { get; set; }
@@ -12,8 +12,11 @@ public class FileXTRF
     public long? Size { get; set; }
     
     [Display("Category key")] 
-    public string CategoryKey { get; set; }
-    
+    public string? CategoryKey { get; set; }
+}
+
+public class FileXTRF : ClassicFileXTRF
+{
     [Display("Languages information")] 
     public LanguageRelation LanguageRelation { get; set; }
 }

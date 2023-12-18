@@ -6,6 +6,7 @@ using Apps.XTRF.Invocables;
 using Apps.XTRF.Models.Identifiers;
 using Apps.XTRF.Models.Requests.ClassicProject;
 using Apps.XTRF.Models.Responses.ClassicProject;
+using Apps.XTRF.Models.Responses.ClassicTask;
 using Apps.XTRF.Models.Responses.Entities;
 using Apps.XTRF.Models.Responses.File;
 using Blackbird.Applications.Sdk.Common;
@@ -36,17 +37,22 @@ public class ClassicProjectActions : XtrfInvocable
     }
     
     [Action("Classic: Download file", Description = "Download the content of a specific file in a classic project")]
-    public async Task<DownloadFileResponse> DownloadFile([ActionParameter] FileIdentifier file)
+    public async Task<DownloadFileResponse> DownloadFile([ActionParameter] ProjectIdentifier project, 
+        [ActionParameter] ClassicTaskIdentifier task, [ActionParameter] ClassicFileIdentifier file)
     {
         var request = new XtrfRequest($"/projects/files/{file.FileId}/download", Method.Get, Creds);
         var response = await Client.ExecuteWithErrorHandling(request);
-        var filename = response.ContentHeaders.First(h => h.Name == "Content-Disposition").Value.ToString().Split('"')[1];
+        
+        var getFilesRequest = new XtrfRequest($"/tasks/{task.TaskId}/files", Method.Get, Creds);
+        var taskFiles = await Client.ExecuteWithErrorHandling<JobFilesResponse>(getFilesRequest);
+        var filesCombined = taskFiles.Jobs.SelectMany(job => job.Files.InputFiles.Concat(job.Files.OutputFiles));
+        var targetFile = filesCombined.First(item => item.Id == file.FileId);
     
         return new()
         {
             File = new(response.RawBytes)
             {
-                Name = filename,
+                Name = targetFile.Name,
                 ContentType = response.ContentType ?? MediaTypeNames.Application.Octet
             }
         };
