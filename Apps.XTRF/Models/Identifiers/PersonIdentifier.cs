@@ -1,12 +1,9 @@
-﻿using Apps.XTRF.DataSourceHandlers;
-using Blackbird.Applications.Sdk.Common;
-using Blackbird.Applications.Sdk.Common.Dynamic;
+﻿using Blackbird.Applications.Sdk.Common;
 
 namespace Apps.XTRF.Models.Identifiers;
 
 public class PersonIdentifier
 {
-    [Display("Person")]
-    [DataSource(typeof(PersonDataHandler))]
+    [Display("Person ID")]
     public string PersonId { get; set; }
 }

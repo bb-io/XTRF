@@ -1,12 +1,9 @@
-﻿using Apps.XTRF.DataSourceHandlers;
-using Blackbird.Applications.Sdk.Common;
-using Blackbird.Applications.Sdk.Common.Dynamic;
+﻿using Blackbird.Applications.Sdk.Common;
 
 namespace Apps.XTRF.Models.Identifiers;
 
 public class VendorIdentifier
 {
-    [Display("Vendor")]
-    [DataSource(typeof(VendorDataHandler))]
+    [Display("Vendor ID")]
     public string VendorId { get; set; }
 }

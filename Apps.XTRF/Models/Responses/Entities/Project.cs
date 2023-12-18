@@ -9,8 +9,8 @@ public class Project
     public string Name { get; set; }
     public string Status { get; set; }
     public string? BudgetCode { get; set; }
-    public int? ClientId { get; set; }
-    public int? ServiceId { get; set; }
+    public string ClientId { get; set; }
+    public string ServiceId { get; set; }
     public string? Origin { get; set; }
     public long? ClientDeadline { get; set; }
     public string? ClientReferenceNumber { get; set; }

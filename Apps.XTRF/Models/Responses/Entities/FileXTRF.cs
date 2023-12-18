@@ -25,13 +25,3 @@ public class LanguageRelation
     [Display("Language combinations")] 
     public IEnumerable<LanguageCombination> LanguageCombinations { get; set; }
 }
-
-public class LanguageCombination
-{
-    [Display("Source language")]
-    public string SourceLanguageId { get; set; }
-    
-    [Display("Target language")]
-    public string TargetLanguageId { get; set; }
-}
-

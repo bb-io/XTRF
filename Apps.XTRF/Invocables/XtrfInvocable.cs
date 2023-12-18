@@ -16,4 +16,27 @@ public class XtrfInvocable : BaseInvocable
     {
         Client = new(Creds);
     }
+
+    protected long? ConvertToInt64(string? input, string parameterName)
+    {
+        if (input == null)
+            return null;
+        
+        var isSuccessful = long.TryParse(input, out var result);
+
+        if (!isSuccessful)
+            throw new Exception($"{parameterName} must be a valid number.");
+
+        return result;
+    }
+    
+    protected IEnumerable<long>? ConvertToInt64Enumerable(IEnumerable<string>? input, string parameterName)
+    {
+        var result = input?.Select(value =>
+            long.TryParse(value, out var longValue)
+                ? longValue
+                : throw new Exception($"{parameterName} must contain valid numbers.")).ToArray();
+        
+        return result;
+    }
 }

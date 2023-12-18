@@ -1,8 +1,8 @@
 ﻿using Blackbird.Applications.Sdk.Common;
 
-namespace Apps.XTRF.Models.Responses.Project;
+namespace Apps.XTRF.Models.Responses.Entities;
 
-public class GetClientContactsByProjectResponse
+public class ProjectContacts
 {
     [Display("Primary contact person")]
     public string PrimaryId { get; set; }

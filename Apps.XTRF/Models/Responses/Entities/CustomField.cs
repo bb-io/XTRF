@@ -1,6 +1,6 @@
 ﻿namespace Apps.XTRF.Models.Responses.Entities;
 
-public class CustomFieldEntity
+public class CustomField
 {
     public string Type { get; set; }
 

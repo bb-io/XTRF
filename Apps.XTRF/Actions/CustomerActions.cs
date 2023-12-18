@@ -141,7 +141,7 @@ public class CustomerActions : XtrfInvocable
     {
         var endpoint = $"/customers/{customer.CustomerId}/customFields";
         var request = new XtrfRequest(endpoint, Method.Get, Creds);
-        var response = await Client.ExecuteWithErrorHandling<CustomFieldEntity[]>(request);
+        var response = await Client.ExecuteWithErrorHandling<CustomField[]>(request);
         return new(response);
     }
 

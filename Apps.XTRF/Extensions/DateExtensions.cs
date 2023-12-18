@@ -9,4 +9,7 @@ public static class DateExtensions
         var offset = new DateTimeOffset(unspecifiedDateKind);
         return offset.ToUnixTimeMilliseconds();
     }
+
+    public static DateTime ConvertFromUnixTime(this long milliseconds)
+        => DateTimeOffset.FromUnixTimeMilliseconds(milliseconds).UtcDateTime.ToLocalTime();
 }

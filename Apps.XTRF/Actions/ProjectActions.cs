@@ -5,10 +5,8 @@ using Apps.XTRF.DataSourceHandlers;
 using Apps.XTRF.Extensions;
 using Apps.XTRF.Invocables;
 using Apps.XTRF.Models.Identifiers;
-using Apps.XTRF.Models.Requests;
 using Apps.XTRF.Models.Requests.CustomField;
 using Apps.XTRF.Models.Requests.Project;
-using Apps.XTRF.Models.Responses;
 using Apps.XTRF.Models.Responses.CustomField;
 using Apps.XTRF.Models.Responses.Entities;
 using Apps.XTRF.Models.Responses.File;
@@ -375,7 +373,7 @@ public class ProjectActions : XtrfInvocable
         var endpoint = $"/v2/projects/{project.ProjectId}/customFields";
         var request = new XtrfRequest(endpoint, Method.Get, Creds);
     
-        var response = await Client.ExecuteWithErrorHandling<CustomFieldEntity[]>(request);
+        var response = await Client.ExecuteWithErrorHandling<CustomField[]>(request);
         return new(response);
     }
     
