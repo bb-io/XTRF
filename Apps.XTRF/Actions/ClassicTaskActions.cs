@@ -1,0 +1,202 @@
+﻿using Apps.XTRF.Api;
+using Apps.XTRF.Constants;
+using Apps.XTRF.Extensions;
+using Apps.XTRF.Invocables;
+using Apps.XTRF.Models.Identifiers;
+using Apps.XTRF.Models.Requests.ClassicTask;
+using Apps.XTRF.Models.Responses.ClassicTask;
+using Apps.XTRF.Models.Responses.Entities;
+using Blackbird.Applications.Sdk.Common;
+using Blackbird.Applications.Sdk.Common.Actions;
+using Blackbird.Applications.Sdk.Common.Invocation;
+using Blackbird.Applications.Sdk.Utils.Extensions.Http;
+using RestSharp;
+
+namespace Apps.XTRF.Actions;
+
+[ActionList]
+public class ClassicTaskActions : XtrfInvocable
+{
+    public ClassicTaskActions(InvocationContext invocationContext) : base(invocationContext)
+    {
+    }
+    
+    #region Get
+
+    [Action("Classic: Get task", Description = "Get information about task")]
+    public async Task<TaskResponse> GetTask([ActionParameter] ProjectIdentifier project, 
+        [ActionParameter] ClassicTaskIdentifier task)
+    {
+        var getProjectRequest = new XtrfRequest($"/projects/{project.ProjectId}?embed=tasks", Method.Get, Creds);
+        var classicProject = await Client.ExecuteWithErrorHandling<ClassicProject>(getProjectRequest);
+        var targetTask = classicProject.Tasks!.First(t => t.Id == task.TaskId);
+        return new(targetTask);
+    }
+
+    [Action("Get task progress", Description = "Get progress of a given task which contains information about task's " +
+                                               "status (ie. opened or ready) and current phase (ie. translation)")]
+    public async Task<TaskProgressResponse> GetTaskProgress([ActionParameter] ProjectIdentifier project, 
+        [ActionParameter] ClassicTaskIdentifier task)
+    {
+        var request = new XtrfRequest($"/tasks/{task.TaskId}/progress", Method.Get, Creds);
+        var response = await Client.ExecuteWithErrorHandling<TaskProgressResponse>(request);
+        return response;
+    }
+    
+    [Action("Classic: List task's files", Description = "List input (workfiles, translation memory, terminology, " +
+                                                        "reference and log files) and output files")]
+    public async Task<ListFilesResponse> ListTaskFiles([ActionParameter] ProjectIdentifier project, 
+        [ActionParameter] ClassicTaskIdentifier task)
+    {
+        var request = new XtrfRequest($"/tasks/{task.TaskId}/files", Method.Get, Creds);
+        var response = await Client.ExecuteWithErrorHandling<ListFilesResponseWrapper>(request);
+        return new(response);
+    }
+    
+    #endregion
+
+    #region Post
+
+    [Action("Classic: Add file to task", Description = "Add a file to a task.")]
+    public async Task<ClassicTaskIdentifier> AddFileToTask([ActionParameter] ProjectIdentifier project, 
+        [ActionParameter] ClassicTaskIdentifier task, [ActionParameter] AddFileToTaskRequest input)
+    {
+        var uploadFileRequest = new XtrfRequest("/files", Method.Post, Creds);
+        uploadFileRequest.AddFile("file", input.File.Bytes, input.File.Name);
+        var uploadFileResponse = await Client.ExecuteWithErrorHandling<TokenResponse>(uploadFileRequest);
+        
+        var addFileToTaskRequest = new XtrfRequest($"/tasks/{task.TaskId}/files/input", Method.Post, Creds)
+            .WithJsonBody(new
+            {
+                token = uploadFileResponse.Token,
+                category = input.Category
+            });
+        await Client.ExecuteWithErrorHandling(addFileToTaskRequest);
+        return task;
+    }
+
+    [Action("Classic: Start task", Description = "Start a task.")]
+    public async Task<ClassicTaskIdentifier> StartTask([ActionParameter] ProjectIdentifier project, 
+        [ActionParameter] ClassicTaskIdentifier task)
+    {
+        var request = new XtrfRequest($"/tasks/{task.TaskId}/start", Method.Post, Creds);
+        await Client.ExecuteWithErrorHandling(request);
+        return task;
+    }
+    
+    #endregion
+    
+    #region Put
+
+    [Action("Classic: Update task", Description = "Update a task, specifying only the fields that require updating")]
+    public async Task<ClassicTaskIdentifier> UpdateTask([ActionParameter] ProjectIdentifier project,
+        [ActionParameter] ClassicTaskIdentifier task, [ActionParameter] UpdateTaskRequest input)
+    {
+        var getProjectRequest = new XtrfRequest($"/projects/{project.ProjectId}?embed=tasks", Method.Get, Creds);
+        var classicProject = await Client.ExecuteWithErrorHandling<ClassicProject>(getProjectRequest);
+        var targetTask = classicProject.Tasks!.First(t => t.Id == task.TaskId);
+
+        if (input.Name != null)
+        {
+            var updateNameRequest = new XtrfRequest($"/tasks/{task.TaskId}/name", Method.Put, Creds)
+                .WithJsonBody(new { value = input.Name });
+            await Client.ExecuteWithErrorHandling(updateNameRequest);
+        }
+        
+        if (input.ClientTaskPONumber != null)
+        {
+            var updateClientTaskPONumberRequest = 
+                new XtrfRequest($"/tasks/{task.TaskId}/clientTaskPONumber", Method.Put, Creds)
+                    .WithJsonBody(new { value = input.ClientTaskPONumber });
+            await Client.ExecuteWithErrorHandling(updateClientTaskPONumberRequest);
+        }
+        
+        if (input.PrimaryId != null || input.AdditionalIds != null || input.SendBackToId != null)
+        {
+            var updateContactsRequest =
+                new XtrfRequest($"/tasks/{task.TaskId}/contacts", Method.Put, Creds)
+                    .WithJsonBody(new
+                    {
+                        primaryId = ConvertToInt64(
+                            input.PrimaryId ?? targetTask.People.CustomerContacts.PrimaryId,
+                            "Primary contact person"),
+                        sendBackToId = ConvertToInt64(
+                            input.SendBackToId ?? targetTask.People.CustomerContacts.SendBackToId,
+                            "Send back to contact person"),
+                        additionalIds = ConvertToInt64Enumerable(
+                            input.AdditionalIds ?? targetTask.People.CustomerContacts.AdditionalIds,
+                            "Additional contact persons")
+                    }, JsonConfig.Settings);
+            await Client.ExecuteWithErrorHandling(updateContactsRequest);
+        }
+        
+        if (input.StartDate != null || input.Deadline != null || input.ActualStartDate != null ||
+            input.ActualDeliveryDate != null)
+        {
+            var updateDatesRequest =
+                new XtrfRequest($"/tasks/{task.TaskId}/dates", Method.Put, Creds)
+                    .WithJsonBody(new
+                    {
+                        startDate = new
+                        {
+                            time = input.StartDate == null
+                                ? targetTask.Dates.StartDate?.Time
+                                : input.StartDate?.ConvertToUnixTime()
+                        },
+                        deadline = new
+                        {
+                            time = input.Deadline == null
+                                ? targetTask.Dates.Deadline?.Time
+                                : input.Deadline?.ConvertToUnixTime()
+                        },
+                        actualStartDate = new
+                        {
+                            time = input.ActualStartDate == null
+                                ? targetTask.Dates.ActualStartDate?.Time
+                                : input.ActualStartDate?.ConvertToUnixTime()
+                        },
+                        actualDeliveryDate = new
+                        {
+                            time = input.ActualDeliveryDate == null
+                                ? targetTask.Dates.ActualDeliveryDate?.Time
+                                : input.ActualDeliveryDate?.ConvertToUnixTime()
+                        }
+                    }, JsonConfig.Settings);
+            await Client.ExecuteWithErrorHandling(updateDatesRequest);
+        }
+        
+        if (input.InstructionFromCustomer != null || input.InstructionForProvider != null ||
+            input.InternalInstruction != null || input.PaymentNoteForCustomer != null || input.Notes != null ||
+            input.PaymentNoteForVendor != null)
+        {
+            var updateInstructionsRequest =
+                new XtrfRequest($"/tasks/{task.TaskId}/instructions", Method.Put, Creds)
+                    .WithJsonBody(new
+                    {
+                        fromCustomer = input.InstructionFromCustomer ?? targetTask.Instructions.FromCustomer,
+                        forProvider = input.InstructionForProvider ?? targetTask.Instructions.ForProvider,
+                        Internal = input.InternalInstruction ?? targetTask.Instructions.Internal,
+                        paymentNoteForCustomer = input.PaymentNoteForCustomer ?? targetTask.Instructions.PaymentNoteForCustomer,
+                        paymentNoteForVendor = input.PaymentNoteForVendor ?? targetTask.Instructions.PaymentNoteForVendor,
+                        notes = input.Notes ?? targetTask.Instructions.Notes
+                    }, JsonConfig.Settings);
+            await Client.ExecuteWithErrorHandling(updateInstructionsRequest);
+        }
+
+        return task;
+    }
+    
+    #endregion
+    
+    #region Delete
+    
+    [Action("Delete task", Description = "Delete a task.")]
+    public async Task DeleteTask([ActionParameter] ProjectIdentifier project, 
+        [ActionParameter] ClassicTaskIdentifier task)
+    {
+        var request = new XtrfRequest($"/tasks/{task.TaskId}", Method.Delete, Creds);
+        await Client.ExecuteWithErrorHandling(request);
+    }
+    
+    #endregion
+}

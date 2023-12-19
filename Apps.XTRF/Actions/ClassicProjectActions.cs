@@ -5,7 +5,6 @@ using Apps.XTRF.Extensions;
 using Apps.XTRF.Invocables;
 using Apps.XTRF.Models.Identifiers;
 using Apps.XTRF.Models.Requests.ClassicProject;
-using Apps.XTRF.Models.Responses.ClassicProject;
 using Apps.XTRF.Models.Responses.ClassicTask;
 using Apps.XTRF.Models.Responses.Entities;
 using Apps.XTRF.Models.Responses.File;
@@ -149,53 +148,67 @@ public class ClassicProjectActions : XtrfInvocable
 
     #region Put
 
-    [Action("Classic: Update project", Description = "Update a classic project. Specify only fields that need to be updated")]
-    public async Task<ProjectIdentifier> UpdateProject([ActionParameter] ProjectIdentifier projectIdentifier, 
+    [Action("Classic: Update project", Description = "Update a classic project, specifying only the fields that require updating")]
+    public async Task<ProjectIdentifier> UpdateProject([ActionParameter] ProjectIdentifier projectIdentifier,
         [ActionParameter] UpdateProjectRequest input)
     {
         var getProjectRequest = new XtrfRequest($"/projects/{projectIdentifier.ProjectId}", Method.Get, Creds);
         var project = await Client.ExecuteWithErrorHandling<ClassicProject>(getProjectRequest);
-        
+
         if (input.PrimaryId != null || input.AdditionalIds != null || input.SendBackToId != null)
         {
-            var updateContactsRequest = new XtrfRequest($"/projects/{projectIdentifier.ProjectId}/contacts", Method.Put, Creds)
-                .WithJsonBody(new
-                {
-                    primaryId = ConvertToInt64(input.PrimaryId ?? project.Contacts.PrimaryId, "Primary contact person"),
-                    sendBackToId = ConvertToInt64(input.SendBackToId ?? project.Contacts.SendBackToId, "Send back to contact person"),
-                    additionalIds = ConvertToInt64Enumerable(input.AdditionalIds ?? project.Contacts.AdditionalIds, "Additional contact persons")
-                }, JsonConfig.Settings);
+            var updateContactsRequest =
+                new XtrfRequest($"/projects/{projectIdentifier.ProjectId}/contacts", Method.Put, Creds)
+                    .WithJsonBody(new
+                    {
+                        primaryId = ConvertToInt64(input.PrimaryId ?? project.Contacts.PrimaryId,
+                            "Primary contact person"),
+                        sendBackToId = ConvertToInt64(input.SendBackToId ?? project.Contacts.SendBackToId,
+                            "Send back to contact person"),
+                        additionalIds = ConvertToInt64Enumerable(input.AdditionalIds ?? project.Contacts.AdditionalIds,
+                            "Additional contact persons")
+                    }, JsonConfig.Settings);
             await Client.ExecuteWithErrorHandling(updateContactsRequest);
         }
 
         if (input.StartDate != null || input.Deadline != null || input.ActualStartDate != null ||
             input.ActualDeliveryDate != null)
         {
-            var updateDatesRequest = new XtrfRequest($"/projects/{projectIdentifier.ProjectId}/contacts", Method.Put, Creds)
-                .WithJsonBody(new
-                {
-                    startDate = new
+            var updateDatesRequest =
+                new XtrfRequest($"/projects/{projectIdentifier.ProjectId}/contacts", Method.Put, Creds)
+                    .WithJsonBody(new
                     {
-                        time = input.StartDate == null ? project.Dates.StartDate?.Time : input.StartDate?.ConvertToUnixTime()
-                    },
-                    deadline = new
-                    {
-                        time = input.Deadline == null ? project.Dates.Deadline?.Time : input.Deadline?.ConvertToUnixTime()
-                    },
-                    actualStartDate = new
-                    {
-                        time = input.ActualStartDate == null ? project.Dates.ActualStartDate?.Time : input.ActualStartDate?.ConvertToUnixTime()
-                    },
-                    actualDeliveryDate = new
-                    {
-                        time = input.ActualDeliveryDate == null ? project.Dates.ActualDeliveryDate?.Time : input.ActualDeliveryDate?.ConvertToUnixTime()
-                    }
-                }, JsonConfig.Settings);
+                        startDate = new
+                        {
+                            time = input.StartDate == null
+                                ? project.Dates.StartDate?.Time
+                                : input.StartDate?.ConvertToUnixTime()
+                        },
+                        deadline = new
+                        {
+                            time = input.Deadline == null
+                                ? project.Dates.Deadline?.Time
+                                : input.Deadline?.ConvertToUnixTime()
+                        },
+                        actualStartDate = new
+                        {
+                            time = input.ActualStartDate == null
+                                ? project.Dates.ActualStartDate?.Time
+                                : input.ActualStartDate?.ConvertToUnixTime()
+                        },
+                        actualDeliveryDate = new
+                        {
+                            time = input.ActualDeliveryDate == null
+                                ? project.Dates.ActualDeliveryDate?.Time
+                                : input.ActualDeliveryDate?.ConvertToUnixTime()
+                        }
+                    }, JsonConfig.Settings);
             await Client.ExecuteWithErrorHandling(updateDatesRequest);
         }
 
         if (input.InstructionFromCustomer != null || input.InstructionForProvider != null ||
-            input.InternalInstruction != null || input.PaymentNoteForCustomer != null || input.Notes != null)
+            input.InternalInstruction != null || input.PaymentNoteForCustomer != null || input.Notes != null ||
+            input.PaymentNoteForVendor != null)
         {
             var updateInstructionsRequest =
                 new XtrfRequest($"/projects/{projectIdentifier.ProjectId}/instructions", Method.Put, Creds)
@@ -205,6 +218,7 @@ public class ClassicProjectActions : XtrfInvocable
                         forProvider = input.InstructionForProvider ?? project.Instructions.ForProvider,
                         Internal = input.InternalInstruction ?? project.Instructions.Internal,
                         paymentNoteForCustomer = input.PaymentNoteForCustomer ?? project.Instructions.PaymentNoteForCustomer,
+                        paymentNoteForVendor = input.PaymentNoteForVendor ?? project.Instructions.PaymentNoteForVendor,
                         notes = input.Notes ?? project.Instructions.Notes
                     }, JsonConfig.Settings);
             await Client.ExecuteWithErrorHandling(updateInstructionsRequest);
@@ -212,7 +226,7 @@ public class ClassicProjectActions : XtrfInvocable
 
         return projectIdentifier;
     }
-    
+
     #endregion
     
     #region Delete

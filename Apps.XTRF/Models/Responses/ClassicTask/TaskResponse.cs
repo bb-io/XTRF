@@ -2,7 +2,7 @@
 using Apps.XTRF.Models.Responses.Entities;
 using Blackbird.Applications.Sdk.Common;
 
-namespace Apps.XTRF.Models.Responses.ClassicProject;
+namespace Apps.XTRF.Models.Responses.ClassicTask;
 
 public class TaskResponse
 {
@@ -13,6 +13,7 @@ public class TaskResponse
         ProjectId = task.ProjectId;
         QuoteId = task.QuoteId;
         Name = task.Name;
+        ClientTaskPONumber = task.ClientTaskPONumber;
         LanguageCombination = task.LanguageCombination;
         StartDate = task.Dates.StartDate?.Time.ConvertFromUnixTime();
         Deadline = task.Dates.Deadline?.Time.ConvertFromUnixTime();
@@ -20,6 +21,7 @@ public class TaskResponse
         ActualDeliveryDate = task.Dates.ActualDeliveryDate?.Time.ConvertFromUnixTime();
         JobIds = task.Jobs.JobIds;
         Instructions = task.Instructions;
+        CustomerContacts = task.People.CustomerContacts;
         CustomFields = task.CustomFields;
     }
         
@@ -36,6 +38,9 @@ public class TaskResponse
     public string QuoteId { get; set; }
     
     public string Name { get; set; }
+    
+    [Display("Client task PO number")]
+    public string ClientTaskPONumber { get; set; }
     
     [Display("Language combination")]
     public LanguageCombination LanguageCombination { get; set; }
@@ -55,6 +60,9 @@ public class TaskResponse
     public IEnumerable<string> JobIds { get; set; }
     
     public Instructions Instructions { get; set; }
+    
+    [Display("Customer contacts")]
+    public ProjectContacts CustomerContacts { get; set; }
     
     [Display("Custom fields")]
     public IEnumerable<Entities.CustomField> CustomFields { get; set; }

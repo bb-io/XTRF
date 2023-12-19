@@ -2,10 +2,15 @@
 using Blackbird.Applications.Sdk.Common;
 using Blackbird.Applications.Sdk.Common.Dynamic;
 
-namespace Apps.XTRF.Models.Requests.ClassicProject;
+namespace Apps.XTRF.Models.Requests.ClassicTask;
 
-public class UpdateProjectRequest
+public class UpdateTaskRequest
 {
+    public string? Name { get; set; }
+    
+    [Display("Client task PO number")]
+    public string? ClientTaskPONumber { get; set; }
+    
     [Display("Primary contact person")]
     [DataSource(typeof(ProjectContactDataHandler))]
     public string? PrimaryId { get; set; }

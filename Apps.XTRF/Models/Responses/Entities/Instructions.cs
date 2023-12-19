@@ -16,5 +16,8 @@ public class Instructions
     [Display("Payment note for customer")]
     public string? PaymentNoteForCustomer { get; set; }
     
+    [Display("Payment note for vendor")]
+    public string? PaymentNoteForVendor { get; set; }
+    
     public string? Notes { get; set; }
 }

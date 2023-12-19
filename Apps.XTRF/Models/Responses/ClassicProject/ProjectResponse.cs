@@ -1,4 +1,5 @@
 ﻿using Apps.XTRF.Extensions;
+using Apps.XTRF.Models.Responses.ClassicTask;
 using Apps.XTRF.Models.Responses.Entities;
 using Blackbird.Applications.Sdk.Common;
 
