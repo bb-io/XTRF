@@ -1,14 +1,11 @@
 ﻿using Apps.XTRF.DataSourceHandlers.EnumHandlers;
 using Blackbird.Applications.Sdk.Common;
 using Blackbird.Applications.Sdk.Common.Dynamic;
-using File = Blackbird.Applications.Sdk.Common.Files.File;
 
 namespace Apps.XTRF.Models.Requests.Job;
 
-public class UploadFileToJobRequest
+public class UploadFileToJobRequest : FileWrapper
 {
-    public File File { get; set; }
-
     [DataSource(typeof(FileCategoryDataHandler))]
     public string Category { get; set; }    
     

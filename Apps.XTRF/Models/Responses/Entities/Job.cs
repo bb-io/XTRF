@@ -14,7 +14,7 @@ public class Job
     [Display("Step number")] 
     public int StepNumber { get; set; }
 
-    [Display("Vendor")] 
+    [Display("Vendor ID")] 
     public string? VendorId { get; set; }
 
     [Display("Step type")] 

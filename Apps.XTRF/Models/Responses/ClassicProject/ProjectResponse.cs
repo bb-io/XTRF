@@ -18,10 +18,10 @@ public class ProjectResponse
         ProjectManagerId = project.ProjectManagerId;
         SpecializationId = project.SpecializationId;
         Status = project.Status;
-        StartDate = project.Dates.StartDate?.Time.ConvertFromUnixTime();
-        Deadline = project.Dates.Deadline?.Time.ConvertFromUnixTime();
-        ActualStartDate = project.Dates.ActualStartDate?.Time.ConvertFromUnixTime();
-        ActualDeliveryDate = project.Dates.ActualDeliveryDate?.Time.ConvertFromUnixTime();
+        StartDate = project.Dates.StartDate?.Time?.ConvertFromUnixTime();
+        Deadline = project.Dates.Deadline?.Time?.ConvertFromUnixTime();
+        ActualStartDate = project.Dates.ActualStartDate?.Time?.ConvertFromUnixTime();
+        ActualDeliveryDate = project.Dates.ActualDeliveryDate?.Time?.ConvertFromUnixTime();
         Instructions = project.Instructions;
         Finance = project.Finance;
         Contacts = project.Contacts;

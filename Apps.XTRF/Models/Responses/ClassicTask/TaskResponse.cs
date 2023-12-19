@@ -15,10 +15,10 @@ public class TaskResponse
         Name = task.Name;
         ClientTaskPONumber = task.ClientTaskPONumber;
         LanguageCombination = task.LanguageCombination;
-        StartDate = task.Dates.StartDate?.Time.ConvertFromUnixTime();
-        Deadline = task.Dates.Deadline?.Time.ConvertFromUnixTime();
-        ActualStartDate = task.Dates.ActualStartDate?.Time.ConvertFromUnixTime();
-        ActualDeliveryDate = task.Dates.ActualDeliveryDate?.Time.ConvertFromUnixTime();
+        StartDate = task.Dates.StartDate?.Time?.ConvertFromUnixTime();
+        Deadline = task.Dates.Deadline?.Time?.ConvertFromUnixTime();
+        ActualStartDate = task.Dates.ActualStartDate?.Time?.ConvertFromUnixTime();
+        ActualDeliveryDate = task.Dates.ActualDeliveryDate?.Time?.ConvertFromUnixTime();
         JobIds = task.Jobs.JobIds;
         Instructions = task.Instructions;
         CustomerContacts = task.People.CustomerContacts;

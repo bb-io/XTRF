@@ -10,20 +10,20 @@ public class ClassicDates
 
 public class StartDate
 {
-    public long Time { get; set; }
+    public long? Time { get; set; }
 }
     
 public class Deadline
 {
-    public long Time { get; set; }
+    public long? Time { get; set; }
 }
     
 public class ActualStartDate
 {
-    public long Time { get; set; }
+    public long? Time { get; set; }
 }
     
 public class ActualDeliveryDate
 {
-    public long Time { get; set; }
+    public long? Time { get; set; }
 }
