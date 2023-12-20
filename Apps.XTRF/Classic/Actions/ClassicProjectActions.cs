@@ -28,25 +28,24 @@ public class ClassicProjectActions : XtrfInvocable
     #region Get
     
     [Action("Classic: Get project details", Description = "Get information about classic project")]
-    public async Task<ProjectResponse> GetProject([ActionParameter] ProjectIdentifier project)
+    public async Task<ProjectResponse> GetProject([ActionParameter] ProjectIdentifier projectIdentifier)
     {
-        var request = new XtrfRequest($"/projects/{project.ProjectId}?embed=tasks", Method.Get, Creds);
-        var classicProject = await Client.ExecuteWithErrorHandling<ClassicProject>(request);
-        var result = new ProjectResponse(classicProject);
-        return result;
+        var request = new XtrfRequest($"/projects/{projectIdentifier.ProjectId}?embed=tasks", Method.Get, Creds);
+        var project = await Client.ExecuteWithErrorHandling<ClassicProject>(request);
+        return new(project);
     }
     
     [Action("Classic: Download file", Description = "Download the content of a specific file in a classic project")]
-    public async Task<FileWrapper> DownloadFile([ActionParameter] ProjectIdentifier project, 
-        [ActionParameter] ClassicTaskIdentifier task, [ActionParameter] ClassicFileIdentifier file)
+    public async Task<FileWrapper> DownloadFile([ActionParameter] ClassicTaskIdentifier taskIdentifier, 
+        [ActionParameter] ClassicFileIdentifier fileIdentifier)
     {
-        var request = new XtrfRequest($"/projects/files/{file.FileId}/download", Method.Get, Creds);
+        var request = new XtrfRequest($"/projects/files/{fileIdentifier.FileId}/download", Method.Get, Creds);
         var response = await Client.ExecuteWithErrorHandling(request);
         
-        var getFilesRequest = new XtrfRequest($"/tasks/{task.TaskId}/files", Method.Get, Creds);
+        var getFilesRequest = new XtrfRequest($"/tasks/{taskIdentifier.TaskId}/files", Method.Get, Creds);
         var taskFiles = await Client.ExecuteWithErrorHandling<JobFilesResponse>(getFilesRequest);
         var filesCombined = taskFiles.Jobs.SelectMany(job => job.Files.InputFiles.Concat(job.Files.OutputFiles));
-        var targetFile = filesCombined.First(item => item.Id == file.FileId);
+        var targetFile = filesCombined.First(file => file.Id == fileIdentifier.FileId);
     
         return new()
         {
@@ -70,7 +69,7 @@ public class ClassicProjectActions : XtrfInvocable
             {
                 customerId = ConvertToInt64(input.CustomerId, "Customer ID"),
                 serviceId = ConvertToInt64(input.ServiceId, "Service ID"),
-                specializationId = ConvertToInt64(input.SpecializationId, "Specialization ID"),
+                specializationId = ConvertToInt64(input.SpecializationId, "Specialization"),
                 name = input.Name,
                 sourceLanguageId = ConvertToInt64(input.SourceLanguageId, "Source language"),
                 targetLanguagesIds = ConvertToInt64Enumerable(input.TargetLanguages, "Target languages"),
@@ -91,60 +90,27 @@ public class ClassicProjectActions : XtrfInvocable
                 }
             }, JsonConfig.Settings);
         
-        var classicProject = await Client.ExecuteWithErrorHandling<ClassicProject>(request);
-        var result = new ProjectResponse(classicProject);
+        var project = await Client.ExecuteWithErrorHandling<ClassicProject>(request);
+        var result = new ProjectResponse(project);
         return result;
     }
 
     [Action("Classic: Create language combination for project", Description = "Create a new language combination for a " +
                                                                               "classic project without creating a task")]
-    public async Task<ProjectIdentifier> CreateLanguageCombinationForProject([ActionParameter] ProjectIdentifier project, 
-        [ActionParameter] CreateLanguageCombinationRequest input)
+    public async Task<ProjectIdentifier> CreateLanguageCombinationForProject(
+        [ActionParameter] ProjectIdentifier projectIdentifier, 
+        [ActionParameter] LanguageCombinationIdentifier languageCombination)
     {
-        var request = new XtrfRequest($"/projects/{project.ProjectId}/languageCombinations", Method.Post, Creds)
+        var request = new XtrfRequest($"/projects/{projectIdentifier.ProjectId}/languageCombinations", Method.Post, Creds)
             .WithJsonBody(new
             {
-                sourceLanguageId = ConvertToInt64(input.SourceLanguageId, "Source language"),
-                targetLanguagesIds = ConvertToInt64(input.TargetLanguageId, "Target language"),
+                sourceLanguageId = ConvertToInt64(languageCombination.SourceLanguageId, "Source language"),
+                targetLanguagesIds = ConvertToInt64(languageCombination.TargetLanguageId, "Target language")
             });
         await Client.ExecuteWithErrorHandling(request);
-        return project;
+        return projectIdentifier;
     }
 
-    [Action("Classic: Create task for project", Description = "Creates a new task for a given classic project")]
-    public async Task<TaskResponse> CreateTaskForProject([ActionParameter] ProjectIdentifier project, 
-        [ActionParameter] CreateTaskForProjectRequest input)
-    {
-        var request = new XtrfRequest($"/projects/{project.ProjectId}/tasks", Method.Post, Creds)
-            .WithJsonBody(new
-            {
-                specializationId = ConvertToInt64(input.SpecializationId, "Specialization ID"),
-                workflowId = ConvertToInt64(input.WorkflowId, "Workflow ID"),
-                name = input.Name,
-                sourceLanguageId = ConvertToInt64(input.SourceLanguageId, "Source language"),
-                targetLanguagesIds = ConvertToInt64(input.TargetLanguageId, "Target language"),
-                dates = new
-                {
-                    deadline = new
-                    {
-                        time = input.Deadline?.ConvertToUnixTime()
-                    }
-                },
-                instructions = new
-                {
-                    fromCustomer = input.InstructionFromCustomer,
-                    forProvider = input.InstructionForProvider,
-                    Internal = input.InternalInstruction,
-                    paymentNoteForCustomer = input.PaymentNoteForCustomer,
-                    notes = input.Notes 
-                }
-            }, JsonConfig.Settings);
-        
-        var task = await Client.ExecuteWithErrorHandling<ClassicTask>(request);
-        var result = new TaskResponse(task);
-        return result;
-    }
-    
     #endregion
 
     #region Put
@@ -255,9 +221,9 @@ public class ClassicProjectActions : XtrfInvocable
     #region Delete
 
     [Action("Classic: Delete project", Description = "Delete a classic project.")]
-    public async Task DeleteProject([ActionParameter] ProjectIdentifier project)
+    public async Task DeleteProject([ActionParameter] ProjectIdentifier projectIdentifier)
     {
-        var request = new XtrfRequest($"/projects/{project.ProjectId}", Method.Delete, Creds);
+        var request = new XtrfRequest($"/projects/{projectIdentifier.ProjectId}", Method.Delete, Creds);
         await Client.ExecuteWithErrorHandling(request);
     }
 

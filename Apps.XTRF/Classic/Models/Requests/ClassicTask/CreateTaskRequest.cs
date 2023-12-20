@@ -2,21 +2,14 @@
 using Blackbird.Applications.Sdk.Common;
 using Blackbird.Applications.Sdk.Common.Dynamic;
 
-namespace Apps.XTRF.Classic.Models.Requests.ClassicProject;
+namespace Apps.XTRF.Classic.Models.Requests.ClassicTask;
 
-public class CreateTaskForProjectRequest
+public class CreateTaskRequest
 {
     public string Name { get; set; }
-    
-    [Display("Source language")]
-    [DataSource(typeof(LanguageDataHandler))]
-    public string SourceLanguageId { get; set; }
-    
-    [Display("Target language")]
-    [DataSource(typeof(LanguageDataHandler))]
-    public string TargetLanguageId { get; set; }
-    
-    [Display("Specialization ID")]
+
+    [Display("Specialization")]
+    [DataSource(typeof(SpecializationDataHandler))]
     public string SpecializationId { get; set; }
     
     [Display("Workflow ID")]

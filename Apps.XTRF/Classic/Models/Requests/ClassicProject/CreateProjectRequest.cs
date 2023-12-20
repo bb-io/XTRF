@@ -16,7 +16,8 @@ public class CreateProjectRequest
     [DataSource(typeof(ServiceDataSourceHandler))]
     public string ServiceId { get; set; }
         
-    [Display("Specialization ID")]
+    [Display("Specialization")]
+    [DataSource(typeof(SpecializationDataHandler))]
     public string SpecializationId { get; set; }
     
     [Display("Source language")]

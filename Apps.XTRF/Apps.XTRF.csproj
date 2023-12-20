@@ -16,8 +16,6 @@
     <EmbeddedResource CopyToOutputDirectory="Always" Include="image\icon.png"></EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
-    <Folder Include="Classic\Models\Requests" />
-    <Folder Include="Classic\Models\Responses" />
     <Folder Include="Shared\Models\Requests" />
     <Folder Include="Shared\Models\Responses" />
     <Folder Include="Smart\Models" />

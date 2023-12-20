@@ -2,9 +2,9 @@
 using Blackbird.Applications.Sdk.Common;
 using Blackbird.Applications.Sdk.Common.Dynamic;
 
-namespace Apps.XTRF.Classic.Models.Requests.ClassicProject;
+namespace Apps.XTRF.Classic.Models.Identifiers;
 
-public class CreateLanguageCombinationRequest
+public class LanguageCombinationIdentifier
 {
     [Display("Source language")]
     [DataSource(typeof(LanguageDataHandler))]
