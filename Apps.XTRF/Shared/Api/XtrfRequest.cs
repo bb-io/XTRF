@@ -8,8 +8,8 @@ namespace Apps.XTRF.Shared.Api;
 
 public class XtrfRequest : BlackBirdRestRequest
 {
-    public XtrfRequest(string endpoint, Method method, IEnumerable<AuthenticationCredentialsProvider> creds) : base(
-        endpoint, method, creds)
+    public XtrfRequest(string endpoint, Method method, IEnumerable<AuthenticationCredentialsProvider> creds) 
+        : base(endpoint, method, creds)
     {
     }
 

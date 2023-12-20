@@ -1,8 +1,14 @@
-﻿using Apps.XTRF.Shared.Utils.Converters;
-using Blackbird.Applications.Sdk.Common;
-using Newtonsoft.Json;
+﻿using Blackbird.Applications.Sdk.Common;
 
 namespace Apps.XTRF.Shared.Models.Entities;
+
+public class SimpleCustomer
+{
+    [Display("Customer")]
+    public string Id { get; set; }
+    
+    public string Name { get; set; }
+}
 
 public class Customer : SimpleCustomer
 {
@@ -19,10 +25,9 @@ public class Customer : SimpleCustomer
     
     public Contact Contact { get; set; }
     
-    public IEnumerable<Person> Persons { get; set; }
+    public IEnumerable<ContactPerson> Persons { get; set; }
 
     [Display("Branch ID")]
-    [JsonConverter(typeof(IntToStringConverter))]
     public string BranchId { get; set; }
 
     public string Status { get; set; }
@@ -38,4 +43,20 @@ public class Customer : SimpleCustomer
     
     [Display("Client number of quotes")] 
     public int ClientNumberOfQuotes { get; set; }
+}
+
+public class ContactPerson
+{
+    [Display("Person ID")]
+    public string Id { get; set; }
+    
+    public string Name { get; set; }
+    
+    [Display("Last name")]
+    public string? LastName { get; set; }
+    
+    public Contact Contact { get; set; }
+    
+    [Display("Mother tongues")]
+    public IEnumerable<string> MotherTonguesIds { get; set; }
 }

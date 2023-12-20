@@ -1,6 +1,4 @@
-﻿using Apps.XTRF.Shared.Utils.Converters;
-using Blackbird.Applications.Sdk.Common;
-using Newtonsoft.Json;
+﻿using Blackbird.Applications.Sdk.Common;
 
 namespace Apps.XTRF.Shared.Models.Entities;
 
@@ -18,6 +16,5 @@ public class Address
     public string PostalCode { get; set; }
     
     [Display("Country ID")]
-    [JsonConverter(typeof(IntToStringConverter))]
     public string CountryId { get; set; }
 }
