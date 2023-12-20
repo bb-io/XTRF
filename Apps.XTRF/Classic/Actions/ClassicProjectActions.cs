@@ -150,7 +150,7 @@ public class ClassicProjectActions : XtrfInvocable
     #region Put
 
     [Action("Classic: Update project", Description = "Update a classic project, specifying only the fields that require updating")]
-    public async Task<ProjectIdentifier> UpdateProject([ActionParameter] ProjectIdentifier projectIdentifier,
+    public async Task<ProjectResponse> UpdateProject([ActionParameter] ProjectIdentifier projectIdentifier,
         [ActionParameter] UpdateProjectRequest input)
     {
         var getProjectRequest = new XtrfRequest($"/projects/{projectIdentifier.ProjectId}", Method.Get, Creds);
@@ -158,74 +158,96 @@ public class ClassicProjectActions : XtrfInvocable
 
         if (input.PrimaryId != null || input.AdditionalIds != null || input.SendBackToId != null)
         {
-            var updateContactsRequest =
+            var jsonBody = new
+            {
+                primaryId = ConvertToInt64(input.PrimaryId ?? project.Contacts.PrimaryId,
+                    "Primary contact person"),
+                sendBackToId = ConvertToInt64(input.SendBackToId ?? project.Contacts.SendBackToId,
+                    "Send back to contact person"),
+                additionalIds = ConvertToInt64Enumerable(input.AdditionalIds ?? project.Contacts.AdditionalIds,
+                    "Additional contact persons")
+            };
+            
+            var updateContactsRequest = 
                 new XtrfRequest($"/projects/{projectIdentifier.ProjectId}/contacts", Method.Put, Creds)
-                    .WithJsonBody(new
-                    {
-                        primaryId = ConvertToInt64(input.PrimaryId ?? project.Contacts.PrimaryId,
-                            "Primary contact person"),
-                        sendBackToId = ConvertToInt64(input.SendBackToId ?? project.Contacts.SendBackToId,
-                            "Send back to contact person"),
-                        additionalIds = ConvertToInt64Enumerable(input.AdditionalIds ?? project.Contacts.AdditionalIds,
-                            "Additional contact persons")
-                    }, JsonConfig.Settings);
+                    .WithJsonBody(jsonBody);
             await Client.ExecuteWithErrorHandling(updateContactsRequest);
+
+            project.Contacts.PrimaryId = jsonBody.primaryId.ToString();
+            project.Contacts.SendBackToId = jsonBody.sendBackToId.ToString();
+            project.Contacts.AdditionalIds = jsonBody.additionalIds?.Select(id => id.ToString());
         }
 
         if (input.StartDate != null || input.Deadline != null || input.ActualStartDate != null ||
             input.ActualDeliveryDate != null)
         {
+            var jsonBody = new
+            {
+                startDate = new
+                {
+                    time = input.StartDate == null
+                        ? project.Dates.StartDate?.Time
+                        : input.StartDate?.ConvertToUnixTime()
+                },
+                deadline = new
+                {
+                    time = input.Deadline == null
+                        ? project.Dates.Deadline?.Time
+                        : input.Deadline?.ConvertToUnixTime()
+                },
+                actualStartDate = new
+                {
+                    time = input.ActualStartDate == null
+                        ? project.Dates.ActualStartDate?.Time
+                        : input.ActualStartDate?.ConvertToUnixTime()
+                },
+                actualDeliveryDate = new
+                {
+                    time = input.ActualDeliveryDate == null
+                        ? project.Dates.ActualDeliveryDate?.Time
+                        : input.ActualDeliveryDate?.ConvertToUnixTime()
+                }
+            };
+            
             var updateDatesRequest =
                 new XtrfRequest($"/projects/{projectIdentifier.ProjectId}/contacts", Method.Put, Creds)
-                    .WithJsonBody(new
-                    {
-                        startDate = new
-                        {
-                            time = input.StartDate == null
-                                ? project.Dates.StartDate?.Time
-                                : input.StartDate?.ConvertToUnixTime()
-                        },
-                        deadline = new
-                        {
-                            time = input.Deadline == null
-                                ? project.Dates.Deadline?.Time
-                                : input.Deadline?.ConvertToUnixTime()
-                        },
-                        actualStartDate = new
-                        {
-                            time = input.ActualStartDate == null
-                                ? project.Dates.ActualStartDate?.Time
-                                : input.ActualStartDate?.ConvertToUnixTime()
-                        },
-                        actualDeliveryDate = new
-                        {
-                            time = input.ActualDeliveryDate == null
-                                ? project.Dates.ActualDeliveryDate?.Time
-                                : input.ActualDeliveryDate?.ConvertToUnixTime()
-                        }
-                    }, JsonConfig.Settings);
+                    .WithJsonBody(jsonBody, JsonConfig.Settings);
             await Client.ExecuteWithErrorHandling(updateDatesRequest);
+            
+            project.Dates.StartDate = new() { Time = jsonBody.startDate.time };
+            project.Dates.Deadline = new() { Time = jsonBody.deadline.time };
+            project.Dates.ActualStartDate = new() { Time = jsonBody.actualStartDate.time };
+            project.Dates.ActualDeliveryDate = new() { Time = jsonBody.actualDeliveryDate.time };
         }
 
         if (input.InstructionFromCustomer != null || input.InstructionForProvider != null ||
             input.InternalInstruction != null || input.PaymentNoteForCustomer != null || input.Notes != null ||
             input.PaymentNoteForVendor != null)
         {
+            var jsonBody = new
+            {
+                fromCustomer = input.InstructionFromCustomer ?? project.Instructions.FromCustomer,
+                forProvider = input.InstructionForProvider ?? project.Instructions.ForProvider,
+                Internal = input.InternalInstruction ?? project.Instructions.Internal,
+                paymentNoteForCustomer = input.PaymentNoteForCustomer ?? project.Instructions.PaymentNoteForCustomer,
+                paymentNoteForVendor = input.PaymentNoteForVendor ?? project.Instructions.PaymentNoteForVendor,
+                notes = input.Notes ?? project.Instructions.Notes
+            };
+            
             var updateInstructionsRequest =
                 new XtrfRequest($"/projects/{projectIdentifier.ProjectId}/instructions", Method.Put, Creds)
-                    .WithJsonBody(new
-                    {
-                        fromCustomer = input.InstructionFromCustomer ?? project.Instructions.FromCustomer,
-                        forProvider = input.InstructionForProvider ?? project.Instructions.ForProvider,
-                        Internal = input.InternalInstruction ?? project.Instructions.Internal,
-                        paymentNoteForCustomer = input.PaymentNoteForCustomer ?? project.Instructions.PaymentNoteForCustomer,
-                        paymentNoteForVendor = input.PaymentNoteForVendor ?? project.Instructions.PaymentNoteForVendor,
-                        notes = input.Notes ?? project.Instructions.Notes
-                    }, JsonConfig.Settings);
+                    .WithJsonBody(jsonBody, JsonConfig.Settings);
             await Client.ExecuteWithErrorHandling(updateInstructionsRequest);
+            
+            project.Instructions.FromCustomer = jsonBody.fromCustomer;
+            project.Instructions.ForProvider = jsonBody.forProvider;
+            project.Instructions.Internal = jsonBody.Internal;
+            project.Instructions.PaymentNoteForCustomer = jsonBody.paymentNoteForCustomer;
+            project.Instructions.PaymentNoteForVendor = jsonBody.paymentNoteForVendor;
+            project.Instructions.Notes = jsonBody.notes;
         }
 
-        return projectIdentifier;
+        return new(project);
     }
 
     #endregion
