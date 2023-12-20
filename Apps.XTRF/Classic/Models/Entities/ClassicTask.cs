@@ -2,7 +2,7 @@
 
 namespace Apps.XTRF.Classic.Models.Entities;
 
-public class ClassicProjectTask
+public class ClassicTask
 {
     public string Id { get; set; }
     public string IdNumber { get; set; }
@@ -12,18 +12,18 @@ public class ClassicProjectTask
     public string ClientTaskPONumber { get; set; }
     public LanguageCombination LanguageCombination { get; set; }
     public ClassicDates Dates { get; set; }
-    public ClassicProjectTaskJobs Jobs { get; set; }
+    public ClassicTaskJobs Jobs { get; set; }
     public Instructions Instructions { get; set; }
-    public ClassicProjectTaskPeople People { get; set; }
+    public ClassicTaskPeople People { get; set; }
     public IEnumerable<CustomField> CustomFields { get; set; }
 }
 
-public class ClassicProjectTaskJobs 
+public class ClassicTaskJobs 
 {
     public IEnumerable<string> JobIds { get; set; }
 }
 
-public class ClassicProjectTaskPeople 
+public class ClassicTaskPeople 
 {
     public ProjectContacts CustomerContacts { get; set; }
 }

@@ -23,20 +23,25 @@ public class ClassicTaskActions : XtrfInvocable
     
     #region Get
 
-    [Action("Classic: Get task", Description = "Get information about task")]
-    public async Task<TaskResponse> GetTask([ActionParameter] ProjectIdentifier project, 
+    [Action("Classic: Get task in project", Description = "Retrieve information about a task within the project")]
+    public async Task<TaskResponse> GetTaskInProject([ActionParameter] ProjectIdentifier project, 
         [ActionParameter] ClassicTaskIdentifier task)
     {
-        var getProjectRequest = new XtrfRequest($"/projects/{project.ProjectId}?embed=tasks", Method.Get, Creds);
-        var classicProject = await Client.ExecuteWithErrorHandling<ClassicProject>(getProjectRequest);
-        var targetTask = classicProject.Tasks!.First(t => t.Id == task.TaskId);
+        var targetTask = await GetTask(project, task);
+        return new(targetTask);
+    }
+    
+    [Action("Classic: Get task in quote", Description = "Retrieve information about a task within the quote")]
+    public async Task<TaskResponse> GetTaskInQuote([ActionParameter] QuoteIdentifier quote, 
+        [ActionParameter] ClassicTaskIdentifier task)
+    {
+        var targetTask = await GetTask(quote, task);
         return new(targetTask);
     }
 
     [Action("Classic: Get task progress", Description = "Get progress of a given task which contains information about task's " +
                                                "status (ie. opened or ready) and current phase (ie. translation)")]
-    public async Task<TaskProgressResponse> GetTaskProgress([ActionParameter] ProjectIdentifier project, 
-        [ActionParameter] ClassicTaskIdentifier task)
+    public async Task<TaskProgressResponse> GetTaskProgress([ActionParameter] ClassicTaskIdentifier task)
     {
         var request = new XtrfRequest($"/tasks/{task.TaskId}/progress", Method.Get, Creds);
         var response = await Client.ExecuteWithErrorHandling<TaskProgressResponse>(request);
@@ -45,8 +50,7 @@ public class ClassicTaskActions : XtrfInvocable
     
     [Action("Classic: List task's files", Description = "List input (workfiles, translation memory, terminology, " +
                                                         "reference and log files) and output files")]
-    public async Task<ListFilesResponse> ListTaskFiles([ActionParameter] ProjectIdentifier project, 
-        [ActionParameter] ClassicTaskIdentifier task)
+    public async Task<ListFilesResponse> ListTaskFiles([ActionParameter] ClassicTaskIdentifier task)
     {
         var request = new XtrfRequest($"/tasks/{task.TaskId}/files", Method.Get, Creds);
         var response = await Client.ExecuteWithErrorHandling<ListFilesResponseWrapper>(request);
@@ -58,8 +62,8 @@ public class ClassicTaskActions : XtrfInvocable
     #region Post
 
     [Action("Classic: Upload file for task", Description = "Upload a file for a task.")]
-    public async Task<ClassicTaskIdentifier> UploadFileForTask([ActionParameter] ProjectIdentifier project, 
-        [ActionParameter] ClassicTaskIdentifier task, [ActionParameter] AddFileToTaskRequest input)
+    public async Task<ClassicTaskIdentifier> UploadFileForTask([ActionParameter] ClassicTaskIdentifier task, 
+        [ActionParameter] AddFileToTaskRequest input)
     {
         var uploadFileRequest = new XtrfRequest("/files", Method.Post, Creds);
         uploadFileRequest.AddFile("file", input.File.Bytes, input.File.Name);
@@ -76,8 +80,7 @@ public class ClassicTaskActions : XtrfInvocable
     }
 
     [Action("Classic: Start task", Description = "Start a task.")]
-    public async Task<ClassicTaskIdentifier> StartTask([ActionParameter] ProjectIdentifier project, 
-        [ActionParameter] ClassicTaskIdentifier task)
+    public async Task<ClassicTaskIdentifier> StartTask([ActionParameter] ClassicTaskIdentifier task)
     {
         var request = new XtrfRequest($"/tasks/{task.TaskId}/start", Method.Post, Creds);
         await Client.ExecuteWithErrorHandling(request);
@@ -88,14 +91,57 @@ public class ClassicTaskActions : XtrfInvocable
     
     #region Put
 
-    [Action("Classic: Update task", Description = "Update a task, specifying only the fields that require updating")]
-    public async Task<TaskResponse> UpdateTask([ActionParameter] ProjectIdentifier project,
+    [Action("Classic: Update task in project", Description = "Update a task within the project, specifying only the " +
+                                                             "fields that require updating")]
+    public async Task<TaskResponse> UpdateTaskInProject([ActionParameter] ProjectIdentifier project,
         [ActionParameter] ClassicTaskIdentifier task, [ActionParameter] UpdateTaskRequest input)
     {
-        var getProjectRequest = new XtrfRequest($"/projects/{project.ProjectId}?embed=tasks", Method.Get, Creds);
-        var classicProject = await Client.ExecuteWithErrorHandling<ClassicProject>(getProjectRequest);
-        var targetTask = classicProject.Tasks!.First(t => t.Id == task.TaskId);
+        var targetTask = await GetTask(project, task);
+        await UpdateTask(task, input, targetTask);
+        return new(targetTask);
+    }
 
+    [Action("Classic: Update task in quote", Description = "Update a task within the quote, specifying only the " +
+                                                           "fields that require updating")]
+    public async Task<TaskResponse> UpdateTaskInProject([ActionParameter] QuoteIdentifier quote,
+        [ActionParameter] ClassicTaskIdentifier task, [ActionParameter] UpdateTaskRequest input)
+    {
+        var targetTask = await GetTask(quote, task);
+        await UpdateTask(task, input, targetTask);
+        return new(targetTask);
+    }
+    
+    #endregion
+    
+    #region Delete
+    
+    [Action("Classic: Delete task", Description = "Delete a task.")]
+    public async Task DeleteTask([ActionParameter] ClassicTaskIdentifier task)
+    {
+        var request = new XtrfRequest($"/tasks/{task.TaskId}", Method.Delete, Creds);
+        await Client.ExecuteWithErrorHandling(request);
+    }
+    
+    #endregion
+
+    private async Task<ClassicTask> GetTask(ProjectIdentifier project, ClassicTaskIdentifier task)
+    {
+        var request = new XtrfRequest($"/projects/{project.ProjectId}?embed=tasks", Method.Get, Creds);
+        var classicProject = await Client.ExecuteWithErrorHandling<ClassicProject>(request);
+        var targetTask = classicProject.Tasks!.First(t => t.Id == task.TaskId);
+        return targetTask;
+    }
+    
+    private async Task<ClassicTask> GetTask(QuoteIdentifier quote, ClassicTaskIdentifier task)
+    {
+        var request = new XtrfRequest($"/quotes/{quote.QuoteId}?embed=tasks", Method.Get, Creds);
+        var classicQuote = await Client.ExecuteWithErrorHandling<ClassicQuote>(request);
+        var targetTask = classicQuote.Tasks!.First(t => t.Id == task.TaskId);
+        return targetTask;
+    }
+    
+    private async Task UpdateTask(ClassicTaskIdentifier task, UpdateTaskRequest input, ClassicTask targetTask)
+    {
         if (input.Name != null)
         {
             var updateNameRequest = new XtrfRequest($"/tasks/{task.TaskId}/name", Method.Put, Creds)
@@ -204,21 +250,5 @@ public class ClassicTaskActions : XtrfInvocable
             targetTask.Instructions.PaymentNoteForVendor = jsonBody.paymentNoteForVendor;
             targetTask.Instructions.Notes = jsonBody.notes;
         }
-
-        return new(targetTask);
     }
-    
-    #endregion
-    
-    #region Delete
-    
-    [Action("Classic: Delete task", Description = "Delete a task.")]
-    public async Task DeleteTask([ActionParameter] ProjectIdentifier project, 
-        [ActionParameter] ClassicTaskIdentifier task)
-    {
-        var request = new XtrfRequest($"/tasks/{task.TaskId}", Method.Delete, Creds);
-        await Client.ExecuteWithErrorHandling(request);
-    }
-    
-    #endregion
 }

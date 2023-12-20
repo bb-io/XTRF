@@ -140,7 +140,7 @@ public class ClassicProjectActions : XtrfInvocable
                 }
             }, JsonConfig.Settings);
         
-        var task = await Client.ExecuteWithErrorHandling<ClassicProjectTask>(request);
+        var task = await Client.ExecuteWithErrorHandling<ClassicTask>(request);
         var result = new TaskResponse(task);
         return result;
     }

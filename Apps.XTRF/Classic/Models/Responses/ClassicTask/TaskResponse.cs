@@ -1,5 +1,4 @@
-﻿using Apps.XTRF.Classic.Models.Entities;
-using Apps.XTRF.Shared.Extensions;
+﻿using Apps.XTRF.Shared.Extensions;
 using Apps.XTRF.Shared.Models.Entities;
 using Blackbird.Applications.Sdk.Common;
 
@@ -7,7 +6,7 @@ namespace Apps.XTRF.Classic.Models.Responses.ClassicTask;
 
 public class TaskResponse
 {
-    public TaskResponse(ClassicProjectTask task)
+    public TaskResponse(Entities.ClassicTask task)
     {
         Id = task.Id;
         IdNumber = task.IdNumber;

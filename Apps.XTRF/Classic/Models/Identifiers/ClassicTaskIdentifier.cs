@@ -1,12 +1,9 @@
-﻿using Apps.XTRF.Classic.DataSourceHandlers;
-using Blackbird.Applications.Sdk.Common;
-using Blackbird.Applications.Sdk.Common.Dynamic;
+﻿using Blackbird.Applications.Sdk.Common;
 
 namespace Apps.XTRF.Classic.Models.Identifiers;
 
 public class ClassicTaskIdentifier
 {
-    [Display("Task")]
-    [DataSource(typeof(ClassicTaskDataHandler))]
+    [Display("Task ID")]
     public string TaskId { get; set; }
 }
