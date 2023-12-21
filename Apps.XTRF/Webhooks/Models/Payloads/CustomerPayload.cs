@@ -6,10 +6,11 @@ namespace Apps.XTRF.Webhooks.Models.Payloads;
 public class CustomerPayload
 {
     [JsonProperty("id")]
+    [Display("ID")]
     public string Id { get; set; }
 
     [JsonProperty("idNumber")]
-    [Display("Id number")] 
+    [Display("ID number")] 
     public string IdNumber { get; set; }
 
     [JsonProperty("name")]
