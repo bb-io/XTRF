@@ -9,6 +9,7 @@ public class ProjectStatusChangedPayload
     public string Name { get; set; }
 
     [JsonProperty("id")]
+    [Display("ID")]
     public string Id { get; set; }
 
     [JsonProperty("internal id")]

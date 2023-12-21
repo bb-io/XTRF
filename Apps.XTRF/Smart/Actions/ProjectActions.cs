@@ -74,8 +74,8 @@ public class ProjectActions : XtrfInvocable
     public async Task<DownloadFileResponse> DownloadFile([ActionParameter] FileIdentifier file, 
         [ActionParameter] [Display("File name")] string fileName)
     {
-        var endpoint = $"/v2/projects/files/{file.FileId}/download/{fileName}";
-        var request = new XtrfRequest(endpoint, Method.Get, Creds);
+        fileName = fileName.Trim();
+        var request = new XtrfRequest($"/v2/projects/files/{file.FileId}/download/{fileName}", Method.Get, Creds);
         var response = await Client.ExecuteWithErrorHandling(request);
     
         return new()
@@ -106,14 +106,11 @@ public class ProjectActions : XtrfInvocable
     public async Task UploadFileToProject([ActionParameter] ProjectIdentifier project, 
         [ActionParameter] UploadFileToProjectRequest input)
     {
-        var uploadEndpoint = $"/v2/projects/{project.ProjectId}/files/upload";
-        var uploadRequest = new XtrfRequest(uploadEndpoint, Method.Post, Creds);
-        uploadRequest.AddFile("file", input.File.Bytes, input.FileName ?? input.File.Name);
-    
+        var uploadRequest = new XtrfRequest($"/v2/projects/{project.ProjectId}/files/upload", Method.Post, Creds);
+        uploadRequest.AddFile("file", input.File.Bytes, input.FileName?.Trim() ?? input.File.Name);
         var outputFileId = (await Client.ExecuteWithErrorHandling<UploadFileResponse>(uploadRequest)).FileId;
-    
-        var addEndpoint = $"/v2/projects/{project.ProjectId}/files/add";
-        var addRequest = new XtrfRequest(addEndpoint, Method.Put, Creds);
+        
+        var addRequest = new XtrfRequest($"/v2/projects/{project.ProjectId}/files/add", Method.Put, Creds);
         addRequest.AddJsonBody(new
         {
             files = new[]

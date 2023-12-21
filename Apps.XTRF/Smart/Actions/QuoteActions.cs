@@ -77,7 +77,7 @@ public class QuoteActions : XtrfInvocable
         var uploadEndpoint = "/v2/quotes/" + input.QuoteId + "/files/upload";
         var uploadRequest = new XtrfRequest(uploadEndpoint, Method.Post, Creds);
 
-        uploadRequest.AddFile("file", input.File.Bytes, input.FileName ?? input.File.Name);
+        uploadRequest.AddFile("file", input.File.Bytes, input.FileName?.Trim() ?? input.File.Name);
         var outputFileId = (await Client.ExecuteWithErrorHandling<UploadFileResponse>(uploadRequest)).FileId;
 
         var addEndpoint = "/v2/quotes/" + input.QuoteId + "/files/add";

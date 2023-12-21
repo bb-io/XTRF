@@ -3,6 +3,9 @@ using Blackbird.Applications.Sdk.Common.Webhooks;
 using Newtonsoft.Json;
 using System.Net;
 using Apps.XTRF.Shared.Webhooks.Models.Payloads;
+using Apps.XTRF.Shared.Webhooks.DataSourceHandlers;
+using Blackbird.Applications.Sdk.Common;
+using Blackbird.Applications.Sdk.Common.Dynamic;
 
 namespace Apps.XTRF.Shared.Webhooks;
 
@@ -18,8 +21,11 @@ public class WebhookList
 
     [Webhook("On project status changed", typeof(ProjectStatusChangedHandler),
         Description = "Triggered when the status of an XTRF project is changed")]
-    public Task<WebhookResponse<ProjectStatusChangedPayload>> ProjectStatusChangedHandler(WebhookRequest webhookRequest)
-        => HandleWebhook<ProjectStatusChangedPayload>(webhookRequest);
+    public Task<WebhookResponse<ProjectStatusChangedPayload>> ProjectStatusChangedHandler(WebhookRequest webhookRequest,
+        [WebhookParameter] [Display("Project status")] [DataSource(typeof(ProjectStatusDataSourceHandler))]
+        string? status)
+        => HandleWebhook<ProjectStatusChangedPayload>(webhookRequest, 
+            status != null ? payload => payload.Status.Equals(status, StringComparison.OrdinalIgnoreCase) : null);
 
     [Webhook("On quote created", typeof(QuoteCreatedHandler),
         Description = "Triggered when a new XTRF quote is created")]
@@ -28,13 +34,19 @@ public class WebhookList
 
     [Webhook("On quote status changed", typeof(QuoteStatusChangedHandler),
         Description = "Triggered when the status of an XTRF quote is changed")]
-    public Task<WebhookResponse<QuoteStatusChangedPayload>> QuoteStatusChangedHandler(WebhookRequest webhookRequest)
-        => HandleWebhook<QuoteStatusChangedPayload>(webhookRequest);
+    public Task<WebhookResponse<QuoteStatusChangedPayload>> QuoteStatusChangedHandler(WebhookRequest webhookRequest,
+        [WebhookParameter] [Display("Quote status")] [DataSource(typeof(QuoteStatusDataSourceHandler))]
+        string? status)
+        => HandleWebhook<QuoteStatusChangedPayload>(webhookRequest,
+            status != null ? payload => payload.Status.Equals(status, StringComparison.OrdinalIgnoreCase) : null);
 
     [Webhook("On job status changed", typeof(JobStatusChangedHandler),
         Description = "Triggered when the status of an XTRF job is changed")]
-    public Task<WebhookResponse<JobStatusChangedPayload>> JobStatusChangedHandler(WebhookRequest webhookRequest)
-        => HandleWebhook<JobStatusChangedPayload>(webhookRequest);
+    public Task<WebhookResponse<JobStatusChangedPayload>> JobStatusChangedHandler(WebhookRequest webhookRequest,
+        [WebhookParameter] [Display("Job status")] [DataSource(typeof(JobStatusDataSourceHandler))]
+        string? status)
+        => HandleWebhook<JobStatusChangedPayload>(webhookRequest,
+            status != null ? payload => payload.Status.Equals(status, StringComparison.OrdinalIgnoreCase) : null);
 
     [Webhook("On customer created", typeof(CustomerCreatedHandler),
         Description = "Triggered when a new XTRF customer is created")]
@@ -49,16 +61,24 @@ public class WebhookList
     #endregion
 
     #region Utils
-
-    public Task<WebhookResponse<T>> HandleWebhook<T>(WebhookRequest webhookRequest) where T : class
+    
+    private Task<WebhookResponse<T>> HandleWebhook<T>(WebhookRequest webhookRequest, Func<T, bool>? predicate = null) 
+        where T : class
     {
         var payload = webhookRequest.Body.ToString();
         ArgumentException.ThrowIfNullOrEmpty(payload);
-
+        
         var data = JsonConvert.DeserializeObject<T>(payload);
 
         if (data is null)
             throw new InvalidCastException(nameof(webhookRequest.Body));
+
+        if (predicate != null && !predicate(data))
+            return Task.FromResult<WebhookResponse<T>>(new()
+            {
+                HttpResponseMessage = new HttpResponseMessage(statusCode: HttpStatusCode.OK),
+                ReceivedWebhookRequestType = WebhookRequestType.Preflight
+            });
 
         return Task.FromResult<WebhookResponse<T>>(new()
         {
