@@ -83,6 +83,7 @@ public class ProjectActions : XtrfInvocable
         [ActionParameter] [Display("File name")]
         string fileName)
     {
+        fileName = fileName.Trim();
         var endpoint = "/v2/projects/files/" + fileId + "/download/" + fileName;
         var request = new XtrfRequest(endpoint, Method.Get, Creds);
 
@@ -118,7 +119,7 @@ public class ProjectActions : XtrfInvocable
     {
         var uploadEndpoint = "/v2/projects/" + input.ProjectId + "/files/upload";
         var uploadRequest = new XtrfRequest(uploadEndpoint, Method.Post, Creds);
-        uploadRequest.AddFile("file", input.File.Bytes, input.FileName ?? input.File.Name);
+        uploadRequest.AddFile("file", input.File.Bytes, input.FileName?.Trim() ?? input.File.Name);
 
         var outputFileId = (await Client.ExecuteWithErrorHandling<UploadFileResponse>(uploadRequest)).FileId;
 
