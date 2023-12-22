@@ -2,7 +2,4 @@
 
 namespace Apps.XTRF.Smart.Models.Responses.File;
 
-public class GetFilesResponse
-{
-    public IEnumerable<FileXTRF> Files { get; set; }
-}
+public record ListFilesResponse(IEnumerable<SmartFileXTRF> Files);

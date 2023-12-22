@@ -2,7 +2,7 @@
 
 namespace Apps.XTRF.Smart.DataSourceHandlers.EnumHandlers;
 
-public class FileCategoryDataHandler : EnumDataHandler
+public class SmartFileCategoryDataHandler : EnumDataHandler
 {
     protected override Dictionary<string, string> EnumValues => new()
     {

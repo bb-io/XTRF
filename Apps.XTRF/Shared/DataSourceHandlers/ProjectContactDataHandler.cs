@@ -38,7 +38,7 @@ public class ProjectContactDataHandler : XtrfInvocable, IAsyncDataSourceHandler
         else
         {
             var request = new XtrfRequest($"/v2/projects/{_project.ProjectId}", Method.Get, Creds);
-            var smartProject = await Client.ExecuteWithErrorHandling<Project>(request);
+            var smartProject = await Client.ExecuteWithErrorHandling<SmartProject>(request);
             customerId = smartProject.ClientId;
         }
 

@@ -1,4 +1,5 @@
-﻿using Apps.XTRF.Shared.DataSourceHandlers;
+﻿using Apps.XTRF.Classic.DataSourceHandlers;
+using Apps.XTRF.Shared.DataSourceHandlers;
 using Blackbird.Applications.Sdk.Common;
 using Blackbird.Applications.Sdk.Common.Dynamic;
 
@@ -13,7 +14,7 @@ public class CreateProjectRequest
     public string CustomerId { get; set; }
     
     [Display("Service")] 
-    [DataSource(typeof(ServiceDataSourceHandler))]
+    [DataSource(typeof(ClassicServiceDataSourceHandler))]
     public string ServiceId { get; set; }
         
     [Display("Specialization")]

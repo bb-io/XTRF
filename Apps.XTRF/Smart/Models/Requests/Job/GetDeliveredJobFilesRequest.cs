@@ -12,6 +12,6 @@ public class GetDeliveredJobFilesRequest
     public string? LanguageId { get; set; }
     
     [Display("File category")]
-    [DataSource(typeof(FileCategoryDataHandler))]
+    [DataSource(typeof(SmartFileCategoryDataHandler))]
     public string? Category { get; set; } 
 }

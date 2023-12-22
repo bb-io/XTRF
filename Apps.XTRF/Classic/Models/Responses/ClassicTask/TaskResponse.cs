@@ -1,4 +1,5 @@
-﻿using Apps.XTRF.Shared.Extensions;
+﻿using Apps.XTRF.Classic.Models.Entities;
+using Apps.XTRF.Shared.Extensions;
 using Apps.XTRF.Shared.Models.Entities;
 using Blackbird.Applications.Sdk.Common;
 
@@ -62,7 +63,7 @@ public class TaskResponse
     public Instructions Instructions { get; set; }
     
     [Display("Customer contacts")]
-    public ProjectContacts CustomerContacts { get; set; }
+    public ClassicProjectContacts CustomerContacts { get; set; }
     
     [Display("Custom fields")]
     public IEnumerable<CustomField> CustomFields { get; set; }

@@ -16,8 +16,7 @@ public class ClassicProject
     public ClassicDates Dates { get; set; }
     public Instructions Instructions { get; set; }
     public FinanceInformation Finance { get; set; }
-    public ProjectContacts Contacts { get; set; }
+    public ClassicProjectContacts Contacts { get; set; }
     public IEnumerable<string> CategoriesIds { get; set; }
     public IEnumerable<ClassicTask>? Tasks { get; set; }
-    public IEnumerable<CustomField> CustomFields { get; set; }
 }

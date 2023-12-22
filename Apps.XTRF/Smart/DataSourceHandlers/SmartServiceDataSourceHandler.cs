@@ -5,11 +5,11 @@ using Blackbird.Applications.Sdk.Common.Dynamic;
 using Blackbird.Applications.Sdk.Common.Invocation;
 using RestSharp;
 
-namespace Apps.XTRF.Shared.DataSourceHandlers;
+namespace Apps.XTRF.Smart.DataSourceHandlers;
 
-public class ServiceDataSourceHandler : XtrfInvocable, IAsyncDataSourceHandler
+public class SmartServiceDataSourceHandler : XtrfInvocable, IAsyncDataSourceHandler
 {
-    public ServiceDataSourceHandler(InvocationContext invocationContext) : base(invocationContext)
+    public SmartServiceDataSourceHandler(InvocationContext invocationContext) : base(invocationContext)
     {
     }
 
@@ -19,6 +19,7 @@ public class ServiceDataSourceHandler : XtrfInvocable, IAsyncDataSourceHandler
         var request = new XtrfRequest("/services/all", Method.Get, Creds);
         var services = await Client.ExecuteWithErrorHandling<IEnumerable<Service>>(request);
         return services
+            .Where(service => !service.Classic)
             .Where(service => context.SearchString == null 
                               || service.Name.Contains(context.SearchString, StringComparison.OrdinalIgnoreCase))
             .ToDictionary(service => service.Id, service => service.Name);

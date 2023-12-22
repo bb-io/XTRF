@@ -1,9 +1,9 @@
 ﻿using Blackbird.Applications.Sdk.Common;
 
-namespace Apps.XTRF.Smart.Models.Responses.Project;
+namespace Apps.XTRF.Smart.Models.Responses.SmartProject;
 
 public class CheckForCatToolResponse
 {
-    [Display("Project created int cat tool or creation is queued")]
+    [Display("Is project created in CAT tool or creation is queued")]
     public bool ProjectCreatedInCatToolOrCreationIsQueued { get; set; }
 }

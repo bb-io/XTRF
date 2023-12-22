@@ -14,7 +14,7 @@ public class UploadFileToQuoteRequest : FileWrapper
     [Display("File name")]
     public string? FileName { get; set; }
 
-    [DataSource(typeof(FileCategoryDataHandler))]
+    [DataSource(typeof(SmartFileCategoryDataHandler))]
     public string Category { get; set; }   
     
     [Display("Language")]

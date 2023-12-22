@@ -9,7 +9,7 @@ using Apps.XTRF.Shared.Models.Responses.CustomField;
 using Apps.XTRF.Smart.Models.Entities;
 using Apps.XTRF.Smart.Models.Requests.Quote;
 using Apps.XTRF.Smart.Models.Responses.File;
-using Apps.XTRF.Smart.Models.Responses.Job;
+using Apps.XTRF.Smart.Models.Responses.SmartJob;
 using Blackbird.Applications.Sdk.Common;
 using Blackbird.Applications.Sdk.Common.Actions;
 using Blackbird.Applications.Sdk.Common.Dynamic;
@@ -46,29 +46,23 @@ public class QuoteActions : XtrfInvocable
     }
 
     [Action("Get jobs in a quote", Description = "Get all jobs of a specific quote")]
-    public async Task<GetJobsResponse> GetJobsByQuote([ActionParameter] [Display("Quote ID")] string quoteId)
+    public async Task<ListJobsResponse> GetJobsByQuote([ActionParameter] [Display("Quote ID")] string quoteId)
     {
         var endpoint = "/v2/quotes/" + quoteId + "/jobs";
         var request = new XtrfRequest(endpoint, Method.Get,
             Creds);
-        var jobs = await Client.ExecuteWithErrorHandling<List<Job>>(request);
+        var jobs = await Client.ExecuteWithErrorHandling<List<SmartJob>>(request);
 
-        return new()
-        {
-            Jobs = jobs
-        };
+        return new(jobs.Select(job => new JobResponse(job)));
     }
 
     [Action("Get files in a quote", Description = "Get all files of a specific quote")]
-    public async Task<GetFilesResponse> GetFilesByQuote([ActionParameter] [Display("Quote ID")] string quoteId)
+    public async Task<ListFilesResponse> GetFilesByQuote([ActionParameter] [Display("Quote ID")] string quoteId)
     {
         var endpoint = "/v2/quotes/" + quoteId + "/files";
         var request = new XtrfRequest(endpoint, Method.Get, Creds);
-
-        return new()
-        {
-            Files = await Client.ExecuteWithErrorHandling<List<FileXTRF>>(request)
-        };
+        var files = await Client.ExecuteWithErrorHandling<List<SmartFileXTRF>>(request);
+        return new(files);
     }
 
     [Action("Upload a file to a quote", Description = "Upload a file to a specific quote")]
@@ -114,12 +108,12 @@ public class QuoteActions : XtrfInvocable
     }
 
     [Action("Get quote file details", Description = "Get details of a specific file in a quote")]
-    public Task<FileXTRF> GetQuoteFileDetails([ActionParameter] [Display("File ID")] string fileId)
+    public Task<SmartFileXTRF> GetQuoteFileDetails([ActionParameter] [Display("File ID")] string fileId)
     {
         var endpoint = "/v2/quotes/files/" + fileId;
         var request = new XtrfRequest(endpoint, Method.Get, Creds);
 
-        return Client.ExecuteWithErrorHandling<FileXTRF>(request);
+        return Client.ExecuteWithErrorHandling<SmartFileXTRF>(request);
     }
 
     [Action("Get finance information for a quote", Description = "Get finance information for a specific quote")]

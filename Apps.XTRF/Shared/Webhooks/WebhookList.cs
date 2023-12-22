@@ -2,8 +2,8 @@
 using Blackbird.Applications.Sdk.Common.Webhooks;
 using Newtonsoft.Json;
 using System.Net;
+using Apps.XTRF.Shared.DataSourceHandlers.EnumHandlers;
 using Apps.XTRF.Shared.Webhooks.Models.Payloads;
-using Apps.XTRF.Shared.Webhooks.DataSourceHandlers;
 using Blackbird.Applications.Sdk.Common;
 using Blackbird.Applications.Sdk.Common.Dynamic;
 
@@ -22,7 +22,7 @@ public class WebhookList
     [Webhook("On project status changed", typeof(ProjectStatusChangedHandler),
         Description = "Triggered when the status of an XTRF project is changed")]
     public Task<WebhookResponse<ProjectStatusChangedPayload>> ProjectStatusChangedHandler(WebhookRequest webhookRequest,
-        [WebhookParameter] [Display("Project status")] [DataSource(typeof(ProjectStatusDataSourceHandler))]
+        [WebhookParameter] [Display("Project status")] [DataSource(typeof(ProjectStatusDataHandler))]
         string? status)
         => HandleWebhook<ProjectStatusChangedPayload>(webhookRequest, 
             status != null ? payload => payload.Status.Equals(status, StringComparison.OrdinalIgnoreCase) : null);
@@ -35,7 +35,7 @@ public class WebhookList
     [Webhook("On quote status changed", typeof(QuoteStatusChangedHandler),
         Description = "Triggered when the status of an XTRF quote is changed")]
     public Task<WebhookResponse<QuoteStatusChangedPayload>> QuoteStatusChangedHandler(WebhookRequest webhookRequest,
-        [WebhookParameter] [Display("Quote status")] [DataSource(typeof(QuoteStatusDataSourceHandler))]
+        [WebhookParameter] [Display("Quote status")] [DataSource(typeof(QuoteStatusDataHandler))]
         string? status)
         => HandleWebhook<QuoteStatusChangedPayload>(webhookRequest,
             status != null ? payload => payload.Status.Equals(status, StringComparison.OrdinalIgnoreCase) : null);
@@ -43,7 +43,7 @@ public class WebhookList
     [Webhook("On job status changed", typeof(JobStatusChangedHandler),
         Description = "Triggered when the status of an XTRF job is changed")]
     public Task<WebhookResponse<JobStatusChangedPayload>> JobStatusChangedHandler(WebhookRequest webhookRequest,
-        [WebhookParameter] [Display("Job status")] [DataSource(typeof(JobStatusDataSourceHandler))]
+        [WebhookParameter] [Display("Job status")] [DataSource(typeof(JobStatusDataHandler))]
         string? status)
         => HandleWebhook<JobStatusChangedPayload>(webhookRequest,
             status != null ? payload => payload.Status.Equals(status, StringComparison.OrdinalIgnoreCase) : null);

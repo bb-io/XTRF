@@ -18,6 +18,7 @@
   <ItemGroup>
     <Folder Include="Shared\Models\Requests" />
     <Folder Include="Shared\Models\Responses" />
+    <Folder Include="Shared\Webhooks\DataSourceHandlers" />
     <Folder Include="Smart\Models" />
   </ItemGroup>
 </Project>

@@ -1,4 +1,5 @@
-﻿using Apps.XTRF.Classic.Models.Responses.ClassicTask;
+﻿using Apps.XTRF.Classic.Models.Entities;
+using Apps.XTRF.Classic.Models.Responses.ClassicTask;
 using Apps.XTRF.Shared.Extensions;
 using Apps.XTRF.Shared.Models.Entities;
 using Blackbird.Applications.Sdk.Common;
@@ -26,7 +27,6 @@ public class ProjectResponse
         Finance = project.Finance;
         Contacts = project.Contacts;
         CategoriesIds = project.CategoriesIds;
-        CustomFields = project.CustomFields;
         Tasks = project.Tasks?.Select(task => new TaskResponse(task));
     }
     
@@ -70,13 +70,10 @@ public class ProjectResponse
     
     public FinanceInformation Finance { get; set; }
     
-    public ProjectContacts Contacts { get; set; }
+    public ClassicProjectContacts Contacts { get; set; }
     
     [Display("Categories IDs")]
     public IEnumerable<string> CategoriesIds { get; set; }
-    
-    [Display("Custom fields")]
-    public IEnumerable<CustomField> CustomFields { get; set; }
-    
+
     public IEnumerable<TaskResponse> Tasks { get; set; }
 }

@@ -24,9 +24,9 @@ public class ClassicJob : ClassicShortJob
     public string? VendorId { get; set; }
     public ClassicJobStepType StepType { get; set; }
     public LanguageCombination Languages { get; set; }
-    public ClassicJobDates Dates { get; set; }
+    public JobDates Dates { get; set; }
     public ClassicJobInstructions Instructions { get; set; }
-    public ClassicJobDocuments Documents { get; set; }
+    public JobDocuments Documents { get; set; }
 }
 
 public class ClassicJobFiles
@@ -44,19 +44,6 @@ public class ClassicJobStepType
     
     [Display("Job type ID")]
     public string JobTypeId { get; set; }
-}
-
-public class ClassicJobDates 
-{
-    public long? StartDate { get; set; }
-    public long? Deadline { get; set; }
-    public long? ActualStartDate { get; set; }
-    public long? ActualEndDate { get; set; }
-}
-
-public class ClassicJobDocuments
-{
-    public string PurchaseOrderStatus { get; set; }
 }
 
 public class ClassicJobInstructions

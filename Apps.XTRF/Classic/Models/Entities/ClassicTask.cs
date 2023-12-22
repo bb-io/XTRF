@@ -25,5 +25,5 @@ public class ClassicTaskJobs
 
 public class ClassicTaskPeople 
 {
-    public ProjectContacts CustomerContacts { get; set; }
+    public ClassicProjectContacts CustomerContacts { get; set; }
 }

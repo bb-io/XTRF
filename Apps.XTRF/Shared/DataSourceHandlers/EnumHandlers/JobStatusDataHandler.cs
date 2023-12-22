@@ -1,8 +1,8 @@
 ﻿using Blackbird.Applications.Sdk.Utils.Sdk.DataSourceHandlers;
 
-namespace Apps.XTRF.Shared.Webhooks.DataSourceHandlers;
+namespace Apps.XTRF.Shared.DataSourceHandlers.EnumHandlers;
 
-public class JobStatusDataSourceHandler : EnumDataHandler
+public class JobStatusDataHandler : EnumDataHandler
 {
     protected override Dictionary<string, string> EnumValues => new()
     {

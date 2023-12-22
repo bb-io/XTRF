@@ -2,11 +2,11 @@
 using Blackbird.Applications.Sdk.Common;
 using Blackbird.Applications.Sdk.Common.Dynamic;
 
-namespace Apps.XTRF.Smart.Models.Requests.Project;
+namespace Apps.XTRF.Smart.Models.Identifiers;
 
-public class AddTargetLanguagesToProjectRequest
+public class FilterLanguageOptionalIdentifier
 {
-    [Display("Target language")]
+    [Display("Filter language")] 
     [DataSource(typeof(LanguageDataHandler))]
-    public string TargetLanguageId { get; set; }
+    public string? LanguageId { get; set; }
 }

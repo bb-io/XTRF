@@ -22,51 +22,42 @@ public class JobsActions : XtrfInvocable
     }
 
     [Action("Get job details", Description = "Get all information of a specific job")]
-    public async Task<Job> GetJob([ActionParameter] JobIdentifier job)
+    public async Task<SmartJob> GetJob([ActionParameter] JobIdentifier job)
     {
         var request = new XtrfRequest($"/v2/jobs/{job.JobId}", Method.Get, Creds);
-        return await Client.ExecuteWithErrorHandling<Job>(request);
+        return await Client.ExecuteWithErrorHandling<SmartJob>(request);
     }
 
     [Action("Get work files shared with a job", Description = "Get all work files shared with a specific job")]
-    public async Task<GetFilesResponse> GetWorkFilesByJob([ActionParameter] JobIdentifier job)
+    public async Task<ListFilesResponse> GetWorkFilesByJob([ActionParameter] JobIdentifier job)
     {
         var endpoint = $"/v2/jobs/{job.JobId}/files/sharedWorkFiles";
         var request = new XtrfRequest(endpoint, Method.Get, Creds);
-
-        return new()
-        {
-            Files = await Client.ExecuteWithErrorHandling<List<FileXTRF>>(request)
-        };
+        var files = await Client.ExecuteWithErrorHandling<List<SmartFileXTRF>>(request);
+        return new(files);
     }
 
     [Action("Get reference files shared with a job",
         Description = "Get all reference files shared with a specific job")]
-    public async Task<GetFilesResponse> GetReferenceFilesByJob([ActionParameter] JobIdentifier job)
+    public async Task<ListFilesResponse> GetReferenceFilesByJob([ActionParameter] JobIdentifier job)
     {
         var endpoint = $"/v2/jobs/{job.JobId}/files/sharedReferenceFiles";
         var request = new XtrfRequest(endpoint, Method.Get, Creds);
-
-        return new()
-        {
-            Files = await Client.ExecuteWithErrorHandling<List<FileXTRF>>(request)
-        };
+        var files = await Client.ExecuteWithErrorHandling<List<SmartFileXTRF>>(request);
+        return new(files);
     }
 
     [Action("Get delivered files in a job", Description = "Get all delivered files in a specific job")]
-    public async Task<GetFilesResponse> GetDeliveredFilesByJob([ActionParameter] JobIdentifier job,
+    public async Task<ListFilesResponse> GetDeliveredFilesByJob([ActionParameter] JobIdentifier job,
         [ActionParameter] GetDeliveredJobFilesRequest input)
     {
         var endpoint = $"/v2/jobs/{job.JobId}/files/delivered";
         var request = new XtrfRequest(endpoint, Method.Get, Creds);
-        var files = await Client.ExecuteWithErrorHandling<List<FileXTRF>>(request);
-    
-        return new()
-        {
-            Files = files
-                .Where(file => input.LanguageId is null || file.LanguageRelation.Languages.Contains(input.LanguageId))
-                .Where(file => input.Category is null || file.CategoryKey == input.Category)
-        };
+        var files = await Client.ExecuteWithErrorHandling<List<SmartFileXTRF>>(request);
+        var filteredFiles = files
+            .Where(file => input.LanguageId is null || file.LanguageRelation.Languages.Contains(input.LanguageId))
+            .Where(file => input.Category is null || file.CategoryKey == input.Category);
+        return new(filteredFiles);
     }
 
     [Action("Upload a delivered file to a job", Description = "Upload a delivered file to a specific job")]

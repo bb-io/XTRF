@@ -3,7 +3,7 @@ using Blackbird.Applications.Sdk.Common;
 
 namespace Apps.XTRF.Smart.Models.Entities;
 
-public class FileXTRF
+public class SmartFileXTRF
 {
     [Display("File ID")] 
     public string Id { get; set; }
@@ -13,10 +13,12 @@ public class FileXTRF
     public long? Size { get; set; }
     
     [Display("Category key")] 
-    public string? CategoryKey { get; set; }
+    public string CategoryKey { get; set; }
     
     [Display("Languages information")] 
     public LanguageRelation LanguageRelation { get; set; }
+    
+    public IEnumerable<string> SharedWithJobs { get; set; }
 }
 
 public class LanguageRelation

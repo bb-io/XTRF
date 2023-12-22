@@ -7,7 +7,7 @@ namespace Apps.XTRF.Smart.Models.Requests.Job;
 
 public class UploadFileToJobRequest : FileWrapper
 {
-    [DataSource(typeof(FileCategoryDataHandler))]
+    [DataSource(typeof(SmartFileCategoryDataHandler))]
     public string Category { get; set; }    
     
     [Display("Filename")]

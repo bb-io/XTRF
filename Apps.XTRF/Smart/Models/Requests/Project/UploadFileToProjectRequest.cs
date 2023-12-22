@@ -8,10 +8,10 @@ namespace Apps.XTRF.Smart.Models.Requests.Project;
 
 public class UploadFileToProjectRequest : FileWrapper
 {
-    [Display("File name")]
-    public string? FileName { get; set; }
+    [Display("Filename")]
+    public string? Filename { get; set; }
 
-    [DataSource(typeof(FileCategoryDataHandler))]
+    [DataSource(typeof(SmartFileCategoryDataHandler))]
     public string Category { get; set; }  
     
     [Display("Language")]
