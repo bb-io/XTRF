@@ -4,7 +4,7 @@ using Newtonsoft.Json;
 
 namespace Apps.XTRF.Smart.Models.Entities;
 
-public class Quote
+public class SmartQuote
 {
     [Display("ID")] public string Id { get; set; }
     [Display("Is classic project")] public bool IsClassicProject { get; set; }

@@ -3,7 +3,7 @@ using Apps.XTRF.Smart.DataSourceHandlers;
 using Blackbird.Applications.Sdk.Common;
 using Blackbird.Applications.Sdk.Common.Dynamic;
 
-namespace Apps.XTRF.Smart.Models.Requests.Project;
+namespace Apps.XTRF.Smart.Models.Requests.SmartProject;
 
 public class CreateProjectRequest
 {

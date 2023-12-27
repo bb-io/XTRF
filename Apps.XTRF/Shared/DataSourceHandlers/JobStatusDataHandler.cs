@@ -2,18 +2,22 @@
 using Apps.XTRF.Shared.Api;
 using Apps.XTRF.Shared.Invocables;
 using Apps.XTRF.Shared.Models.Identifiers;
+using Apps.XTRF.Smart.Models.Entities;
 using Blackbird.Applications.Sdk.Common;
 using Blackbird.Applications.Sdk.Common.Dynamic;
 using Blackbird.Applications.Sdk.Common.Invocation;
 using RestSharp;
 
-namespace Apps.XTRF.Classic.DataSourceHandlers;
+namespace Apps.XTRF.Shared.DataSourceHandlers;
 
-public class ClassicJobStatusDataHandler : XtrfInvocable, IAsyncDataSourceHandler
+/// <summary>
+/// Data source handler that should be used for statuses in update job actions
+/// </summary>
+public class JobStatusDataHandler : XtrfInvocable, IAsyncDataSourceHandler
 {
     private readonly JobIdentifier _jobIdentifier;
     
-    public ClassicJobStatusDataHandler(InvocationContext invocationContext, [ActionParameter] JobIdentifier jobIdentifier)
+    public JobStatusDataHandler(InvocationContext invocationContext, [ActionParameter] JobIdentifier jobIdentifier)
         : base(invocationContext)
     {
         _jobIdentifier = jobIdentifier;
@@ -33,11 +37,23 @@ public class ClassicJobStatusDataHandler : XtrfInvocable, IAsyncDataSourceHandle
 
         if (_jobIdentifier.JobId == null)
             return availableStatuses;
-        
-        var getJobRequest = new XtrfRequest($"/jobs/{_jobIdentifier.JobId}", Method.Get, Creds);
-        var job = await Client.ExecuteWithErrorHandling<ClassicJob>(getJobRequest);
 
-        switch (job.Status)
+        string currentJobStatus;
+        
+        if (long.TryParse(_jobIdentifier.JobId, out _))
+        {
+            var getJobRequest = new XtrfRequest($"/jobs/{_jobIdentifier.JobId}", Method.Get, Creds);
+            var job = await Client.ExecuteWithErrorHandling<ClassicJob>(getJobRequest);
+            currentJobStatus = job.Status;
+        }
+        else
+        {
+            var getJobRequest = new XtrfRequest($"/v2/jobs/{_jobIdentifier.JobId}", Method.Get, Creds);
+            var job = await Client.ExecuteWithErrorHandling<SmartJob>(getJobRequest);
+            currentJobStatus = job.Status;
+        }
+        
+        switch (currentJobStatus)
         {
             case "OPEN":
                 return new()

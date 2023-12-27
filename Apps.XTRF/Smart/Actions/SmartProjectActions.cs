@@ -9,7 +9,7 @@ using Apps.XTRF.Shared.Models.Entities;
 using Apps.XTRF.Shared.Models.Identifiers;
 using Apps.XTRF.Smart.Models.Entities;
 using Apps.XTRF.Smart.Models.Identifiers;
-using Apps.XTRF.Smart.Models.Requests.Project;
+using Apps.XTRF.Smart.Models.Requests.SmartProject;
 using Apps.XTRF.Smart.Models.Responses.File;
 using Apps.XTRF.Smart.Models.Responses.SmartJob;
 using Apps.XTRF.Smart.Models.Responses.SmartProject;
@@ -32,7 +32,7 @@ public class SmartProjectActions : XtrfInvocable
 
     #region Get
 
-    [Action("Smart: Get project details", Description = "Get information about smart project")]
+    [Action("Smart: Get project details", Description = "Get information about a smart project")]
     public async Task<ProjectResponse> GetProject([ActionParameter] ProjectIdentifier projectIdentifier)
     {
         var request = new XtrfRequest($"/v2/projects/{projectIdentifier.ProjectId}", Method.Get, Creds);
@@ -253,7 +253,7 @@ public class SmartProjectActions : XtrfInvocable
 
         if (input.PrimaryId != null || input.AdditionalIds != null)
         {
-            object requestBody = null;
+            object requestBody;
 
             if (input.PrimaryId == null || input.AdditionalIds == null)
             {
