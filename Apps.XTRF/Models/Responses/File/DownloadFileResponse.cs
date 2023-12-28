@@ -1,6 +1,8 @@
-﻿namespace Apps.XTRF.Models.Responses.File;
+﻿using Blackbird.Applications.Sdk.Common.Files;
+
+namespace Apps.XTRF.Models.Responses.File;
 
 public class DownloadFileResponse
 {
-    public Blackbird.Applications.Sdk.Common.Files.File File { get; set; }
+    public FileReference File { get; set; }
 }

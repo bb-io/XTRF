@@ -15,6 +15,8 @@ using Blackbird.Applications.Sdk.Common;
 using Blackbird.Applications.Sdk.Common.Actions;
 using Blackbird.Applications.Sdk.Common.Dynamic;
 using Blackbird.Applications.Sdk.Common.Invocation;
+using Blackbird.Applications.SDK.Extensions.FileManagement.Interfaces;
+using Blackbird.Applications.Sdk.Utils.Extensions.Files;
 using Blackbird.Applications.Sdk.Utils.Extensions.Http;
 using Blackbird.Applications.Sdk.Utils.Parsers;
 using RestSharp;
@@ -24,8 +26,12 @@ namespace Apps.XTRF.Actions;
 [ActionList]
 public class QuoteActions : XtrfInvocable
 {
-    public QuoteActions(InvocationContext invocationContext) : base(invocationContext)
+    private readonly IFileManagementClient _fileManagementClient;
+    
+    public QuoteActions(InvocationContext invocationContext, IFileManagementClient fileManagementClient) 
+        : base(invocationContext)
     {
+        _fileManagementClient = fileManagementClient;
     }
 
     [Action("Get quote details", Description = "Get all information of a specific quote")]
@@ -83,7 +89,10 @@ public class QuoteActions : XtrfInvocable
         var uploadEndpoint = "/v2/quotes/" + input.QuoteId + "/files/upload";
         var uploadRequest = new XtrfRequest(uploadEndpoint, Method.Post, Creds);
 
-        uploadRequest.AddFile("file", input.File.Bytes, input.FileName?.Trim() ?? input.File.Name);
+        var fileStream = await _fileManagementClient.DownloadAsync(input.File);
+        var fileBytes = await fileStream.GetByteData();
+
+        uploadRequest.AddFile("file", fileBytes, input.FileName?.Trim() ?? input.File.Name);
         var outputFileId = (await Client.ExecuteWithErrorHandling<UploadFileResponse>(uploadRequest)).FileId;
 
         var addEndpoint = "/v2/quotes/" + input.QuoteId + "/files/add";

@@ -11,6 +11,8 @@ using Blackbird.Applications.Sdk.Common;
 using Blackbird.Applications.Sdk.Common.Actions;
 using Blackbird.Applications.Sdk.Common.Authentication;
 using Blackbird.Applications.Sdk.Common.Invocation;
+using Blackbird.Applications.SDK.Extensions.FileManagement.Interfaces;
+using Blackbird.Applications.Sdk.Utils.Extensions.Files;
 using RestSharp;
 
 namespace Apps.XTRF.Actions;
@@ -18,8 +20,12 @@ namespace Apps.XTRF.Actions;
 [ActionList]
 public class JobsActions : XtrfInvocable
 {
-    public JobsActions(InvocationContext invocationContext) : base(invocationContext)
+    private readonly IFileManagementClient _fileManagementClient;
+    
+    public JobsActions(InvocationContext invocationContext, IFileManagementClient fileManagementClient) 
+        : base(invocationContext)
     {
+        _fileManagementClient = fileManagementClient;
     }
 
     [Action("Get job details", Description = "Get all information of a specific job")]
@@ -78,7 +84,9 @@ public class JobsActions : XtrfInvocable
     {
         var uploadEndpoint = "/v2/jobs/" + input.JobId + "/files/delivered/upload";
         var uploadRequest = new XtrfRequest(uploadEndpoint, Method.Post, Creds);
-        uploadRequest.AddFile("file", input.File.Bytes, input.FileName?.Trim() ?? input.File.Name);
+        var fileStream = await _fileManagementClient.DownloadAsync(input.File);
+        var fileBytes = await fileStream.GetByteData();
+        uploadRequest.AddFile("file", fileBytes, input.FileName?.Trim() ?? input.File.Name);
 
         var outputFileId = (await Client.ExecuteWithErrorHandling<UploadFileResponse>(uploadRequest)).FileId;
 

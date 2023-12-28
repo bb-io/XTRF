@@ -15,6 +15,8 @@ using Apps.XTRF.Models.Responses.Project;
 using Blackbird.Applications.Sdk.Common;
 using Blackbird.Applications.Sdk.Common.Actions;
 using Blackbird.Applications.Sdk.Common.Invocation;
+using Blackbird.Applications.SDK.Extensions.FileManagement.Interfaces;
+using Blackbird.Applications.Sdk.Utils.Extensions.Files;
 using Blackbird.Applications.Sdk.Utils.Extensions.Http;
 using Blackbird.Applications.Sdk.Utils.Parsers;
 using RestSharp;
@@ -24,8 +26,12 @@ namespace Apps.XTRF.Actions;
 [ActionList]
 public class ProjectActions : XtrfInvocable
 {
-    public ProjectActions(InvocationContext invocationContext) : base(invocationContext)
+    private readonly IFileManagementClient _fileManagementClient;
+
+    public ProjectActions(InvocationContext invocationContext, IFileManagementClient fileManagementClient) 
+        : base(invocationContext)
     {
+        _fileManagementClient = fileManagementClient;
     }
 
     [Action("Get project details", Description = "Get all information of a specific project")]
@@ -86,17 +92,13 @@ public class ProjectActions : XtrfInvocable
         fileName = fileName.Trim();
         var endpoint = "/v2/projects/files/" + fileId + "/download/" + fileName;
         var request = new XtrfRequest(endpoint, Method.Get, Creds);
-
         var response = await Client.ExecuteWithErrorHandling(request);
 
-        return new()
-        {
-            File = new(response.RawBytes)
-            {
-                Name = fileName,
-                ContentType = response.ContentType ?? MediaTypeNames.Application.Octet
-            }
-        };
+        using var stream = new MemoryStream(response.RawBytes);
+        var file = await _fileManagementClient.UploadAsync(stream,
+            response.ContentType ?? MediaTypeNames.Application.Octet, fileName);
+
+        return new() { File = file };
     }
 
     [Action("Change project status", Description = "Change the status of a project")]
@@ -119,7 +121,9 @@ public class ProjectActions : XtrfInvocable
     {
         var uploadEndpoint = "/v2/projects/" + input.ProjectId + "/files/upload";
         var uploadRequest = new XtrfRequest(uploadEndpoint, Method.Post, Creds);
-        uploadRequest.AddFile("file", input.File.Bytes, input.FileName?.Trim() ?? input.File.Name);
+        var fileStream = await _fileManagementClient.DownloadAsync(input.File);
+        var fileBytes = await fileStream.GetByteData();
+        uploadRequest.AddFile("file", fileBytes, input.FileName?.Trim() ?? input.File.Name);
 
         var outputFileId = (await Client.ExecuteWithErrorHandling<UploadFileResponse>(uploadRequest)).FileId;
 
