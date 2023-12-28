@@ -9,6 +9,7 @@ using Apps.XTRF.Shared.Models.Entities;
 using Apps.XTRF.Shared.Models.Identifiers;
 using Apps.XTRF.Smart.Models.Entities;
 using Apps.XTRF.Smart.Models.Identifiers;
+using Apps.XTRF.Smart.Models.Requests.File;
 using Apps.XTRF.Smart.Models.Requests.SmartProject;
 using Apps.XTRF.Smart.Models.Responses.File;
 using Apps.XTRF.Smart.Models.Responses.SmartJob;
@@ -115,8 +116,8 @@ public class SmartProjectActions : XtrfInvocable
         };
     }
     
-    [Action("Smart: Get file details", Description = "Get information about specific file")]
-    public async Task<SmartFileXTRF> GetFile([ActionParameter] FileIdentifier fileIdentifier)
+    [Action("Smart: Get project file details", Description = "Get information about specific file in a smart project")]
+    public async Task<SmartFileXTRF> GetProjectFile([ActionParameter] FileIdentifier fileIdentifier)
     {
         var request = new XtrfRequest($"/v2/projects/files/{fileIdentifier.FileId}", Method.Get, Creds);
         var file = await Client.ExecuteWithErrorHandling<SmartFileXTRF>(request);
@@ -144,11 +145,11 @@ public class SmartProjectActions : XtrfInvocable
     
     [Action("Smart: Upload file to project", Description = "Upload a file to a smart project")]
     public async Task<FileIdentifier> UploadFileToProject([ActionParameter] ProjectIdentifier projectIdentifier, 
-        [ActionParameter] UploadFileToProjectRequest input)
+        [ActionParameter] UploadFileRequest input)
     {
         var uploadFileRequest =
             new XtrfRequest($"/v2/projects/{projectIdentifier.ProjectId}/files/upload", Method.Post, Creds);
-        uploadFileRequest.AddFile("file", input.File.Bytes, input.Filename?.Trim() ?? input.File.Name);
+        uploadFileRequest.AddFile("file", input.File.Bytes, input.File.Name);
         var fileIdentifier = await Client.ExecuteWithErrorHandling<FileIdentifier>(uploadFileRequest);
 
         var addFileRequest = new XtrfRequest($"/v2/projects/{projectIdentifier.ProjectId}/files/add", Method.Put, Creds)
@@ -218,6 +219,7 @@ public class SmartProjectActions : XtrfInvocable
             var updateStatusRequest = 
                 new XtrfRequest($"/v2/projects/{projectIdentifier.ProjectId}/status", Method.Put, Creds)
                     .WithJsonBody(new { status = input.Status });
+            
             await Client.ExecuteWithErrorHandling(updateStatusRequest);
         }
 
@@ -277,6 +279,7 @@ public class SmartProjectActions : XtrfInvocable
             var updateContactsRequest =
                 new XtrfRequest($"/v2/projects/{projectIdentifier.ProjectId}/clientContacts", Method.Put, Creds)
                     .WithJsonBody(requestBody);
+            
             await Client.ExecuteWithErrorHandling(updateContactsRequest);
         }
 
@@ -358,6 +361,7 @@ public class SmartProjectActions : XtrfInvocable
             new XtrfRequest(
                 $"/v2/projects/{projectIdentifier.ProjectId}/finance/payables/{payableIdentifier.PayableId}",
                 Method.Delete, Creds);
+        
         await Client.ExecuteWithErrorHandling(request);
     }
     
@@ -369,6 +373,7 @@ public class SmartProjectActions : XtrfInvocable
             new XtrfRequest(
                 $"/v2/projects/{projectIdentifier.ProjectId}/finance/receivables/{receivableIdentifier.ReceivableId}",
                 Method.Delete, Creds);
+        
         await Client.ExecuteWithErrorHandling(request);
     }
 

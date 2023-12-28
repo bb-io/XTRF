@@ -1,31 +1,37 @@
-﻿using Apps.XTRF.Shared.Utils.Converters;
-using Blackbird.Applications.Sdk.Common;
-using Newtonsoft.Json;
+﻿using Blackbird.Applications.Sdk.Common;
 
 namespace Apps.XTRF.Smart.Models.Entities;
 
 public class SmartQuote
 {
-    [Display("ID")] public string Id { get; set; }
-    [Display("Is classic project")] public bool IsClassicProject { get; set; }
-    [Display("Quote ID number")] public string QuoteIdNumber { get; set; }
+    public string Id { get; set; }
+    public bool IsClassicQuote { get; set; }
+    public string QuoteIdNumber { get; set; }
     public string Name { get; set; }
     public string Status { get; set; }
-    [Display("Budget code")] public string? BudgetCode { get; set; }
-
-    [Display("Client ID")]
-    [JsonConverter(typeof(IntToStringConverter))]
+    public string BudgetCode { get; set; }
     public string ClientId { get; set; }
-
-    [Display("Service ID")]
-    [JsonConverter(typeof(IntToStringConverter))]
     public string ServiceId { get; set; }
-
     public string Origin { get; set; }
-    [Display("Client deadline")] public long? ClientDeadline { get; set; }
-    [Display("Client reference number")] public string? ClientReferenceNumber { get; set; }
-    [Display("Client notes")] public string? ClientNotes { get; set; }
-    [Display("Internal notes")] public string? InternalNotes { get; set; }
-    [Display("Instructions for all jobs")] public string? InstructionsForAllJobs { get; set; }
-    [Display("Ordered on")] public long? OrderedOn { get; set; }
+    public string ClientReferenceNumber { get; set; }
+    public string ClientNotes { get; set; }
+    public string InternalNotes { get; set; }
+    public string InstructionsForAllJobs { get; set; }
+    public long? ClientDeadline { get; set; }
+    public long? OrderedOn { get; set; }
+    public long? QuoteExpiry { get; set; }
+    public long? ExpectedDeliveryDate { get; set; }
+    public int BusinessDays { get; set; }
+    public SmartProjectLanguages Languages { get; set; }
+    public SmartProjectDocuments Documents { get; set; }
+    public SmartProjectPeople People { get; set; }
+    public SmartQuoteVolume Volume { get; set; }
 }
+
+public class SmartQuoteVolume
+{
+    public int Value { get; set; }
+    
+    [Display("Unit ID")]
+    public string UnitId { get; set; }
+} 

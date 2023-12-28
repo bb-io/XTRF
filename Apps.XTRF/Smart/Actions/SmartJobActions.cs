@@ -76,7 +76,7 @@ public class SmartJobActions : XtrfInvocable
         var uploadFileRequest = new XtrfRequest($"/v2/jobs/{jobIdentifier.JobId}/files/delivered/upload", Method.Post, 
             Creds);
         uploadFileRequest.AddFile("file", file.File.Bytes, file.File.Name);
-        var uploadFileResponse = await Client.ExecuteWithErrorHandling<UploadFileResponse>(uploadFileRequest);
+        var fileIdentifier = await Client.ExecuteWithErrorHandling<FileIdentifier>(uploadFileRequest);
         
         var addFileRequest = new XtrfRequest($"/v2/jobs/{jobIdentifier.JobId}/files/delivered/add", Method.Put, Creds);
         addFileRequest.AddJsonBody(new
@@ -86,7 +86,7 @@ public class SmartJobActions : XtrfInvocable
                 new
                 {
                     category = category.Category,
-                    fileId = uploadFileResponse.FileId
+                    fileId = fileIdentifier.FileId
                 }
             }
         });
