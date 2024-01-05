@@ -257,10 +257,10 @@ public class ClassicTaskActions : XtrfInvocable
                 new XtrfRequest($"/tasks/{taskIdentifier.TaskId}/dates", Method.Put, Creds).WithJsonBody(jsonBody);
             await Client.ExecuteWithErrorHandling(updateDatesRequest);
 
-            task.Dates.StartDate = new() { Time = jsonBody.startDate.time };
-            task.Dates.Deadline = new() { Time = jsonBody.deadline.time };
-            task.Dates.ActualStartDate = new() { Time = jsonBody.actualStartDate.time };
-            task.Dates.ActualDeliveryDate = new() { Time = jsonBody.actualDeliveryDate.time };
+            task.Dates.StartDate = new(jsonBody.startDate.time);
+            task.Dates.Deadline = new(jsonBody.deadline.time);
+            task.Dates.ActualStartDate = new(jsonBody.actualStartDate.time);
+            task.Dates.ActualDeliveryDate = new(jsonBody.actualDeliveryDate.time);
         }
         
         if (input.InstructionFromCustomer != null || input.InstructionForProvider != null ||

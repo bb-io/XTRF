@@ -1,29 +1,11 @@
-﻿namespace Apps.XTRF.Classic.Models.Entities;
+﻿using Apps.XTRF.Shared.Models.Entities;
+
+namespace Apps.XTRF.Classic.Models.Entities;
 
 public class ClassicDates
 {
-    public StartDate? StartDate { get; set; }
-    public Deadline? Deadline { get; set; }
-    public ActualStartDate? ActualStartDate { get; set; }
-    public ActualDeliveryDate? ActualDeliveryDate { get; set; }
-}
-
-public class StartDate
-{
-    public long? Time { get; set; }
-}
-    
-public class Deadline
-{
-    public long? Time { get; set; }
-}
-    
-public class ActualStartDate
-{
-    public long? Time { get; set; }
-}
-    
-public class ActualDeliveryDate
-{
-    public long? Time { get; set; }
+    public LongDateTimeRepresentation? StartDate { get; set; }
+    public LongDateTimeRepresentation? Deadline { get; set; }
+    public LongDateTimeRepresentation? ActualStartDate { get; set; }
+    public LongDateTimeRepresentation? ActualDeliveryDate { get; set; }
 }

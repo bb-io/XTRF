@@ -12,7 +12,7 @@ public class XtrfInvocable : BaseInvocable
 
     protected XtrfClient Client { get; }
 
-    public XtrfInvocable(InvocationContext invocationContext) : base(invocationContext)
+    protected XtrfInvocable(InvocationContext invocationContext) : base(invocationContext)
     {
         Client = new(Creds);
     }

@@ -23,7 +23,6 @@ public class TaskResponse
         JobIds = task.Jobs.JobIds;
         Instructions = task.Instructions;
         CustomerContacts = task.People.CustomerContacts;
-        CustomFields = task.CustomFields;
     }
         
     [Display("Task ID")]
@@ -64,7 +63,4 @@ public class TaskResponse
     
     [Display("Customer contacts")]
     public ClassicProjectContacts CustomerContacts { get; set; }
-    
-    [Display("Custom fields")]
-    public IEnumerable<CustomField> CustomFields { get; set; }
 }

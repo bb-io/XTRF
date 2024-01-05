@@ -20,18 +20,8 @@ public class ClassicQuote
 
 public class ClassicQuoteDates
 {
-    public StartDate? StartDate { get; set; }
-    public Deadline? Deadline { get; set; }
-    public CreatedOn? CreatedOn { get; set; }
-    public OfferExpiry? OfferExpiry { get; set; }
-}
-
-public class CreatedOn
-{
-    public long? Time { get; set; }
-}
-    
-public class OfferExpiry
-{
-    public long? Time { get; set; }
+    public LongDateTimeRepresentation? StartDate { get; set; }
+    public LongDateTimeRepresentation? Deadline { get; set; }
+    public LongDateTimeRepresentation? CreatedOn { get; set; }
+    public LongDateTimeRepresentation? OfferExpiry { get; set; }
 }

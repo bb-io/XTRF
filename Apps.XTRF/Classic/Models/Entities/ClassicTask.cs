@@ -15,7 +15,6 @@ public class ClassicTask
     public ClassicTaskJobs Jobs { get; set; }
     public Instructions Instructions { get; set; }
     public ClassicTaskPeople People { get; set; }
-    public IEnumerable<CustomField> CustomFields { get; set; }
 }
 
 public class ClassicTaskJobs 

@@ -180,10 +180,10 @@ public class ClassicProjectActions : XtrfInvocable
                     .WithJsonBody(jsonBody, JsonConfig.Settings);
             await Client.ExecuteWithErrorHandling(updateDatesRequest);
             
-            project.Dates.StartDate = new() { Time = jsonBody.startDate.time };
-            project.Dates.Deadline = new() { Time = jsonBody.deadline.time };
-            project.Dates.ActualStartDate = new() { Time = jsonBody.actualStartDate.time };
-            project.Dates.ActualDeliveryDate = new() { Time = jsonBody.actualDeliveryDate.time };
+            project.Dates.StartDate = new(jsonBody.startDate.time);
+            project.Dates.Deadline = new(jsonBody.deadline.time);
+            project.Dates.ActualStartDate = new(jsonBody.actualStartDate.time);
+            project.Dates.ActualDeliveryDate = new(jsonBody.actualDeliveryDate.time);
         }
 
         if (input.InstructionFromCustomer != null || input.InstructionForProvider != null ||

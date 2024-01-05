@@ -1,5 +1,3 @@
-﻿using Blackbird.Applications.Sdk.Common;
+﻿namespace Apps.XTRF.Shared.Models.Responses.CustomField;
 
-namespace Apps.XTRF.Shared.Models.Responses.CustomField;
-
-public record ListCustomFieldsResponse([Display("Custom fields")] IEnumerable<Entities.CustomField> CustomFields);
+public record ListCustomFieldsResponse(IEnumerable<Entities.CustomField> Fields);

@@ -26,8 +26,8 @@ public class ConnectionDefinition : IConnectionDefinition
     {
         yield return new AuthenticationCredentialsProvider(
             AuthenticationCredentialsRequestLocation.None,
-            CredsNames.Url,
-           values[CredsNames.Url]
+            CredsNames.Url, 
+            values[CredsNames.Url]
         );
 
         yield return new AuthenticationCredentialsProvider(
