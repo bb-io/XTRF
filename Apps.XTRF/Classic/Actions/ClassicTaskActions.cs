@@ -2,23 +2,25 @@
 using Apps.XTRF.Classic.Models.Identifiers;
 using Apps.XTRF.Classic.Models.Requests.ClassicTask;
 using Apps.XTRF.Classic.Models.Responses.ClassicTask;
+using Apps.XTRF.Shared.Actions.Base;
 using Apps.XTRF.Shared.Api;
 using Apps.XTRF.Shared.Constants;
 using Apps.XTRF.Shared.Extensions;
-using Apps.XTRF.Shared.Invocables;
 using Apps.XTRF.Shared.Models.Identifiers;
 using Blackbird.Applications.Sdk.Common;
 using Blackbird.Applications.Sdk.Common.Actions;
 using Blackbird.Applications.Sdk.Common.Invocation;
+using Blackbird.Applications.SDK.Extensions.FileManagement.Interfaces;
 using Blackbird.Applications.Sdk.Utils.Extensions.Http;
 using RestSharp;
 
 namespace Apps.XTRF.Classic.Actions;
 
 [ActionList]
-public class ClassicTaskActions : XtrfInvocable
+public class ClassicTaskActions : BaseFileActions
 {
-    public ClassicTaskActions(InvocationContext invocationContext) : base(invocationContext)
+    public ClassicTaskActions(InvocationContext invocationContext, IFileManagementClient fileManagementClient) 
+        : base(invocationContext, fileManagementClient)
     {
     }
     
@@ -83,7 +85,8 @@ public class ClassicTaskActions : XtrfInvocable
         [ActionParameter] AddFileToTaskRequest input)
     {
         var uploadFileRequest = new XtrfRequest("/files", Method.Post, Creds);
-        uploadFileRequest.AddFile("file", input.File.Bytes, input.File.Name);
+        var fileBytes = await DownloadFile(input.File);
+        uploadFileRequest.AddFile("file", fileBytes, input.File.Name);
         var uploadFileResponse = await Client.ExecuteWithErrorHandling<TokenResponse>(uploadFileRequest);
         
         var addFileToTaskRequest = new XtrfRequest($"/tasks/{taskIdentifier.TaskId}/files/input", Method.Post, Creds)

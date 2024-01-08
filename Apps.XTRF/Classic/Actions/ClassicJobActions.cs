@@ -2,24 +2,26 @@
 using Apps.XTRF.Classic.Models.Requests.ClassicJob;
 using Apps.XTRF.Classic.Models.Responses.ClassicJob;
 using Apps.XTRF.Classic.Models.Responses.ClassicTask;
+using Apps.XTRF.Shared.Actions.Base;
 using Apps.XTRF.Shared.Api;
 using Apps.XTRF.Shared.Constants;
 using Apps.XTRF.Shared.Extensions;
-using Apps.XTRF.Shared.Invocables;
 using Apps.XTRF.Shared.Models;
 using Apps.XTRF.Shared.Models.Identifiers;
 using Blackbird.Applications.Sdk.Common;
 using Blackbird.Applications.Sdk.Common.Actions;
 using Blackbird.Applications.Sdk.Common.Invocation;
+using Blackbird.Applications.SDK.Extensions.FileManagement.Interfaces;
 using Blackbird.Applications.Sdk.Utils.Extensions.Http;
 using RestSharp;
 
 namespace Apps.XTRF.Classic.Actions;
 
 [ActionList]
-public class ClassicJobActions : XtrfInvocable
+public class ClassicJobActions : BaseFileActions
 {
-    public ClassicJobActions(InvocationContext invocationContext) : base(invocationContext)
+    public ClassicJobActions(InvocationContext invocationContext, IFileManagementClient fileManagementClient) 
+        : base(invocationContext, fileManagementClient)
     {
     }
 
@@ -42,7 +44,8 @@ public class ClassicJobActions : XtrfInvocable
         [ActionParameter] FileWrapper file)
     {
         var uploadFileRequest = new XtrfRequest("/files", Method.Post, Creds);
-        uploadFileRequest.AddFile("file", file.File.Bytes, file.File.Name);
+        var fileBytes = await DownloadFile(file.File);
+        uploadFileRequest.AddFile("file", fileBytes, file.File.Name);
         var uploadFileResponse = await Client.ExecuteWithErrorHandling<TokenResponse>(uploadFileRequest);
         
         var addOutputFileToJobRequest = new XtrfRequest($"/jobs/{jobIdentifier.JobId}/files/output", Method.Post, Creds)

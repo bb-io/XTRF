@@ -4,24 +4,26 @@ using Apps.XTRF.Classic.Models.Identifiers;
 using Apps.XTRF.Classic.Models.Requests.ClassicProject;
 using Apps.XTRF.Classic.Models.Responses.ClassicProject;
 using Apps.XTRF.Classic.Models.Responses.ClassicTask;
+using Apps.XTRF.Shared.Actions.Base;
 using Apps.XTRF.Shared.Api;
 using Apps.XTRF.Shared.Constants;
 using Apps.XTRF.Shared.Extensions;
-using Apps.XTRF.Shared.Invocables;
 using Apps.XTRF.Shared.Models;
 using Apps.XTRF.Shared.Models.Identifiers;
 using Blackbird.Applications.Sdk.Common;
 using Blackbird.Applications.Sdk.Common.Actions;
 using Blackbird.Applications.Sdk.Common.Invocation;
+using Blackbird.Applications.SDK.Extensions.FileManagement.Interfaces;
 using Blackbird.Applications.Sdk.Utils.Extensions.Http;
 using RestSharp;
 
 namespace Apps.XTRF.Classic.Actions;
 
 [ActionList]
-public class ClassicProjectActions : XtrfInvocable
+public class ClassicProjectActions : BaseFileActions
 {
-    public ClassicProjectActions(InvocationContext invocationContext) : base(invocationContext)
+    public ClassicProjectActions(InvocationContext invocationContext, IFileManagementClient fileManagementClient) 
+        : base(invocationContext, fileManagementClient)
     {
     }
 
@@ -46,15 +48,11 @@ public class ClassicProjectActions : XtrfInvocable
         var taskFiles = await Client.ExecuteWithErrorHandling<JobFilesResponse>(getFilesRequest);
         var filesCombined = taskFiles.Jobs.SelectMany(job => job.Files.InputFiles.Concat(job.Files.OutputFiles));
         var targetFile = filesCombined.First(file => file.Id == fileIdentifier.FileId);
+        
+        var fileReference = await UploadFile(response.RawBytes,
+            response.ContentType ?? MediaTypeNames.Application.Octet, targetFile.Name);
     
-        return new()
-        {
-            File = new(response.RawBytes)
-            {
-                Name = targetFile.Name,
-                ContentType = response.ContentType ?? MediaTypeNames.Application.Octet
-            }
-        };
+        return new() { File = fileReference };
     }
 
     #endregion

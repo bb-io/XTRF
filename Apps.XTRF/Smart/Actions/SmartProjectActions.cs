@@ -1,9 +1,9 @@
 ﻿using System.Net.Mime;
+using Apps.XTRF.Shared.Actions.Base;
 using Apps.XTRF.Shared.Api;
 using Apps.XTRF.Shared.Constants;
 using Apps.XTRF.Shared.DataSourceHandlers;
 using Apps.XTRF.Shared.Extensions;
-using Apps.XTRF.Shared.Invocables;
 using Apps.XTRF.Shared.Models;
 using Apps.XTRF.Shared.Models.Entities;
 using Apps.XTRF.Shared.Models.Identifiers;
@@ -18,6 +18,7 @@ using Blackbird.Applications.Sdk.Common;
 using Blackbird.Applications.Sdk.Common.Actions;
 using Blackbird.Applications.Sdk.Common.Dynamic;
 using Blackbird.Applications.Sdk.Common.Invocation;
+using Blackbird.Applications.SDK.Extensions.FileManagement.Interfaces;
 using Blackbird.Applications.Sdk.Utils.Extensions.Http;
 using Blackbird.Applications.Sdk.Utils.Parsers;
 using RestSharp;
@@ -25,9 +26,10 @@ using RestSharp;
 namespace Apps.XTRF.Smart.Actions;
 
 [ActionList]
-public class SmartProjectActions : XtrfInvocable
+public class SmartProjectActions : BaseFileActions
 {
-    public SmartProjectActions(InvocationContext invocationContext) : base(invocationContext)
+    public SmartProjectActions(InvocationContext invocationContext, IFileManagementClient fileManagementClient) 
+        : base(invocationContext, fileManagementClient)
     {
     }
 
@@ -117,14 +119,10 @@ public class SmartProjectActions : XtrfInvocable
         var request = new XtrfRequest($"/v2/projects/files/{fileIdentifier.FileId}/download/{filename}", Method.Get, Creds);
         var response = await Client.ExecuteWithErrorHandling(request);
     
-        return new()
-        {
-            File = new(response.RawBytes)
-            {
-                Name = filename,
-                ContentType = response.ContentType ?? MediaTypeNames.Application.Octet
-            }
-        };
+        var fileReference = await UploadFile(response.RawBytes,
+            response.ContentType ?? MediaTypeNames.Application.Octet, filename);
+        
+        return new() { File = fileReference };
     }
     
     [Action("Smart: Get project file details", Description = "Get information about specific file in a smart project")]
@@ -160,7 +158,8 @@ public class SmartProjectActions : XtrfInvocable
     {
         var uploadFileRequest =
             new XtrfRequest($"/v2/projects/{projectIdentifier.ProjectId}/files/upload", Method.Post, Creds);
-        uploadFileRequest.AddFile("file", input.File.Bytes, input.File.Name);
+        var fileBytes = await DownloadFile(input.File);
+        uploadFileRequest.AddFile("file", fileBytes, input.File.Name);
         var fileIdentifier = await Client.ExecuteWithErrorHandling<FileIdentifier>(uploadFileRequest);
 
         var addFileRequest = new XtrfRequest($"/v2/projects/{projectIdentifier.ProjectId}/files/add", Method.Put, Creds)

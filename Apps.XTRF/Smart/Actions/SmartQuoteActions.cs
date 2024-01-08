@@ -1,8 +1,8 @@
-﻿using Apps.XTRF.Shared.Api;
+﻿using Apps.XTRF.Shared.Actions.Base;
+using Apps.XTRF.Shared.Api;
 using Apps.XTRF.Shared.Constants;
 using Apps.XTRF.Shared.DataSourceHandlers;
 using Apps.XTRF.Shared.Extensions;
-using Apps.XTRF.Shared.Invocables;
 using Apps.XTRF.Shared.Models.Entities;
 using Apps.XTRF.Shared.Models.Identifiers;
 using Apps.XTRF.Smart.Models.Entities;
@@ -16,6 +16,7 @@ using Blackbird.Applications.Sdk.Common;
 using Blackbird.Applications.Sdk.Common.Actions;
 using Blackbird.Applications.Sdk.Common.Dynamic;
 using Blackbird.Applications.Sdk.Common.Invocation;
+using Blackbird.Applications.SDK.Extensions.FileManagement.Interfaces;
 using Blackbird.Applications.Sdk.Utils.Extensions.Http;
 using Blackbird.Applications.Sdk.Utils.Parsers;
 using RestSharp;
@@ -23,9 +24,10 @@ using RestSharp;
 namespace Apps.XTRF.Smart.Actions;
 
 [ActionList]
-public class SmartQuoteActions : XtrfInvocable
+public class SmartQuoteActions : BaseFileActions
 {
-    public SmartQuoteActions(InvocationContext invocationContext) : base(invocationContext)
+    public SmartQuoteActions(InvocationContext invocationContext, IFileManagementClient fileManagementClient) 
+        : base(invocationContext, fileManagementClient)
     {
     }
 
@@ -106,8 +108,10 @@ public class SmartQuoteActions : XtrfInvocable
     public async Task UploadFileToQuote([ActionParameter] QuoteIdentifier quoteIdentifier,
         [ActionParameter] UploadFileRequest input)
     {
-        var uploadFileRequest = new XtrfRequest($"/v2/quotes/{quoteIdentifier.QuoteId}/files/upload", Method.Post, Creds);
-        uploadFileRequest.AddFile("file", input.File.Bytes, input.File.Name);
+        var uploadFileRequest =
+            new XtrfRequest($"/v2/quotes/{quoteIdentifier.QuoteId}/files/upload", Method.Post, Creds);
+        var fileBytes = await DownloadFile(input.File);
+        uploadFileRequest.AddFile("file", fileBytes, input.File.Name);
         var fileIdentifier = await Client.ExecuteWithErrorHandling<FileIdentifier>(uploadFileRequest);
 
         var addFileRequest = new XtrfRequest($"/v2/quotes/{quoteIdentifier.QuoteId}/files/add", Method.Put, Creds)

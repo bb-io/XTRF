@@ -1,7 +1,7 @@
-﻿using Apps.XTRF.Shared.Api;
+﻿using Apps.XTRF.Shared.Actions.Base;
+using Apps.XTRF.Shared.Api;
 using Apps.XTRF.Shared.Constants;
 using Apps.XTRF.Shared.Extensions;
-using Apps.XTRF.Shared.Invocables;
 using Apps.XTRF.Shared.Models;
 using Apps.XTRF.Shared.Models.Identifiers;
 using Apps.XTRF.Smart.Models.Entities;
@@ -12,15 +12,17 @@ using Apps.XTRF.Smart.Models.Responses.Job;
 using Blackbird.Applications.Sdk.Common;
 using Blackbird.Applications.Sdk.Common.Actions;
 using Blackbird.Applications.Sdk.Common.Invocation;
+using Blackbird.Applications.SDK.Extensions.FileManagement.Interfaces;
 using Blackbird.Applications.Sdk.Utils.Extensions.Http;
 using RestSharp;
 
 namespace Apps.XTRF.Smart.Actions;
 
 [ActionList]
-public class SmartJobActions : XtrfInvocable
+public class SmartJobActions : BaseFileActions
 {
-    public SmartJobActions(InvocationContext invocationContext) : base(invocationContext)
+    public SmartJobActions(InvocationContext invocationContext, IFileManagementClient fileManagementClient) 
+        : base(invocationContext, fileManagementClient)
     {
     }
 
@@ -75,7 +77,8 @@ public class SmartJobActions : XtrfInvocable
     {
         var uploadFileRequest = new XtrfRequest($"/v2/jobs/{jobIdentifier.JobId}/files/delivered/upload", Method.Post, 
             Creds);
-        uploadFileRequest.AddFile("file", file.File.Bytes, file.File.Name);
+        var fileBytes = await DownloadFile(file.File);
+        uploadFileRequest.AddFile("file", fileBytes, file.File.Name);
         var fileIdentifier = await Client.ExecuteWithErrorHandling<FileIdentifier>(uploadFileRequest);
         
         var addFileRequest = new XtrfRequest($"/v2/jobs/{jobIdentifier.JobId}/files/delivered/add", Method.Put, Creds);
