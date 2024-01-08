@@ -159,7 +159,7 @@ public class SmartProjectActions : BaseFileActions
         var uploadFileRequest =
             new XtrfRequest($"/v2/projects/{projectIdentifier.ProjectId}/files/upload", Method.Post, Creds);
         var fileBytes = await DownloadFile(input.File);
-        uploadFileRequest.AddFile("file", fileBytes, input.File.Name);
+        uploadFileRequest.AddFile("file", fileBytes, input.File.Name!.Sanitize());
         var fileIdentifier = await Client.ExecuteWithErrorHandling<FileIdentifier>(uploadFileRequest);
 
         var addFileRequest = new XtrfRequest($"/v2/projects/{projectIdentifier.ProjectId}/files/add", Method.Put, Creds)

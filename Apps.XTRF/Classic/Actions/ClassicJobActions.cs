@@ -45,7 +45,7 @@ public class ClassicJobActions : BaseFileActions
     {
         var uploadFileRequest = new XtrfRequest("/files", Method.Post, Creds);
         var fileBytes = await DownloadFile(file.File);
-        uploadFileRequest.AddFile("file", fileBytes, file.File.Name);
+        uploadFileRequest.AddFile("file", fileBytes, file.File.Name!.Sanitize());
         var uploadFileResponse = await Client.ExecuteWithErrorHandling<TokenResponse>(uploadFileRequest);
         
         var addOutputFileToJobRequest = new XtrfRequest($"/jobs/{jobIdentifier.JobId}/files/output", Method.Post, Creds)

@@ -111,7 +111,7 @@ public class SmartQuoteActions : BaseFileActions
         var uploadFileRequest =
             new XtrfRequest($"/v2/quotes/{quoteIdentifier.QuoteId}/files/upload", Method.Post, Creds);
         var fileBytes = await DownloadFile(input.File);
-        uploadFileRequest.AddFile("file", fileBytes, input.File.Name);
+        uploadFileRequest.AddFile("file", fileBytes, input.File.Name!.Sanitize());
         var fileIdentifier = await Client.ExecuteWithErrorHandling<FileIdentifier>(uploadFileRequest);
 
         var addFileRequest = new XtrfRequest($"/v2/quotes/{quoteIdentifier.QuoteId}/files/add", Method.Put, Creds)

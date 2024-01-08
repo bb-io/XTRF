@@ -86,7 +86,7 @@ public class ClassicTaskActions : BaseFileActions
     {
         var uploadFileRequest = new XtrfRequest("/files", Method.Post, Creds);
         var fileBytes = await DownloadFile(input.File);
-        uploadFileRequest.AddFile("file", fileBytes, input.File.Name);
+        uploadFileRequest.AddFile("file", fileBytes, input.File.Name!.Sanitize());
         var uploadFileResponse = await Client.ExecuteWithErrorHandling<TokenResponse>(uploadFileRequest);
         
         var addFileToTaskRequest = new XtrfRequest($"/tasks/{taskIdentifier.TaskId}/files/input", Method.Post, Creds)

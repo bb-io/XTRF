@@ -78,7 +78,7 @@ public class SmartJobActions : BaseFileActions
         var uploadFileRequest = new XtrfRequest($"/v2/jobs/{jobIdentifier.JobId}/files/delivered/upload", Method.Post, 
             Creds);
         var fileBytes = await DownloadFile(file.File);
-        uploadFileRequest.AddFile("file", fileBytes, file.File.Name);
+        uploadFileRequest.AddFile("file", fileBytes, file.File.Name!.Sanitize());
         var fileIdentifier = await Client.ExecuteWithErrorHandling<FileIdentifier>(uploadFileRequest);
         
         var addFileRequest = new XtrfRequest($"/v2/jobs/{jobIdentifier.JobId}/files/delivered/add", Method.Put, Creds);
