@@ -1,8 +1,8 @@
 ﻿using Blackbird.Applications.Sdk.Common;
 
-namespace Apps.XTRF.Shared.Models.Identifiers;
+namespace Apps.XTRF.Smart.Models.Identifiers;
 
-public class CustomFieldIdentifier
+public class SmartCustomFieldIdentifier
 {
     [Display("Custom field key")]
     public string Key { get; set; }

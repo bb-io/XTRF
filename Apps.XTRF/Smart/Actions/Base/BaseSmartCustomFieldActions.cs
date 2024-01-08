@@ -15,19 +15,19 @@ public abstract class BaseSmartCustomFieldActions : BaseCustomFieldActions
     {
     }
 
-    protected override async Task UpdateTextCustomField(string entityId, string key, string value)
+    protected async Task UpdateTextCustomField(string entityId, string key, string value)
         => await UpdateCustomField(entityId, key, new { value });
     
-    protected override async Task UpdateNumberCustomField(string entityId, string key, decimal value)
+    protected async Task UpdateNumberCustomField(string entityId, string key, decimal value)
         => await UpdateCustomField(entityId, key, new { value });
 
-    protected override async Task UpdateDateCustomField(string entityId, string key, DateTime value)
+    protected async Task UpdateDateCustomField(string entityId, string key, DateTime value)
         => await UpdateCustomField(entityId, key, new { value = new { time = value.ConvertToUnixTime() } });
     
-    protected override async Task UpdateCheckboxCustomField(string entityId, string key, bool value)
+    protected async Task UpdateCheckboxCustomField(string entityId, string key, bool value)
         => await UpdateCustomField(entityId, key, new { value });
 
-    protected override async Task UpdateMultipleSelectionCustomField(string entityId, string key,
+    protected async Task UpdateMultipleSelectionCustomField(string entityId, string key,
         IEnumerable<string> value)
         => await UpdateCustomField(entityId, key, new { value });
 

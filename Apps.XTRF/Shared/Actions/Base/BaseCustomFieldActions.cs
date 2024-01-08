@@ -34,7 +34,7 @@ public abstract class BaseCustomFieldActions : XtrfInvocable
                 throw new Exception("Entity provided does not support custom fields.");
         }
         
-        Endpoint = $"/{(apiType == ApiType.Smart ? "v2" : string.Empty)}/{entityTypeEndpointPart}/{{0}}/customFields";
+        Endpoint = $"{(apiType == ApiType.Smart ? "/v2" : string.Empty)}/{entityTypeEndpointPart}/{{0}}/customFields";
     }
 
     #region Get
@@ -89,20 +89,6 @@ public abstract class BaseCustomFieldActions : XtrfInvocable
         
         return customField;
     }
-
-    #endregion
-
-    #region Put
-
-    protected abstract Task UpdateTextCustomField(string entityId, string key, string value);
-
-    protected abstract Task UpdateNumberCustomField(string entityId, string key, decimal value);
-
-    protected abstract Task UpdateDateCustomField(string entityId, string key, DateTime value);
-
-    protected abstract Task UpdateCheckboxCustomField(string entityId, string key, bool value);
-
-    protected abstract Task UpdateMultipleSelectionCustomField(string entityId, string key, IEnumerable<string> value);
 
     #endregion
 }
