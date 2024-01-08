@@ -31,20 +31,23 @@ public class SmartQuoteActions : XtrfInvocable
 
     #region Get
 
-    [Action("Smart: Get quote details", Description = "Get information about a smart quote")]
-    public async Task<QuoteResponse> GetQuote([ActionParameter] QuoteIdentifier quoteIdentifier)
+    [Action("Smart: Get quote details", Description = "Get information about a smart quote.  If you need to retrieve " +
+                                                      "finance information, set the respective optional parameter to 'True'")]
+    public async Task<QuoteResponse> GetQuote([ActionParameter] QuoteIdentifier quoteIdentifier,
+        [ActionParameter] [Display("Include finance information")] bool? includeFinanceInformation)
     {
-        var request = new XtrfRequest($"/v2/quotes/{quoteIdentifier.QuoteId}", Method.Get, Creds);
-        var quote = await Client.ExecuteWithErrorHandling<SmartQuote>(request);
-        return new(quote);
-    }
-    
-    [Action("Smart: Get finance information for quote", Description = "Get finance information for a smart quote")]
-    public async Task<FinanceInformation> GetFinanceInfo([ActionParameter] QuoteIdentifier quoteIdentifier)
-    {
-        var request = new XtrfRequest($"/v2/quotes/{quoteIdentifier.QuoteId}/finance", Method.Get, Creds);
-        var financeInformation = await Client.ExecuteWithErrorHandling<FinanceInformation>(request);
-        return financeInformation;
+        var getQuoteRequest = new XtrfRequest($"/v2/quotes/{quoteIdentifier.QuoteId}", Method.Get, Creds);
+        var quote = await Client.ExecuteWithErrorHandling<SmartQuote>(getQuoteRequest);
+        var quoteResponse = new QuoteResponse(quote);
+
+        if (includeFinanceInformation != null && includeFinanceInformation.Value)
+        {
+            var request = new XtrfRequest($"/v2/quotes/{quoteIdentifier.QuoteId}/finance", Method.Get, Creds);
+            var financeInformation = await Client.ExecuteWithErrorHandling<FinanceInformation>(request);
+            quoteResponse.FinanceInformation = financeInformation;
+        }
+
+        return quoteResponse;
     }
 
     [Action("Smart: List jobs in quote", Description = "List all jobs in a smart quote")]

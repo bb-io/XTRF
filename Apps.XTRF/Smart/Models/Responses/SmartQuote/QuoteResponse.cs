@@ -1,4 +1,5 @@
 ﻿using Apps.XTRF.Shared.Extensions;
+using Apps.XTRF.Shared.Models.Entities;
 using Apps.XTRF.Smart.Models.Entities;
 using Blackbird.Applications.Sdk.Common;
 
@@ -102,4 +103,7 @@ public class QuoteResponse
     
     [Display("Project confirmation status")]
     public string ProjectConfirmationStatus { get; set; }
+    
+    [Display("Finance information")]
+    public FinanceInformation FinanceInformation { get; set; }
 }

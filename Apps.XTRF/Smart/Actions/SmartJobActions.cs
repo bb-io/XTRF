@@ -42,7 +42,7 @@ public class SmartJobActions : XtrfInvocable
         return new(files);
     }
     
-    [Action("Smart: Get reference files shared with a job", Description = "Get reference files shared with a smart job")]
+    [Action("Smart: Get reference files shared with job", Description = "Get reference files shared with a smart job")]
     public async Task<ListFilesResponse> GetReferenceFilesByJob([ActionParameter] JobIdentifier jobIdentifier)
     {
         var request = new XtrfRequest($"/v2/jobs/{jobIdentifier.JobId}/files/sharedReferenceFiles", Method.Get, Creds);

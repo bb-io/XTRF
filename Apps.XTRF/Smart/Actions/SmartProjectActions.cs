@@ -33,47 +33,58 @@ public class SmartProjectActions : XtrfInvocable
 
     #region Get
 
-    [Action("Smart: Get project details", Description = "Get information about a smart project")]
-    public async Task<ProjectResponse> GetProject([ActionParameter] ProjectIdentifier projectIdentifier)
+    [Action("Smart: Get project details", Description = "Get information about a smart project. If you need to retrieve " +
+                                                        "client contacts, finance information, process ID or check if " +
+                                                        "project created in CAT tool or creation is queued, set the " +
+                                                        "respective optional parameter to 'True'")]
+    public async Task<ProjectResponse> GetProject([ActionParameter] ProjectIdentifier projectIdentifier,
+        [ActionParameter] [Display("Include client contacts")] bool? includeClientContacts,
+        [ActionParameter] [Display("Include finance information")] bool? includeFinanceInformation,
+        [ActionParameter] [Display("Include process ID")] bool? includeProcessId,
+        [ActionParameter] [Display("Include if project is created in CAT tool or queued")] bool? includeCatTool)
     {
-        var request = new XtrfRequest($"/v2/projects/{projectIdentifier.ProjectId}", Method.Get, Creds);
-        var project = await Client.ExecuteWithErrorHandling<SmartProject>(request);
-        return new(project);
-    }
-    
-    [Action("Smart: Get client contacts for project", Description = "Get client contacts information for a smart project")]
-    public async Task<SmartProjectContacts> GetClientContactsForProject([ActionParameter] ProjectIdentifier project)
-    {
-        var request = new XtrfRequest($"/v2/projects/{project.ProjectId}/clientContacts", Method.Get, Creds);
-        var contacts = await Client.ExecuteWithErrorHandling<SmartProjectContacts>(request);
-        return contacts;
-    }
-    
-    [Action("Smart: Get finance information for project", Description = "Get finance information for a smart project")]
-    public async Task<FinanceInformation> GetFinanceInfo([ActionParameter] ProjectIdentifier project)
-    {
-        var request = new XtrfRequest($"/v2/projects/{project.ProjectId}/finance", Method.Get, Creds);
-        var financeInformation = await Client.ExecuteWithErrorHandling<FinanceInformation>(request);
-        return financeInformation;
+        var getProjectRequest = new XtrfRequest($"/v2/projects/{projectIdentifier.ProjectId}", Method.Get, Creds);
+        var project = await Client.ExecuteWithErrorHandling<SmartProject>(getProjectRequest);
+        var projectResponse = new ProjectResponse(project);
+
+        if (includeClientContacts != null && includeClientContacts.Value)
+        {
+            var getContactsRequest = 
+                new XtrfRequest($"/v2/projects/{projectIdentifier.ProjectId}/clientContacts", Method.Get, Creds);
+            var contacts = await Client.ExecuteWithErrorHandling<SmartProjectContacts>(getContactsRequest);
+            projectResponse.ProjectContacts = contacts;
+        }
+        
+        if (includeFinanceInformation != null && includeFinanceInformation.Value)
+        {
+            var getFinanceInformationRequest =
+                new XtrfRequest($"/v2/projects/{projectIdentifier.ProjectId}/finance", Method.Get, Creds);
+            var financeInformation =
+                await Client.ExecuteWithErrorHandling<FinanceInformation>(getFinanceInformationRequest);
+            projectResponse.FinanceInformation = financeInformation;
+        }
+        
+        if (includeProcessId != null && includeProcessId.Value)
+        {
+            var getProcessIdRequest =
+                new XtrfRequest($"/v2/projects/{projectIdentifier.ProjectId}/process", Method.Get, Creds);
+            var process = await Client.ExecuteWithErrorHandling<ProcessResponse>(getProcessIdRequest);
+            projectResponse.ProcessId = process.ProcessId;
+        }
+
+        if (includeCatTool != null && includeCatTool.Value)
+        {
+            var checkForCatToolResponseRequest = 
+                new XtrfRequest( $"/v2/projects/{projectIdentifier.ProjectId}/catToolProject", Method.Get, Creds);
+            var checkForCatToolResponseResponse =
+                await Client.ExecuteWithErrorHandling<CheckForCatToolResponse>(checkForCatToolResponseRequest);
+            projectResponse.ProjectCreatedInCatToolOrCreationIsQueued =
+                checkForCatToolResponseResponse.ProjectCreatedInCatToolOrCreationIsQueued;
+        }
+
+        return projectResponse;
     }
 
-    [Action("Smart: Get process ID for project", Description = "Get process ID for a smart project")]
-    public async Task<ProcessResponse> GetProcessIdForProject([ActionParameter] ProjectIdentifier project)
-    {
-        var request = new XtrfRequest($"/v2/projects/{project.ProjectId}/process", Method.Get, Creds);
-        var process = await Client.ExecuteWithErrorHandling<ProcessResponse>(request);
-        return process;
-    }
-    
-    [Action("Smart: Check if project is CAT tool created or queued", Description = "Check if smart project is created " +
-                                                                                    "in CAT tool or creation is queued")]
-    public async Task<CheckForCatToolResponse> CheckForCatTool([ActionParameter] ProjectIdentifier project)
-    {
-        var request = new XtrfRequest( $"/v2/projects/{project.ProjectId}/catToolProject", Method.Get, Creds);
-        var response = await Client.ExecuteWithErrorHandling<CheckForCatToolResponse>(request);
-        return response;
-    }
-    
     [Action("Smart: List jobs in project", Description = "List all jobs in a smart project")]
     public async Task<ListJobsResponse> GetJobsInProject([ActionParameter] ProjectIdentifier projectIdentifier)
     {

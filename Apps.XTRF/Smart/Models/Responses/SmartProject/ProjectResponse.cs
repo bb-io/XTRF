@@ -1,4 +1,5 @@
 ﻿using Apps.XTRF.Shared.Extensions;
+using Apps.XTRF.Shared.Models.Entities;
 using Apps.XTRF.Smart.Models.Entities;
 using Blackbird.Applications.Sdk.Common;
 
@@ -94,4 +95,16 @@ public class ProjectResponse
     
     [Display("Project confirmation status")]
     public string ProjectConfirmationStatus { get; set; }
+    
+    [Display("Project contacts")]
+    public SmartProjectContacts ProjectContacts { get; set; }
+    
+    [Display("Finance information")]
+    public FinanceInformation FinanceInformation { get; set; }
+    
+    [Display("Process ID")]
+    public string ProcessId { get; set; }
+    
+    [Display("Is project created in CAT tool or creation is queued")]
+    public bool ProjectCreatedInCatToolOrCreationIsQueued { get; set; }
 }
