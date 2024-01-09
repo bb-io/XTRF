@@ -110,6 +110,32 @@ public class SmartProjectActions : BaseFileActions
     
         return new(filteredFiles);
     }
+
+    [Action("Smart: List deliverable files for source file", Description = "List files ready for delivery with the same " +
+                                                                           "name as given source file in a smart project")]
+    public async Task<ListFilesResponse> GetDeliverableFilesForSourceFile(
+        [ActionParameter] ProjectIdentifier projectIdentifier,
+        [ActionParameter] FileIdentifier fileIdentifier,
+        [ActionParameter] FilterLanguageOptionalIdentifier languageIdentifier)
+    {
+        var getDeliverableFilesRequest =
+            new XtrfRequest($"/v2/projects/{projectIdentifier.ProjectId}/files/deliverable", Method.Get, Creds);
+        var deliverableFiles =
+            (await Client.ExecuteWithErrorHandling<IEnumerable<SmartFileXTRF>>(getDeliverableFilesRequest)).ToList();
+
+        if (deliverableFiles.Count == 0)
+            return new(deliverableFiles);
+        
+        var getFileRequest = new XtrfRequest($"/v2/projects/files/{fileIdentifier.FileId}", Method.Get, Creds);
+        var file = await Client.ExecuteWithErrorHandling<SmartFileXTRF>(getFileRequest);
+
+        var filteredDeliverableFiles = deliverableFiles
+            .Where(deliverableFile => deliverableFile.Name == file.Name)
+            .Where(deliverableFile => languageIdentifier.LanguageId == null ||
+                                      deliverableFile.LanguageRelation.Languages.Contains(languageIdentifier.LanguageId));
+
+        return new(filteredDeliverableFiles);
+    }
     
     [Action("Smart: Download file", Description = "Download the content of a specific file")]
     public async Task<FileWrapper> DownloadFile([ActionParameter] FileIdentifier fileIdentifier, 
