@@ -1,9 +1,9 @@
-﻿using Apps.XTRF.Shared.Models.Entities;
+﻿using Apps.XTRF.Shared.Extensions;
+using Apps.XTRF.Shared.Models.Entities;
 using Apps.XTRF.Shared.Models.Entities.Enums;
 using Apps.XTRF.Shared.Models.Identifiers;
 using Apps.XTRF.Shared.Models.Responses.CustomField;
 using Apps.XTRF.Smart.Actions.Base;
-using Apps.XTRF.Smart.Models.Identifiers;
 using Blackbird.Applications.Sdk.Common;
 using Blackbird.Applications.Sdk.Common.Actions;
 using Blackbird.Applications.Sdk.Common.Invocation;
@@ -27,41 +27,41 @@ public class SmartProjectCustomFieldActions : BaseSmartCustomFieldActions
                                                                    "action corresponding to the field type")]
     public async Task<ListCustomFieldsResponse> ListCustomFieldsForProject(
         [ActionParameter] ProjectIdentifier projectIdentifier)
-        => await ListCustomFields(projectIdentifier.ProjectId);
+        => new(await ListCustomFields(projectIdentifier.ProjectId));
 
     [Action("Smart: Get text or selection custom field for project",
         Description = "Retrieve a text or selection custom field for a smart project")]
     public async Task<CustomField<string>> GetTextCustomFieldForProject(
         [ActionParameter] ProjectIdentifier projectIdentifier,
-        [ActionParameter] SmartCustomFieldIdentifier customFieldIdentifier)
+        [ActionParameter] CustomFieldIdentifier customFieldIdentifier)
         => await GetTextCustomField(projectIdentifier.ProjectId, customFieldIdentifier.Key);
 
     [Action("Smart: Get number custom field for project", 
         Description = "Retrieve a number custom field for a smart project")]
     public async Task<CustomField<decimal?>> GetNumberCustomFieldForProject(
         [ActionParameter] ProjectIdentifier projectIdentifier,
-        [ActionParameter] SmartCustomFieldIdentifier customFieldIdentifier)
+        [ActionParameter] CustomFieldIdentifier customFieldIdentifier)
         => await GetNumberCustomField(projectIdentifier.ProjectId, customFieldIdentifier.Key);
 
     [Action("Smart: Get date custom field for project",
         Description = "Retrieve a date/date and time custom field for a smart project")]
     public async Task<CustomField<DateTime?>> GetDateCustomFieldForProject(
         [ActionParameter] ProjectIdentifier projectIdentifier,
-        [ActionParameter] SmartCustomFieldIdentifier customFieldIdentifier)
+        [ActionParameter] CustomFieldIdentifier customFieldIdentifier)
         => await GetDateCustomField(projectIdentifier.ProjectId, customFieldIdentifier.Key);
 
     [Action("Smart: Get checkbox custom field for project",
         Description = "Retrieve a checkbox (boolean) custom field for a smart project")]
     public async Task<CustomField<bool?>> GetCheckboxCustomFieldForProject(
         [ActionParameter] ProjectIdentifier projectIdentifier,
-        [ActionParameter] SmartCustomFieldIdentifier customFieldIdentifier)
+        [ActionParameter] CustomFieldIdentifier customFieldIdentifier)
         => await GetCheckboxCustomField(projectIdentifier.ProjectId, customFieldIdentifier.Key);
 
     [Action("Smart: Get multiple selection custom field for project",
         Description = "Retrieve a multiple selection (list) custom field for a smart project")]
     public async Task<CustomField<IEnumerable<string>>> GetMultipleSelectionCustomFieldForProject(
         [ActionParameter] ProjectIdentifier projectIdentifier,
-        [ActionParameter] SmartCustomFieldIdentifier customFieldIdentifier)
+        [ActionParameter] CustomFieldIdentifier customFieldIdentifier)
         => await GetMultipleSelectionCustomField(projectIdentifier.ProjectId, customFieldIdentifier.Key);
     
     #endregion
@@ -70,56 +70,57 @@ public class SmartProjectCustomFieldActions : BaseSmartCustomFieldActions
 
     [Action("Smart: Update text or selection custom field for project",
         Description = "Update a text or selection custom field for a smart project")]
-    public async Task<SmartCustomFieldIdentifier> UpdateTextCustomFieldForProject(
+    public async Task<CustomFieldIdentifier> UpdateTextCustomFieldForProject(
         [ActionParameter] ProjectIdentifier projectIdentifier,
-        [ActionParameter] SmartCustomFieldIdentifier customFieldIdentifier,
+        [ActionParameter] CustomFieldIdentifier customFieldIdentifier,
         [ActionParameter] [Display("Value")] string value)
     {
-        await UpdateTextCustomField(projectIdentifier.ProjectId, customFieldIdentifier.Key, value);
+        await UpdateCustomField(projectIdentifier.ProjectId, customFieldIdentifier.Key, value);
         return customFieldIdentifier;
     }
 
     [Action("Smart: Update number custom field for project", 
         Description = "Update a number custom field for a smart project")]
-    public async Task<SmartCustomFieldIdentifier> UpdateNumberCustomFieldForProject(
+    public async Task<CustomFieldIdentifier> UpdateNumberCustomFieldForProject(
         [ActionParameter] ProjectIdentifier projectIdentifier,
-        [ActionParameter] SmartCustomFieldIdentifier customFieldIdentifier,
+        [ActionParameter] CustomFieldIdentifier customFieldIdentifier,
         [ActionParameter] [Display("Value")] decimal value)
     {
-        await UpdateNumberCustomField(projectIdentifier.ProjectId, customFieldIdentifier.Key, value);
+        await UpdateCustomField(projectIdentifier.ProjectId, customFieldIdentifier.Key, value);
         return customFieldIdentifier;
     }
 
     [Action("Smart: Update date custom field for project",
         Description = "Update a date/date and time custom field for a smart project")]
-    public async Task<SmartCustomFieldIdentifier> UpdateDateCustomFieldForProject(
+    public async Task<CustomFieldIdentifier> UpdateDateCustomFieldForProject(
         [ActionParameter] ProjectIdentifier projectIdentifier,
-        [ActionParameter] SmartCustomFieldIdentifier customFieldIdentifier,
+        [ActionParameter] CustomFieldIdentifier customFieldIdentifier,
         [ActionParameter] [Display("Value")] DateTime value)
     {
-        await UpdateDateCustomField(projectIdentifier.ProjectId, customFieldIdentifier.Key, value);
+        await UpdateCustomField(projectIdentifier.ProjectId, customFieldIdentifier.Key,
+            new LongDateTimeRepresentation(value.ConvertToUnixTime()));
         return customFieldIdentifier;
     }
 
     [Action("Smart: Update checkbox custom field for project",
         Description = "Update a checkbox (boolean) custom field for a smart project")]
-    public async Task<SmartCustomFieldIdentifier> UpdateCheckboxCustomFieldForProject(
+    public async Task<CustomFieldIdentifier> UpdateCheckboxCustomFieldForProject(
         [ActionParameter] ProjectIdentifier projectIdentifier,
-        [ActionParameter] SmartCustomFieldIdentifier customFieldIdentifier,
+        [ActionParameter] CustomFieldIdentifier customFieldIdentifier,
         [ActionParameter] [Display("Value")] bool value)
     {
-        await UpdateCheckboxCustomField(projectIdentifier.ProjectId, customFieldIdentifier.Key, value);
+        await UpdateCustomField(projectIdentifier.ProjectId, customFieldIdentifier.Key, value);
         return customFieldIdentifier;
     }
 
     [Action("Smart: Update multiple selection custom field for project",
         Description = "Update a multiple selection (list) custom field for a smart project")]
-    public async Task<SmartCustomFieldIdentifier> UpdateMultipleSelectionCustomFieldForProject(
+    public async Task<CustomFieldIdentifier> UpdateMultipleSelectionCustomFieldForProject(
         [ActionParameter] ProjectIdentifier projectIdentifier,
-        [ActionParameter] SmartCustomFieldIdentifier customFieldIdentifier,
+        [ActionParameter] CustomFieldIdentifier customFieldIdentifier,
         [ActionParameter] [Display("Value")] IEnumerable<string> value)
     {
-        await UpdateMultipleSelectionCustomField(projectIdentifier.ProjectId, customFieldIdentifier.Key, value);
+        await UpdateCustomField(projectIdentifier.ProjectId, customFieldIdentifier.Key, value);
         return customFieldIdentifier;
     }
 

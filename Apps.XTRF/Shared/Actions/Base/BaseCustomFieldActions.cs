@@ -3,7 +3,6 @@ using Apps.XTRF.Shared.Extensions;
 using Apps.XTRF.Shared.Invocables;
 using Apps.XTRF.Shared.Models.Entities;
 using Apps.XTRF.Shared.Models.Entities.Enums;
-using Apps.XTRF.Shared.Models.Responses.CustomField;
 using Blackbird.Applications.Sdk.Common.Invocation;
 using Newtonsoft.Json.Linq;
 using RestSharp;
@@ -39,11 +38,10 @@ public abstract class BaseCustomFieldActions : XtrfInvocable
 
     #region Get
 
-    protected async Task<ListCustomFieldsResponse> ListCustomFields(string entityId)
+    protected async Task<IEnumerable<CustomField>> ListCustomFields(string entityId)
     {
         var request = new XtrfRequest(string.Format(Endpoint, entityId), Method.Get, Creds);
-        var response = await Client.ExecuteWithErrorHandling<IEnumerable<CustomField>>(request);
-        return new(response);
+        return await Client.ExecuteWithErrorHandling<IEnumerable<CustomField>>(request);
     }
     
     protected async Task<CustomField<string>> GetTextCustomField(string entityId, string key)
@@ -89,6 +87,12 @@ public abstract class BaseCustomFieldActions : XtrfInvocable
         
         return customField;
     }
+
+    #endregion
+
+    #region Put
+
+    protected abstract Task UpdateCustomField<T>(string entityId, string key, T value);
 
     #endregion
 }
