@@ -8,7 +8,7 @@ namespace Apps.XTRF.Classic.Models.Responses.ClassicProject;
 
 public class ProjectResponse
 {
-    public ProjectResponse(Entities.ClassicProject project)
+    public ProjectResponse(Entities.ClassicProject project, XtrfTimeZoneInfo timeZoneInfo)
     {
         Id = project.Id;
         IsClassicProject = project.IsClassicProject;
@@ -19,15 +19,15 @@ public class ProjectResponse
         ProjectManagerId = project.ProjectManagerId;
         SpecializationId = project.SpecializationId;
         Status = project.Status;
-        StartDate = project.Dates.StartDate?.Time?.ConvertFromUnixTime();
-        Deadline = project.Dates.Deadline?.Time?.ConvertFromUnixTime();
-        ActualStartDate = project.Dates.ActualStartDate?.Time?.ConvertFromUnixTime();
-        ActualDeliveryDate = project.Dates.ActualDeliveryDate?.Time?.ConvertFromUnixTime();
+        StartDate = project.Dates.StartDate?.Time?.ConvertFromUnixTime(timeZoneInfo);
+        Deadline = project.Dates.Deadline?.Time?.ConvertFromUnixTime(timeZoneInfo);
+        ActualStartDate = project.Dates.ActualStartDate?.Time?.ConvertFromUnixTime(timeZoneInfo);
+        ActualDeliveryDate = project.Dates.ActualDeliveryDate?.Time?.ConvertFromUnixTime(timeZoneInfo);
         Instructions = project.Instructions;
         Finance = project.Finance;
         Contacts = project.Contacts;
         CategoriesIds = project.CategoriesIds;
-        Tasks = project.Tasks?.Select(task => new TaskResponse(task));
+        Tasks = project.Tasks?.Select(task => new TaskResponse(task, timeZoneInfo));
     }
     
     [Display("Project ID")]

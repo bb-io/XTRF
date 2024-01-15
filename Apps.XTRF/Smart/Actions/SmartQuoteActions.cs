@@ -40,7 +40,8 @@ public class SmartQuoteActions : BaseFileActions
     {
         var getQuoteRequest = new XtrfRequest($"/v2/quotes/{quoteIdentifier.QuoteId}", Method.Get, Creds);
         var quote = await Client.ExecuteWithErrorHandling<SmartQuote>(getQuoteRequest);
-        var quoteResponse = new QuoteResponse(quote);
+        var timeZoneInfo = await GetTimeZoneInfo();
+        var quoteResponse = new QuoteResponse(quote, timeZoneInfo);
 
         if (includeFinanceInformation != null && includeFinanceInformation.Value)
         {
@@ -57,7 +58,8 @@ public class SmartQuoteActions : BaseFileActions
     {
         var request = new XtrfRequest($"/v2/quotes/{quoteIdentifier.QuoteId}/jobs", Method.Get, Creds);
         var jobs = await Client.ExecuteWithErrorHandling<IEnumerable<SmartJob>>(request);
-        return new(jobs.Select(job => new JobResponse(job)));
+        var timeZoneInfo = await GetTimeZoneInfo();
+        return new(jobs.Select(job => new JobResponse(job, timeZoneInfo)));
     }
     
     [Action("Smart: List files in quote", Description = "List all files in a smart quote")]
@@ -101,7 +103,8 @@ public class SmartQuoteActions : BaseFileActions
             });
 
         var quote = await Client.ExecuteWithErrorHandling<SmartQuote>(request);
-        return new(quote);
+        var timeZoneInfo = await GetTimeZoneInfo();
+        return new(quote, timeZoneInfo);
     }
     
     [Action("Smart: Upload file to quote", Description = "Upload a file to a smart quote")]
@@ -291,18 +294,20 @@ public class SmartQuoteActions : BaseFileActions
 
         if (input.ExpectedDeliveryDate != null)
         {
+            var timeZoneInfo = await GetTimeZoneInfo();
             var updateExpectedDeliveryDateRequest = 
                 new XtrfRequest($"/v2/quotes/{quoteIdentifier.QuoteId}/expectedDeliveryDate", Method.Put, Creds)
-                    .WithJsonBody(new { value = input.ExpectedDeliveryDate?.ConvertToUnixTime() });
+                    .WithJsonBody(new { value = input.ExpectedDeliveryDate?.ConvertToUnixTime(timeZoneInfo) });
 
             await Client.ExecuteWithErrorHandling(updateExpectedDeliveryDateRequest);
         }
 
         if (input.QuoteExpiry != null)
         {
+            var timeZoneInfo = await GetTimeZoneInfo();
             var updateQuoteExpiryRequest = 
                 new XtrfRequest($"/v2/quotes/{quoteIdentifier.QuoteId}/quoteExpiry", Method.Put, Creds)
-                    .WithJsonBody(new { value = input.QuoteExpiry?.ConvertToUnixTime() });
+                    .WithJsonBody(new { value = input.QuoteExpiry?.ConvertToUnixTime(timeZoneInfo) });
 
             await Client.ExecuteWithErrorHandling(updateQuoteExpiryRequest);
         }

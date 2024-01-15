@@ -7,7 +7,7 @@ namespace Apps.XTRF.Classic.Models.Responses.ClassicQuote;
 
 public class QuoteResponse
 {
-    public QuoteResponse(Entities.ClassicQuote quote)
+    public QuoteResponse(Entities.ClassicQuote quote, XtrfTimeZoneInfo timeZoneInfo)
     {
         Id = quote.Id;
         IsClassicQuote = quote.IsClassicQuote;
@@ -16,14 +16,14 @@ public class QuoteResponse
         CustomerId = quote.CustomerId;
         ContactPersonId = quote.ContactPersonId;
         Status = quote.Status;
-        StartDate = quote.Dates.StartDate?.Time?.ConvertFromUnixTime();
-        Deadline = quote.Dates.Deadline?.Time?.ConvertFromUnixTime();
-        CreatedOn = quote.Dates.CreatedOn?.Time?.ConvertFromUnixTime();
-        OfferExpiry = quote.Dates.OfferExpiry?.Time?.ConvertFromUnixTime();
+        StartDate = quote.Dates.StartDate?.Time?.ConvertFromUnixTime(timeZoneInfo);
+        Deadline = quote.Dates.Deadline?.Time?.ConvertFromUnixTime(timeZoneInfo);
+        CreatedOn = quote.Dates.CreatedOn?.Time?.ConvertFromUnixTime(timeZoneInfo);
+        OfferExpiry = quote.Dates.OfferExpiry?.Time?.ConvertFromUnixTime(timeZoneInfo);
         Instructions = quote.Instructions;
         Finance = quote.Finance;
         CategoriesIds = quote.CategoriesIds;
-        Tasks = quote.Tasks?.Select(task => new TaskResponse(task));
+        Tasks = quote.Tasks?.Select(task => new TaskResponse(task, timeZoneInfo));
     }
     
     [Display("Quote ID")]

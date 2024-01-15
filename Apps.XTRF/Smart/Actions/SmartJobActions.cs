@@ -123,11 +123,13 @@ public class SmartJobActions : BaseFileActions
         
         if (input.StartDate != null || input.Deadline != null)
         {
+            var timeZoneInfo = await GetTimeZoneInfo();
+            
             var updateDatesRequest = new XtrfRequest($"/v2/jobs/{jobIdentifier.JobId}/dates", Method.Put, Creds)
                 .WithJsonBody(new
                 {
-                    startDate = input.StartDate?.ConvertToUnixTime(),
-                    deadline = input.Deadline?.ConvertToUnixTime()
+                    startDate = input.StartDate?.ConvertToUnixTime(timeZoneInfo),
+                    deadline = input.Deadline?.ConvertToUnixTime(timeZoneInfo)
                 }, JsonConfig.Settings);
             
             await Client.ExecuteWithErrorHandling(updateDatesRequest);

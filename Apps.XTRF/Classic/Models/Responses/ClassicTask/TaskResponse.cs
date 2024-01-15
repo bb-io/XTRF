@@ -7,7 +7,7 @@ namespace Apps.XTRF.Classic.Models.Responses.ClassicTask;
 
 public class TaskResponse
 {
-    public TaskResponse(Entities.ClassicTask task)
+    public TaskResponse(Entities.ClassicTask task, XtrfTimeZoneInfo timeZoneInfo)
     {
         Id = task.Id;
         IdNumber = task.IdNumber;
@@ -16,10 +16,10 @@ public class TaskResponse
         Name = task.Name;
         ClientTaskPONumber = task.ClientTaskPONumber;
         LanguageCombination = task.LanguageCombination;
-        StartDate = task.Dates.StartDate?.Time?.ConvertFromUnixTime();
-        Deadline = task.Dates.Deadline?.Time?.ConvertFromUnixTime();
-        ActualStartDate = task.Dates.ActualStartDate?.Time?.ConvertFromUnixTime();
-        ActualDeliveryDate = task.Dates.ActualDeliveryDate?.Time?.ConvertFromUnixTime();
+        StartDate = task.Dates.StartDate?.Time?.ConvertFromUnixTime(timeZoneInfo);
+        Deadline = task.Dates.Deadline?.Time?.ConvertFromUnixTime(timeZoneInfo);
+        ActualStartDate = task.Dates.ActualStartDate?.Time?.ConvertFromUnixTime(timeZoneInfo);
+        ActualDeliveryDate = task.Dates.ActualDeliveryDate?.Time?.ConvertFromUnixTime(timeZoneInfo);
         JobIds = task.Jobs.JobIds;
         Instructions = task.Instructions;
         CustomerContacts = task.People.CustomerContacts;

@@ -28,7 +28,8 @@ public class ClassicQuoteActions : XtrfInvocable
     {
         var request = new XtrfRequest($"/quotes/{quoteIdentifier.QuoteId}", Method.Get, Creds);
         var quote = await Client.ExecuteWithErrorHandling<ClassicQuote>(request);
-        return new(quote);
+        var timeZoneInfo = await GetTimeZoneInfo();
+        return new(quote, timeZoneInfo);
     }
 
     #endregion
@@ -45,7 +46,7 @@ public class ClassicQuoteActions : XtrfInvocable
             .WithJsonBody(new
             {
                 sourceLanguageId = ConvertToInt64(languageCombination.SourceLanguageId, "Source language"),
-                targetLanguagesIds = ConvertToInt64(languageCombination.TargetLanguageId, "Target language")
+                targetLanguageId = ConvertToInt64(languageCombination.TargetLanguageId, "Target language")
             });
         await Client.ExecuteWithErrorHandling(request);
         return quoteIdentifier;

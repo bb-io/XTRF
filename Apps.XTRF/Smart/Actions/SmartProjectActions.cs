@@ -47,7 +47,8 @@ public class SmartProjectActions : BaseFileActions
     {
         var getProjectRequest = new XtrfRequest($"/v2/projects/{projectIdentifier.ProjectId}", Method.Get, Creds);
         var project = await Client.ExecuteWithErrorHandling<SmartProject>(getProjectRequest);
-        var projectResponse = new ProjectResponse(project);
+        var timeZoneInfo = await GetTimeZoneInfo();
+        var projectResponse = new ProjectResponse(project, timeZoneInfo);
 
         if (includeClientContacts != null && includeClientContacts.Value)
         {
@@ -92,7 +93,8 @@ public class SmartProjectActions : BaseFileActions
     {
         var request = new XtrfRequest($"/v2/projects/{projectIdentifier.ProjectId}/jobs", Method.Get, Creds);
         var jobs = await Client.ExecuteWithErrorHandling<IEnumerable<SmartJob>>(request);
-        return new(jobs.Select(job => new JobResponse(job)));
+        var timeZoneInfo = await GetTimeZoneInfo();
+        return new(jobs.Select(job => new JobResponse(job, timeZoneInfo)));
     }
     
     [Action("Smart: List files in project", Description = "List all files in a smart project")]
@@ -175,7 +177,8 @@ public class SmartProjectActions : BaseFileActions
             }, JsonConfig.Settings);
     
         var project = await Client.ExecuteWithErrorHandling<SmartProject>(request);
-        return new(project);
+        var timeZoneInfo = await GetTimeZoneInfo();
+        return new(project, timeZoneInfo);
     }
     
     [Action("Smart: Upload file to project", Description = "Upload a file to a smart project")]
@@ -321,18 +324,20 @@ public class SmartProjectActions : BaseFileActions
 
         if (input.ClientDeadline != null)
         {
+            var timeZoneInfo = await GetTimeZoneInfo();
             var updateClientDeadlineRequest =
                 new XtrfRequest($"/v2/projects/{projectIdentifier.ProjectId}/clientDeadline", Method.Put, Creds)
-                    .WithJsonBody(new { value = input.ClientDeadline?.ConvertToUnixTime() });
+                    .WithJsonBody(new { value = input.ClientDeadline?.ConvertToUnixTime(timeZoneInfo) });
 
             await Client.ExecuteWithErrorHandling(updateClientDeadlineRequest);
         }
 
         if (input.OrderDate != null)
         {
+            var timeZoneInfo = await GetTimeZoneInfo();
             var updateClientDeadlineRequest =
                 new XtrfRequest($"/v2/projects/{projectIdentifier.ProjectId}/orderDate", Method.Put, Creds)
-                    .WithJsonBody(new { value = input.OrderDate?.ConvertToUnixTime() });
+                    .WithJsonBody(new { value = input.OrderDate?.ConvertToUnixTime(timeZoneInfo) });
 
             await Client.ExecuteWithErrorHandling(updateClientDeadlineRequest);
         }

@@ -60,7 +60,8 @@ public abstract class BaseCustomFieldActions : XtrfInvocable
     {
         var field = await GetCustomField(entityId, key);
         var value = new LongDateTimeRepresentation(((JObject)field.Value)["time"]?.Value<long>());
-        return new(field.Type, field.Name, field.Key, value.Time?.ConvertFromUnixTime());
+        var timeZoneInfo = await GetTimeZoneInfo();
+        return new(field.Type, field.Name, field.Key, value.Time?.ConvertFromUnixTime(timeZoneInfo));
     }
     
     protected async Task<CustomField<bool?>> GetCheckboxCustomField(string entityId, string key)

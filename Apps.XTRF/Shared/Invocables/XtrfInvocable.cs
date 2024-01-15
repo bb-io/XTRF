@@ -1,7 +1,9 @@
 ﻿using Apps.XTRF.Shared.Api;
+using Apps.XTRF.Shared.Models.Entities;
 using Blackbird.Applications.Sdk.Common;
 using Blackbird.Applications.Sdk.Common.Authentication;
 using Blackbird.Applications.Sdk.Common.Invocation;
+using RestSharp;
 
 namespace Apps.XTRF.Shared.Invocables;
 
@@ -38,5 +40,12 @@ public class XtrfInvocable : BaseInvocable
                 : throw new Exception($"{parameterName} must contain valid numbers.")).ToArray();
         
         return result;
+    }
+
+    protected async Task<XtrfTimeZoneInfo> GetTimeZoneInfo()
+    {
+        var request = new XtrfRequest("/users/me/timeZone", Method.Get, Creds);
+        var timeZoneInfo = await Client.ExecuteWithErrorHandling<XtrfTimeZoneInfo>(request);
+        return timeZoneInfo;
     }
 }

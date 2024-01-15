@@ -96,8 +96,9 @@ public class SmartQuoteCustomFieldActions : BaseSmartCustomFieldActions
         [ActionParameter] CustomFieldIdentifier customFieldIdentifier,
         [ActionParameter] [Display("Value")] DateTime value)
     {
+        var timeZoneInfo = await GetTimeZoneInfo();
         await UpdateCustomField(quoteIdentifier.QuoteId, customFieldIdentifier.Key,
-            new LongDateTimeRepresentation(value.ConvertToUnixTime()));
+            new LongDateTimeRepresentation(value.ConvertToUnixTime(timeZoneInfo)));
         return customFieldIdentifier;
     }
 

@@ -94,8 +94,9 @@ public class CustomerCustomFieldActions : BaseClassicCustomFieldActions
         [ActionParameter] CustomFieldIdentifier customFieldIdentifier,
         [ActionParameter] [Display("Value")] DateTime value)
     {
+        var timeZoneInfo = await GetTimeZoneInfo();
         await UpdateCustomField(customerIdentifier.CustomerId, customFieldIdentifier.Key, 
-            new LongDateTimeRepresentation(value.ConvertToUnixTime()));
+            new LongDateTimeRepresentation(value.ConvertToUnixTime(timeZoneInfo)));
         return customFieldIdentifier;
     }
 

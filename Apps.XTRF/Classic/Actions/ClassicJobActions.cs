@@ -32,7 +32,8 @@ public class ClassicJobActions : BaseFileActions
     {
         var request = new XtrfRequest($"/jobs/{jobIdentifier.JobId}", Method.Get, Creds);
         var job = await Client.ExecuteWithErrorHandling<ClassicJob>(request);
-        return new(job);
+        var timeZoneInfo = await GetTimeZoneInfo();
+        return new(job, timeZoneInfo);
     }
 
     #endregion
@@ -67,6 +68,7 @@ public class ClassicJobActions : BaseFileActions
     {
         var getJobRequest = new XtrfRequest($"/jobs/{jobIdentifier.JobId}", Method.Get, Creds);
         var job = await Client.ExecuteWithErrorHandling<ClassicJob>(getJobRequest);
+        var timeZoneInfo = await GetTimeZoneInfo();
 
         if (input.Status != null)
         {
@@ -88,8 +90,10 @@ public class ClassicJobActions : BaseFileActions
         {
             var jsonBody = new
             {
-                startDate = input.StartDate == null ? job.Dates.StartDate : input.StartDate?.ConvertToUnixTime(),
-                deadline = input.Deadline == null ? job.Dates.Deadline : input.Deadline?.ConvertToUnixTime(),
+                startDate = input.StartDate == null
+                    ? job.Dates.StartDate
+                    : input.StartDate?.ConvertToUnixTime(timeZoneInfo),
+                deadline = input.Deadline == null ? job.Dates.Deadline : input.Deadline?.ConvertToUnixTime(timeZoneInfo)
             };
 
             var updateDatesRequest =
@@ -121,7 +125,7 @@ public class ClassicJobActions : BaseFileActions
             job.Instructions.PaymentNoteForVendor = jsonBody.paymentNoteForVendor;
         }
 
-        return new(job);
+        return new(job, timeZoneInfo);
     }
 
     #endregion

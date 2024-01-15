@@ -97,8 +97,9 @@ public class ClassicProjectCustomFieldActions : BaseClassicCustomFieldActions
         [ActionParameter] CustomFieldIdentifier customFieldIdentifier,
         [ActionParameter] [Display("Value")] DateTime value)
     {
+        var timeZoneInfo = await GetTimeZoneInfo();
         await UpdateCustomField(projectIdentifier.ProjectId, customFieldIdentifier.Key, 
-            new LongDateTimeRepresentation(value.ConvertToUnixTime()));
+            new LongDateTimeRepresentation(value.ConvertToUnixTime(timeZoneInfo)));
         return customFieldIdentifier;
     }
 

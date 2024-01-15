@@ -34,7 +34,8 @@ public class ClassicProjectActions : BaseFileActions
     {
         var request = new XtrfRequest($"/projects/{projectIdentifier.ProjectId}?embed=tasks", Method.Get, Creds);
         var project = await Client.ExecuteWithErrorHandling<ClassicProject>(request);
-        return new(project);
+        var timeZoneInfo = await GetTimeZoneInfo();
+        return new(project, timeZoneInfo);
     }
     
     [Action("Classic: Download file", Description = "Download the content of a specific file in a classic project")]
@@ -62,6 +63,8 @@ public class ClassicProjectActions : BaseFileActions
     [Action("Classic: Create new project", Description = "Create a new classic project")]
     public async Task<ProjectResponse> CreateProject([ActionParameter] CreateProjectRequest input)
     {
+        var timeZoneInfo = await GetTimeZoneInfo();
+        
         var request = new XtrfRequest("/projects", Method.Post, Creds)
             .WithJsonBody(new
             {
@@ -75,7 +78,7 @@ public class ClassicProjectActions : BaseFileActions
                 {
                     deadline = new
                     {
-                        time = input.Deadline?.ConvertToUnixTime()
+                        time = input.Deadline?.ConvertToUnixTime(timeZoneInfo)
                     }
                 },
                 instructions = new
@@ -89,7 +92,7 @@ public class ClassicProjectActions : BaseFileActions
             }, JsonConfig.Settings);
         
         var project = await Client.ExecuteWithErrorHandling<ClassicProject>(request);
-        var result = new ProjectResponse(project);
+        var result = new ProjectResponse(project, timeZoneInfo);
         return result;
     }
 
@@ -103,7 +106,7 @@ public class ClassicProjectActions : BaseFileActions
             .WithJsonBody(new
             {
                 sourceLanguageId = ConvertToInt64(languageCombination.SourceLanguageId, "Source language"),
-                targetLanguagesIds = ConvertToInt64(languageCombination.TargetLanguageId, "Target language")
+                targetLanguageId = ConvertToInt64(languageCombination.TargetLanguageId, "Target language")
             });
         await Client.ExecuteWithErrorHandling(request);
         return projectIdentifier;
@@ -119,6 +122,7 @@ public class ClassicProjectActions : BaseFileActions
     {
         var getProjectRequest = new XtrfRequest($"/projects/{projectIdentifier.ProjectId}", Method.Get, Creds);
         var project = await Client.ExecuteWithErrorHandling<ClassicProject>(getProjectRequest);
+        var timeZoneInfo = await GetTimeZoneInfo();
 
         if (input.PrimaryId != null || input.AdditionalIds != null || input.SendBackToId != null)
         {
@@ -151,25 +155,25 @@ public class ClassicProjectActions : BaseFileActions
                 {
                     time = input.StartDate == null
                         ? project.Dates.StartDate?.Time
-                        : input.StartDate?.ConvertToUnixTime()
+                        : input.StartDate?.ConvertToUnixTime(timeZoneInfo)
                 },
                 deadline = new
                 {
                     time = input.Deadline == null
                         ? project.Dates.Deadline?.Time
-                        : input.Deadline?.ConvertToUnixTime()
+                        : input.Deadline?.ConvertToUnixTime(timeZoneInfo)
                 },
                 actualStartDate = new
                 {
                     time = input.ActualStartDate == null
                         ? project.Dates.ActualStartDate?.Time
-                        : input.ActualStartDate?.ConvertToUnixTime()
+                        : input.ActualStartDate?.ConvertToUnixTime(timeZoneInfo)
                 },
                 actualDeliveryDate = new
                 {
                     time = input.ActualDeliveryDate == null
                         ? project.Dates.ActualDeliveryDate?.Time
-                        : input.ActualDeliveryDate?.ConvertToUnixTime()
+                        : input.ActualDeliveryDate?.ConvertToUnixTime(timeZoneInfo)
                 }
             };
             
@@ -211,7 +215,7 @@ public class ClassicProjectActions : BaseFileActions
             project.Instructions.Notes = jsonBody.notes;
         }
 
-        return new(project);
+        return new(project, timeZoneInfo);
     }
 
     #endregion

@@ -1,4 +1,5 @@
 ﻿using Apps.XTRF.Shared.Extensions;
+using Apps.XTRF.Shared.Models.Entities;
 using Apps.XTRF.Smart.Models.Entities;
 using Blackbird.Applications.Sdk.Common;
 
@@ -6,7 +7,7 @@ namespace Apps.XTRF.Smart.Models.Responses.SmartJob;
 
 public class JobResponse
 {
-    public JobResponse(Entities.SmartJob job)
+    public JobResponse(Entities.SmartJob job, XtrfTimeZoneInfo timeZoneInfo)
     {
         Id = job.Id;
         IdNumber = job.IdNumber;
@@ -15,10 +16,10 @@ public class JobResponse
         StepNumber = job.StepNumber;
         VendorId = job.VendorId;
         PurchaseOrderStatus = job.Documents.PurchaseOrderStatus;
-        StartDate = job.Dates.StartDate?.ConvertFromUnixTime();
-        Deadline = job.Dates.Deadline?.ConvertFromUnixTime();
-        ActualStartDate = job.Dates.ActualStartDate?.ConvertFromUnixTime();
-        ActualEndDate = job.Dates.ActualEndDate?.ConvertFromUnixTime();
+        StartDate = job.Dates.StartDate?.ConvertFromUnixTime(timeZoneInfo);
+        Deadline = job.Dates.Deadline?.ConvertFromUnixTime(timeZoneInfo);
+        ActualStartDate = job.Dates.ActualStartDate?.ConvertFromUnixTime(timeZoneInfo);
+        ActualEndDate = job.Dates.ActualEndDate?.ConvertFromUnixTime(timeZoneInfo);
         StepType = job.StepType;
         Files = job.Files;
         Instructions = job.Communication;

@@ -7,7 +7,7 @@ namespace Apps.XTRF.Smart.Models.Responses.SmartProject;
 
 public class ProjectResponse
 {
-    public ProjectResponse(Entities.SmartProject project)
+    public ProjectResponse(Entities.SmartProject project, XtrfTimeZoneInfo timeZoneInfo)
     {
         Id = project.Id;
         IsClassicProject = project.IsClassicProject;
@@ -25,8 +25,8 @@ public class ProjectResponse
         ClientNotes = project.ClientNotes;
         InternalNotes = project.InternalNotes;
         InstructionsForAllJobs = project.InstructionsForAllJobs;
-        ClientDeadline = project.ClientDeadline?.ConvertFromUnixTime();
-        OrderedOn = project.OrderedOn?.ConvertFromUnixTime();
+        ClientDeadline = project.ClientDeadline?.ConvertFromUnixTime(timeZoneInfo);
+        OrderedOn = project.OrderedOn?.ConvertFromUnixTime(timeZoneInfo);
         SourceLanguageId = project.Languages.SourceLanguageId;
         TargetLanguageIds = project.Languages.TargetLanguageIds;
         LanguageCombinations = project.Languages.LanguageCombinations;

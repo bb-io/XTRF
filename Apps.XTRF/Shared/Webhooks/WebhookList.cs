@@ -194,10 +194,12 @@ public class WebhookList : XtrfInvocable
 
         if (input.DateValue != null)
         {
+            var timeZoneInfo = GetTimeZoneInfo().Result;
+            
             if (targetCustomField.Type == CustomFieldTypes.Date)
             {
                 var value = new LongDateTimeRepresentation(((JObject)targetCustomField.Value)["time"]?.Value<long>()).Time?
-                    .ConvertFromUnixTime();
+                    .ConvertFromUnixTime(timeZoneInfo);
                 
                 // only Equal, Before and After filter types possible according to CustomFieldFilterTypeDataHandler
                 switch (filterType)
@@ -216,7 +218,7 @@ public class WebhookList : XtrfInvocable
             if (targetCustomField.Type == CustomFieldTypes.DateTime)
             {
                 var value = new LongDateTimeRepresentation(((JObject)targetCustomField.Value)["time"]?.Value<long>()).Time?
-                    .ConvertFromUnixTime();
+                    .ConvertFromUnixTime(timeZoneInfo);
                 
                 switch (filterType)
                 {

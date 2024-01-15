@@ -31,7 +31,8 @@ public class ClassicTaskActions : BaseFileActions
         [ActionParameter] ClassicTaskIdentifier taskIdentifier)
     {
         var task = await GetTask(projectIdentifier, taskIdentifier);
-        return new(task);
+        var timeZoneInfo = await GetTimeZoneInfo();
+        return new(task, timeZoneInfo);
     }
     
     [Action("Classic: Get task in quote", Description = "Retrieve information about a task within the quote")]
@@ -39,7 +40,8 @@ public class ClassicTaskActions : BaseFileActions
         [ActionParameter] ClassicTaskIdentifier taskIdentifier)
     {
         var task = await GetTask(quoteIdentifier, taskIdentifier);
-        return new(task);
+        var timeZoneInfo = await GetTimeZoneInfo();
+        return new(task, timeZoneInfo);
     }
 
     [Action("Classic: Get task progress", Description = "Get progress of a given task which contains information about task's " +
@@ -113,7 +115,8 @@ public class ClassicTaskActions : BaseFileActions
         [ActionParameter] CreateTaskRequest input)
     {
         var task = await CreateTask($"/projects/{projectIdentifier.ProjectId}/tasks", languageCombination, input);
-        return new(task);
+        var timeZoneInfo = await GetTimeZoneInfo();
+        return new(task, timeZoneInfo);
     }
     
     [Action("Classic: Create task for quote", Description = "Creates a new task for a given classic quote")]
@@ -122,25 +125,31 @@ public class ClassicTaskActions : BaseFileActions
         [ActionParameter] CreateTaskRequest input)
     {
         var task = await CreateTask($"/quotes/{quoteIdentifier.QuoteId}/tasks", languageCombination, input);
-        return new(task);
+        var timeZoneInfo = await GetTimeZoneInfo();
+        return new(task, timeZoneInfo);
     }
     
     private async Task<ClassicTask> CreateTask(string endpoint, LanguageCombinationIdentifier languageCombination, 
         CreateTaskRequest input)
     {
+        var timeZoneInfo = await GetTimeZoneInfo();
+        
         var request = new XtrfRequest(endpoint, Method.Post, Creds)
             .WithJsonBody(new
             {
                 specializationId = ConvertToInt64(input.SpecializationId, "Specialization"),
                 workflowId = ConvertToInt64(input.WorkflowId, "Workflow ID"),
                 name = input.Name,
-                sourceLanguageId = ConvertToInt64(languageCombination.SourceLanguageId, "Source language"),
-                targetLanguagesId = ConvertToInt64(languageCombination.TargetLanguageId, "Target language"),
+                languageCombination = new
+                {
+                    sourceLanguageId = ConvertToInt64(languageCombination.SourceLanguageId, "Source language"),
+                    targetLanguageId = ConvertToInt64(languageCombination.TargetLanguageId, "Target language")
+                },
                 dates = new
                 {
                     deadline = new
                     {
-                        time = input.Deadline?.ConvertToUnixTime()
+                        time = input.Deadline?.ConvertToUnixTime(timeZoneInfo)
                     }
                 },
                 instructions = new
@@ -168,7 +177,9 @@ public class ClassicTaskActions : BaseFileActions
     {
         var task = await GetTask(projectIdentifier, taskIdentifier);
         await UpdateTask(taskIdentifier, input, task);
-        return new(task);
+        
+        var timeZoneInfo = await GetTimeZoneInfo();
+        return new(task, timeZoneInfo);
     }
 
     [Action("Classic: Update task in quote", Description = "Update a task within the quote, specifying only the " +
@@ -178,7 +189,9 @@ public class ClassicTaskActions : BaseFileActions
     {
         var task = await GetTask(quoteIdentifier, taskIdentifier);
         await UpdateTask(taskIdentifier, input, task);
-        return new(task);
+        
+        var timeZoneInfo = await GetTimeZoneInfo();
+        return new(task, timeZoneInfo);
     }
     
     private async Task UpdateTask(ClassicTaskIdentifier taskIdentifier, UpdateTaskRequest input, ClassicTask task)
@@ -228,31 +241,33 @@ public class ClassicTaskActions : BaseFileActions
         if (input.StartDate != null || input.Deadline != null || input.ActualStartDate != null ||
             input.ActualDeliveryDate != null)
         {
+            var timeZoneInfo = await GetTimeZoneInfo();
+            
             var jsonBody = new
             {
                 startDate = new
                 {
                     time = input.StartDate == null
                         ? task.Dates.StartDate?.Time
-                        : input.StartDate?.ConvertToUnixTime()
+                        : input.StartDate?.ConvertToUnixTime(timeZoneInfo)
                 },
                 deadline = new
                 {
                     time = input.Deadline == null
                         ? task.Dates.Deadline?.Time
-                        : input.Deadline?.ConvertToUnixTime()
+                        : input.Deadline?.ConvertToUnixTime(timeZoneInfo)
                 },
                 actualStartDate = new
                 {
                     time = input.ActualStartDate == null
                         ? task.Dates.ActualStartDate?.Time
-                        : input.ActualStartDate?.ConvertToUnixTime()
+                        : input.ActualStartDate?.ConvertToUnixTime(timeZoneInfo)
                 },
                 actualDeliveryDate = new
                 {
                     time = input.ActualDeliveryDate == null
                         ? task.Dates.ActualDeliveryDate?.Time
-                        : input.ActualDeliveryDate?.ConvertToUnixTime()
+                        : input.ActualDeliveryDate?.ConvertToUnixTime(timeZoneInfo)
                 }
             };
             

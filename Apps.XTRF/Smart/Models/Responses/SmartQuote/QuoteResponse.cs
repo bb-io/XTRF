@@ -7,7 +7,7 @@ namespace Apps.XTRF.Smart.Models.Responses.SmartQuote;
 
 public class QuoteResponse
 {
-    public QuoteResponse(Entities.SmartQuote quote)
+    public QuoteResponse(Entities.SmartQuote quote, XtrfTimeZoneInfo timeZoneInfo)
     {
         Id = quote.Id;
         IsClassicQuote = quote.IsClassicQuote;
@@ -24,10 +24,10 @@ public class QuoteResponse
         ClientNotes = quote.ClientNotes;
         InternalNotes = quote.InternalNotes;
         InstructionsForAllJobs = quote.InstructionsForAllJobs;
-        ClientDeadline = quote.ClientDeadline?.ConvertFromUnixTime();
-        OrderedOn = quote.OrderedOn?.ConvertFromUnixTime();
-        QuoteExpiry = quote.QuoteExpiry?.ConvertFromUnixTime();
-        ExpectedDeliveryDate = quote.ExpectedDeliveryDate?.ConvertFromUnixTime();
+        ClientDeadline = quote.ClientDeadline?.ConvertFromUnixTime(timeZoneInfo);
+        OrderedOn = quote.OrderedOn?.ConvertFromUnixTime(timeZoneInfo);
+        QuoteExpiry = quote.QuoteExpiry?.ConvertFromUnixTime(timeZoneInfo);
+        ExpectedDeliveryDate = quote.ExpectedDeliveryDate?.ConvertFromUnixTime(timeZoneInfo);
         BusinessDays = quote.BusinessDays;
         SourceLanguageId = quote.Languages.SourceLanguageId;
         TargetLanguageIds = quote.Languages.TargetLanguageIds;

@@ -30,7 +30,8 @@ public class CustomerActions : XtrfInvocable
         var endpoint = "/customers";
         if (updatedSince is not null)
         {
-            var elapsedTimeInMilliseconds = updatedSince.Value.ConvertToUnixTime();
+            var timeZoneInfo = await GetTimeZoneInfo();
+            var elapsedTimeInMilliseconds = updatedSince.Value.ConvertToUnixTime(timeZoneInfo);
             endpoint += $"?updatedSince={elapsedTimeInMilliseconds}";
         }
 

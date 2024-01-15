@@ -7,7 +7,7 @@ namespace Apps.XTRF.Classic.Models.Responses.ClassicJob;
 
 public class JobResponse
 {
-    public JobResponse(Entities.ClassicJob job)
+    public JobResponse(Entities.ClassicJob job, XtrfTimeZoneInfo timeZoneInfo)
     {
         Id = job.Id;
         Name = job.Name;
@@ -16,10 +16,10 @@ public class JobResponse
         SpecializationId = job.SpecializationId;
         VendorId = job.VendorId;
         PurchaseOrderStatus = job.Documents.PurchaseOrderStatus;
-        StartDate = job.Dates.StartDate?.ConvertFromUnixTime();
-        Deadline = job.Dates.Deadline?.ConvertFromUnixTime();
-        ActualStartDate = job.Dates.ActualStartDate?.ConvertFromUnixTime();
-        ActualEndDate = job.Dates.ActualEndDate?.ConvertFromUnixTime();
+        StartDate = job.Dates.StartDate?.ConvertFromUnixTime(timeZoneInfo);
+        Deadline = job.Dates.Deadline?.ConvertFromUnixTime(timeZoneInfo);
+        ActualStartDate = job.Dates.ActualStartDate?.ConvertFromUnixTime(timeZoneInfo);
+        ActualEndDate = job.Dates.ActualEndDate?.ConvertFromUnixTime(timeZoneInfo);
         StepType = job.StepType;
         Languages = job.Languages;
         Instructions = job.Instructions;
