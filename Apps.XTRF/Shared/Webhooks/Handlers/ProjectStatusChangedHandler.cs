@@ -1,10 +1,15 @@
-﻿namespace Apps.XTRF.Shared.Webhooks.Handlers;
+﻿using Apps.XTRF.Shared.Webhooks.Handlers.Base;
+using Apps.XTRF.Shared.Webhooks.Models.Inputs;
+using Blackbird.Applications.Sdk.Common.Webhooks;
 
-public class ProjectStatusChangedHandler : BaseWebhookHandler
+namespace Apps.XTRF.Shared.Webhooks.Handlers;
+
+public class ProjectStatusChangedHandler : WebhookHandlerWithFilter
 {
     const string SubscriptionEvent = "project_status_changed";
 
-    public ProjectStatusChangedHandler() : base(SubscriptionEvent)
+    public ProjectStatusChangedHandler([WebhookParameter(true)] FilterStringInput filterString) 
+        : base(SubscriptionEvent, filterString)
     {
     }
 }

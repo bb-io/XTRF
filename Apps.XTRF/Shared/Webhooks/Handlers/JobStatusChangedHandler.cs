@@ -1,6 +1,8 @@
-﻿namespace Apps.XTRF.Shared.Webhooks.Handlers;
+﻿using Apps.XTRF.Shared.Webhooks.Handlers.Base;
 
-public class JobStatusChangedHandler : BaseWebhookHandler
+namespace Apps.XTRF.Shared.Webhooks.Handlers;
+
+public class JobStatusChangedHandler : SimpleWebhookHandler
 {
     const string SubscriptionEvent = "job_status_changed";
 

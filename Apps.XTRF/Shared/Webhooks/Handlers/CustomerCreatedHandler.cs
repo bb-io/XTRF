@@ -1,6 +1,8 @@
-﻿namespace Apps.XTRF.Shared.Webhooks.Handlers;
+﻿using Apps.XTRF.Shared.Webhooks.Handlers.Base;
 
-public class CustomerCreatedHandler : BaseWebhookHandler
+namespace Apps.XTRF.Shared.Webhooks.Handlers;
+
+public class CustomerCreatedHandler : SimpleWebhookHandler
 {
     const string SubscriptionEvent = "customer_created";
 
