@@ -1,19 +1,23 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
-  <PropertyGroup>
-    <TargetFramework>net8.0</TargetFramework>
-    <ImplicitUsings>enable</ImplicitUsings>
-    <Nullable>enable</Nullable>
-    <Product>XTRF</Product>
-    <Version>1.0.4</Version>
-    <Description>Translation project management made easy</Description>
-    <AssemblyName>Apps.XTRF</AssemblyName>
-  </PropertyGroup>
-  <ItemGroup>
-    <PackageReference Include="Blackbird.Applications.Sdk.Common" Version="2.3.2-alpha1" />
-    <PackageReference Include="Blackbird.Applications.SDK.Extensions.FileManagement" Version="1.0.1" />
-    <PackageReference Include="Blackbird.Applications.Sdk.Utils" Version="1.0.16" />
-  </ItemGroup>
-  <ItemGroup>
-    <EmbeddedResource CopyToOutputDirectory="Always" Include="image\icon.png"></EmbeddedResource>
-  </ItemGroup>
+    <PropertyGroup>
+        <TargetFramework>net8.0</TargetFramework>
+        <ImplicitUsings>enable</ImplicitUsings>
+        <Nullable>enable</Nullable>
+        <Product>XTRF</Product>
+        <Version>2.0.0</Version>
+        <Description>Translation project management made easy</Description>
+        <AssemblyName>Apps.XTRF</AssemblyName>
+    </PropertyGroup>
+    <ItemGroup>
+        <PackageReference Include="Blackbird.Applications.Sdk.Common" Version="2.3.2-alpha1" />
+        <PackageReference Include="Blackbird.Applications.SDK.Extensions.FileManagement" Version="1.0.1" />
+        <PackageReference Include="Blackbird.Applications.Sdk.Utils" Version="1.0.19" />
+    </ItemGroup>
+    <ItemGroup>
+        <EmbeddedResource CopyToOutputDirectory="Always" Include="image\icon.png"></EmbeddedResource>
+    </ItemGroup>
+    <ItemGroup>
+        <Folder Include="Shared\Models\Requests" />
+        <Folder Include="Smart\Models" />
+    </ItemGroup>
 </Project>
