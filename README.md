@@ -93,69 +93,69 @@ XTRF is a comprehensive translation management system that streamlines and autom
 
 ### Smart - File 
 
-- ** Download file** Download the content of a specific file
-- ** List deliverable files for source file** List files ready for delivery with the same name as given source file in a smart project
+- **Download file** Download the content of a specific file
+- **List deliverable files for source file** List files ready for delivery with the same name as given source file in a smart project
 
 ### Smart - Job
 
-- ** Get delivered files in job** Get delivered files in a smart job
-- ** Get job details** Get information about a smart job
-- ** Get reference files shared with job** Get reference files shared with a smart job
-- ** Get work files shared with job** Get work files shared with a smart job
-- ** Share file as reference file with job** Share a file as a reference file with a smart job. Both the file and the job must belong to the same project
-- ** Share file as work file with job** Share a file as a work file with a smart job. Both the file and the job must belong to the same project
-- ** Stop sharing file with job** Stop sharing a file with a smart job
-- ** Update job** Update a smart job, specifying only the fields that require updating
-- ** Upload delivered file to job** Upload a delivered file to a smart job
+- **Get delivered files in job** Get delivered files in a smart job
+- **Get job details** Get information about a smart job
+- **Get reference files shared with job** Get reference files shared with a smart job
+- **Get work files shared with job** Get work files shared with a smart job
+- **Share file as reference file with job** Share a file as a reference file with a smart job. Both the file and the job must belong to the same project
+- **Share file as work file with job** Share a file as a work file with a smart job. Both the file and the job must belong to the same project
+- **Stop sharing file with job** Stop sharing a file with a smart job
+- **Update job** Update a smart job, specifying only the fields that require updating
+- **Upload delivered file to job** Upload a delivered file to a smart job
 
 
 ### Smart - Project
 
-- ** Add target languages to project** Add more target languages to a smart project
-- ** Create new project** Create a new smart project
-- ** Delete payable for project** Delete a payable for a smart project
-- ** Delete receivable for project** Delete a receivable for a smart project
-- ** Get checkbox custom field for project** Retrieve a checkbox (boolean) custom field for a smart project
-- ** Get date custom field for project** Retrieve a date/date and time custom field for a smart project
-- ** Get multiple selection custom field for project** Retrieve a multiple selection (list) custom field for a smart project
-- ** Get number custom field for project** Retrieve a number custom field for a smart project
-- ** Get project details** Get information about a smart project. If you need to retrieve client contacts, finance information, process ID or check if project created in CAT tool or creation is queued, set the respective optional parameter to 'True'
-- ** Get project file details** Get information about specific file in a smart project
-- ** Get text or selection custom field for project** Retrieve a text or selection custom field for a smart project
-- ** List custom fields for project** List the custom fields for a smart project, returning fields that can be assigned to the project without their values. To obtain the field value, use the "Get custom field for project" action corresponding to the field type
-- ** List files in project** List all files in a smart project
-- ** List jobs in project** List all jobs in a smart project
-- ** Update checkbox custom field for project** Update a checkbox (boolean) custom field for a smart project
-- ** Update date custom field for project** Update a date/date and time custom field for a smart project
-- ** Update multiple selection custom field for project** Update a multiple selection (list) custom field for a smart project
-- ** Update number custom field for project** Update a number custom field for a smart project
-- ** Update project** Update a smart project, specifying only the fields that require updating
-- ** Update text or selection custom field for project** Update a text or selection custom field for a smart project
-- ** Upload file to project** Upload a file to a smart project
+- **Add target languages to project** Add more target languages to a smart project
+- **Create new project** Create a new smart project
+- **Delete payable for project** Delete a payable for a smart project
+- **Delete receivable for project** Delete a receivable for a smart project
+- **Get checkbox custom field for project** Retrieve a checkbox (boolean) custom field for a smart project
+- **Get date custom field for project** Retrieve a date/date and time custom field for a smart project
+- **Get multiple selection custom field for project** Retrieve a multiple selection (list) custom field for a smart project
+- **Get number custom field for project** Retrieve a number custom field for a smart project
+- **Get project details** Get information about a smart project. If you need to retrieve client contacts, finance information, process ID or check if project created in CAT tool or creation is queued, set the respective optional parameter to 'True'
+- **Get project file details** Get information about specific file in a smart project
+- **Get text or selection custom field for project** Retrieve a text or selection custom field for a smart project
+- **List custom fields for project** List the custom fields for a smart project, returning fields that can be assigned to the project without their values. To obtain the field value, use the "Get custom field for project" action corresponding to the field type
+- **List files in project** List all files in a smart project
+- **List jobs in project** List all jobs in a smart project
+- **Update checkbox custom field for project** Update a checkbox (boolean) custom field for a smart project
+- **Update date custom field for project** Update a date/date and time custom field for a smart project
+- **Update multiple selection custom field for project** Update a multiple selection (list) custom field for a smart project
+- **Update number custom field for project** Update a number custom field for a smart project
+- **Update project** Update a smart project, specifying only the fields that require updating
+- **Update text or selection custom field for project** Update a text or selection custom field for a smart project
+- **Upload file to project** Upload a file to a smart project
 
 ### Smart - Quote
 
-- ** Add target languages to quote** Add more target languages to a smart quote
-- ** Create new quote** Create a new smart quote
-- ** Delete payable for quote** Delete a payable for a smart quote
-- ** Delete receivable for quote** Delete a receivable for a smart quote
-- ** Get checkbox custom field for quote** Retrieve a checkbox (boolean) custom field for a smart quote
-- ** Get date custom field for quote** Retrieve a date/date and time custom field for a smart quote
-- ** Get multiple selection custom field for quote** Retrieve a multiple selection (list) custom field for a smart quote
-- ** Get number custom field for quote** Retrieve a number custom field for a smart quote
-- ** Get quote details** Get information about a smart quote. If you need to retrieve finance information, set the respective optional parameter to 'True'
-- ** Get quote file details** Get information about specific file in a smart quote
-- ** Get text or selection custom field for quote** Retrieve a text or selection custom field for a smart quote
-- ** List custom fields for quote** List the custom fields for a smart quote, returning fields that can be assigned to the quote without their values. To obtain the field value, use the "Get custom field for quote" action corresponding to the field type
-- ** List files in quote** List all files in a smart quote
-- ** List jobs in quote** List all jobs in a smart quote
-- ** Update checkbox custom field for quote** Update a checkbox (boolean) custom field for a smart quote
-- ** Update date custom field for quote** Update a date/date and time custom field for a smart quote
-- ** Update multiple selection custom field for quote** Update a multiple selection (list) custom field for a smart quote
-- ** Update number custom field for quote** Update a number custom field for a smart quote
-- ** Update quote** Update a smart quote, specifying only the fields that require updating
-- ** Update text or selection custom field for quote** Update a text or selection custom field for a smart quote
-- ** Upload file to quote** Upload a file to a smart quote
+- **Add target languages to quote** Add more target languages to a smart quote
+- **Create new quote** Create a new smart quote
+- **Delete payable for quote** Delete a payable for a smart quote
+- **Delete receivable for quote** Delete a receivable for a smart quote
+- **Get checkbox custom field for quote** Retrieve a checkbox (boolean) custom field for a smart quote
+- **Get date custom field for quote** Retrieve a date/date and time custom field for a smart quote
+- **Get multiple selection custom field for quote** Retrieve a multiple selection (list) custom field for a smart quote
+- **Get number custom field for quote** Retrieve a number custom field for a smart quote
+- **Get quote details** Get information about a smart quote. If you need to retrieve finance information, set the respective optional parameter to 'True'
+- **Get quote file details** Get information about specific file in a smart quote
+- **Get text or selection custom field for quote** Retrieve a text or selection custom field for a smart quote
+- **List custom fields for quote** List the custom fields for a smart quote, returning fields that can be assigned to the quote without their values. To obtain the field value, use the "Get custom field for quote" action corresponding to the field type
+- **List files in quote** List all files in a smart quote
+- **List jobs in quote** List all jobs in a smart quote
+- **Update checkbox custom field for quote** Update a checkbox (boolean) custom field for a smart quote
+- **Update date custom field for quote** Update a date/date and time custom field for a smart quote
+- **Update multiple selection custom field for quote** Update a multiple selection (list) custom field for a smart quote
+- **Update number custom field for quote** Update a number custom field for a smart quote
+- **Update quote** Update a smart quote, specifying only the fields that require updating
+- **Update text or selection custom field for quote** Update a text or selection custom field for a smart quote
+- **Upload file to quote** Upload a file to a smart quote
 
 ## Events
 
