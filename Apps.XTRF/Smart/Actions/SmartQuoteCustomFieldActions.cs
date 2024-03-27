@@ -37,14 +37,14 @@ public class SmartQuoteCustomFieldActions : BaseSmartCustomFieldActions
 
     [Action("Smart: Get number custom field for quote", 
         Description = "Retrieve a number custom field for a smart quote")]
-    public async Task<CustomField<decimal?>> GetNumberCustomFieldForQuote(
+    public async Task<CustomDecimalField> GetNumberCustomFieldForQuote(
         [ActionParameter] QuoteIdentifier quoteIdentifier,
         [ActionParameter] CustomFieldIdentifier customFieldIdentifier)
         => await GetNumberCustomField(quoteIdentifier.QuoteId, customFieldIdentifier.Key);
 
     [Action("Smart: Get date custom field for quote",
         Description = "Retrieve a date/date and time custom field for a smart quote")]
-    public async Task<CustomField<DateTime?>> GetDateCustomFieldForQuote(
+    public async Task<CustomDateTimeField> GetDateCustomFieldForQuote(
         [ActionParameter] QuoteIdentifier quoteIdentifier,
         [ActionParameter] CustomFieldIdentifier customFieldIdentifier)
         => await GetDateCustomField(quoteIdentifier.QuoteId, customFieldIdentifier.Key);

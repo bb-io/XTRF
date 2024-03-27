@@ -38,14 +38,14 @@ public class ClassicProjectCustomFieldActions : BaseClassicCustomFieldActions
 
     [Action("Classic: Get number custom field for project", 
         Description = "Retrieve a number custom field for a classic project")]
-    public async Task<CustomField<decimal?>> GetNumberCustomFieldForProject(
+    public async Task<CustomDecimalField> GetNumberCustomFieldForProject(
         [ActionParameter] ProjectIdentifier projectIdentifier,
         [ActionParameter] CustomFieldIdentifier customFieldIdentifier)
         => await GetNumberCustomField(projectIdentifier.ProjectId, customFieldIdentifier.Key);
 
     [Action("Classic: Get date custom field for project",
         Description = "Retrieve a date/date and time custom field for a classic project")]
-    public async Task<CustomField<DateTime?>> GetDateCustomFieldForProject(
+    public async Task<CustomDateTimeField> GetDateCustomFieldForProject(
         [ActionParameter] ProjectIdentifier projectIdentifier,
         [ActionParameter] CustomFieldIdentifier customFieldIdentifier)
         => await GetDateCustomField(projectIdentifier.ProjectId, customFieldIdentifier.Key);

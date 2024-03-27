@@ -36,14 +36,14 @@ public class CustomerCustomFieldActions : BaseClassicCustomFieldActions
         => await GetTextCustomField(customerIdentifier.CustomerId, customFieldIdentifier.Key);
 
     [Action("Get number custom field for customer", Description = "Retrieve a number custom field for a customer")]
-    public async Task<CustomField<decimal?>> GetNumberCustomFieldForCustomer(
+    public async Task<CustomDecimalField> GetNumberCustomFieldForCustomer(
         [ActionParameter] CustomerIdentifier customerIdentifier,
         [ActionParameter] CustomFieldIdentifier customFieldIdentifier)
         => await GetNumberCustomField(customerIdentifier.CustomerId, customFieldIdentifier.Key);
 
     [Action("Get date custom field for customer", Description = "Retrieve a date/date and time custom field for " +
                                                                 "a customer")]
-    public async Task<CustomField<DateTime?>> GetDateCustomFieldForCustomer(
+    public async Task<CustomDateTimeField> GetDateCustomFieldForCustomer(
         [ActionParameter] CustomerIdentifier customerIdentifier,
         [ActionParameter] CustomFieldIdentifier customFieldIdentifier)
         => await GetDateCustomField(customerIdentifier.CustomerId, customFieldIdentifier.Key);

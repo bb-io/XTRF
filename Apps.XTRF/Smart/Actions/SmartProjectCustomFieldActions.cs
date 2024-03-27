@@ -38,14 +38,14 @@ public class SmartProjectCustomFieldActions : BaseSmartCustomFieldActions
 
     [Action("Smart: Get number custom field for project", 
         Description = "Retrieve a number custom field for a smart project")]
-    public async Task<CustomField<decimal?>> GetNumberCustomFieldForProject(
+    public async Task<CustomDecimalField> GetNumberCustomFieldForProject(
         [ActionParameter] ProjectIdentifier projectIdentifier,
         [ActionParameter] CustomFieldIdentifier customFieldIdentifier)
         => await GetNumberCustomField(projectIdentifier.ProjectId, customFieldIdentifier.Key);
 
     [Action("Smart: Get date custom field for project",
         Description = "Retrieve a date/date and time custom field for a smart project")]
-    public async Task<CustomField<DateTime?>> GetDateCustomFieldForProject(
+    public async Task<CustomDateTimeField> GetDateCustomFieldForProject(
         [ActionParameter] ProjectIdentifier projectIdentifier,
         [ActionParameter] CustomFieldIdentifier customFieldIdentifier)
         => await GetDateCustomField(projectIdentifier.ProjectId, customFieldIdentifier.Key);
