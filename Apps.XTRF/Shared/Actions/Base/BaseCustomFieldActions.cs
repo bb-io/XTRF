@@ -50,24 +50,24 @@ public abstract class BaseCustomFieldActions : XtrfInvocable
         return new(field.Type, field.Name, field.Key, field.Value?.ToString());
     }
     
-    protected async Task<CustomField<decimal?>> GetNumberCustomField(string entityId, string key)
+    protected async Task<CustomDecimalField> GetNumberCustomField(string entityId, string key)
     {
         var field = await GetCustomField(entityId, key);
         return new(field.Type, field.Name, field.Key, Convert.ToDecimal(field.Value));
     }
     
-    protected async Task<CustomField<DateTime?>> GetDateCustomField(string entityId, string key)
+    protected async Task<CustomDateTimeField> GetDateCustomField(string entityId, string key)
     {
         var field = await GetCustomField(entityId, key);
         var value = new LongDateTimeRepresentation(((JObject)field.Value)["time"]?.Value<long>());
         var timeZoneInfo = await GetTimeZoneInfo();
-        return new(field.Type, field.Name, field.Key, value.Time?.ConvertFromUnixTime(timeZoneInfo));
+        return new(field.Type, field.Name, field.Key, value.Time?.ConvertFromUnixTime(timeZoneInfo) ?? default);
     }
     
-    protected async Task<CustomField<bool?>> GetCheckboxCustomField(string entityId, string key)
+    protected async Task<CustomBooleanField> GetCheckboxCustomField(string entityId, string key)
     {
         var field = await GetCustomField(entityId, key);
-        return new(field.Type, field.Name, field.Key, (bool)field.Value);
+        return new(field.Type, field.Name, field.Key, (bool)(field.Value ?? default(bool)));
     }
     
     protected async Task<CustomField<IEnumerable<string>>> GetMultipleSelectionCustomField(string entityId, string key)

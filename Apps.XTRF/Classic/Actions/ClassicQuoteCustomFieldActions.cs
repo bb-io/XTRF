@@ -38,21 +38,21 @@ public class ClassicQuoteCustomFieldActions : BaseClassicCustomFieldActions
 
     [Action("Classic: Get number custom field for quote", 
         Description = "Retrieve a number custom field for a classic quote")]
-    public async Task<CustomField<decimal?>> GetNumberCustomFieldForQuote(
+    public async Task<CustomDecimalField> GetNumberCustomFieldForQuote(
         [ActionParameter] QuoteIdentifier quoteIdentifier,
         [ActionParameter] CustomFieldIdentifier customFieldIdentifier)
         => await GetNumberCustomField(quoteIdentifier.QuoteId, customFieldIdentifier.Key);
 
     [Action("Classic: Get date custom field for quote",
         Description = "Retrieve a date/date and time custom field for a classic quote")]
-    public async Task<CustomField<DateTime?>> GetDateCustomFieldForQuote(
+    public async Task<CustomDateTimeField> GetDateCustomFieldForQuote(
         [ActionParameter] QuoteIdentifier quoteIdentifier,
         [ActionParameter] CustomFieldIdentifier customFieldIdentifier)
         => await GetDateCustomField(quoteIdentifier.QuoteId, customFieldIdentifier.Key);
 
     [Action("Classic: Get checkbox custom field for quote",
         Description = "Retrieve a checkbox (boolean) custom field for a classic quote")]
-    public async Task<CustomField<bool?>> GetCheckboxCustomFieldForQuote(
+    public async Task<CustomBooleanField> GetCheckboxCustomFieldForQuote(
         [ActionParameter] QuoteIdentifier quoteIdentifier,
         [ActionParameter] CustomFieldIdentifier customFieldIdentifier)
         => await GetCheckboxCustomField(quoteIdentifier.QuoteId, customFieldIdentifier.Key);
