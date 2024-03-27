@@ -50,7 +50,7 @@ public class CustomerCustomFieldActions : BaseClassicCustomFieldActions
 
     [Action("Get checkbox custom field for customer", Description = "Retrieve a checkbox (boolean) custom field for " +
                                                                     "a customer")]
-    public async Task<CustomField<bool?>> GetCheckboxCustomFieldForCustomer(
+    public async Task<CustomBooleanField> GetCheckboxCustomFieldForCustomer(
         [ActionParameter] CustomerIdentifier customerIdentifier,
         [ActionParameter] CustomFieldIdentifier customFieldIdentifier)
         => await GetCheckboxCustomField(customerIdentifier.CustomerId, customFieldIdentifier.Key);

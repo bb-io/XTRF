@@ -64,7 +64,7 @@ public abstract class BaseCustomFieldActions : XtrfInvocable
         return new(field.Type, field.Name, field.Key, value.Time?.ConvertFromUnixTime(timeZoneInfo));
     }
     
-    protected async Task<CustomField<bool?>> GetCheckboxCustomField(string entityId, string key)
+    protected async Task<CustomBooleanField> GetCheckboxCustomField(string entityId, string key)
     {
         var field = await GetCustomField(entityId, key);
         return new(field.Type, field.Name, field.Key, (bool)field.Value);

@@ -52,7 +52,7 @@ public class ClassicProjectCustomFieldActions : BaseClassicCustomFieldActions
 
     [Action("Classic: Get checkbox custom field for project",
         Description = "Retrieve a checkbox (boolean) custom field for a classic project")]
-    public async Task<CustomField<bool?>> GetCheckboxCustomFieldForProject(
+    public async Task<CustomBooleanField> GetCheckboxCustomFieldForProject(
         [ActionParameter] ProjectIdentifier projectIdentifier,
         [ActionParameter] CustomFieldIdentifier customFieldIdentifier)
         => await GetCheckboxCustomField(projectIdentifier.ProjectId, customFieldIdentifier.Key);

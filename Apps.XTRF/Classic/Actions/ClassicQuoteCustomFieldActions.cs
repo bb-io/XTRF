@@ -52,7 +52,7 @@ public class ClassicQuoteCustomFieldActions : BaseClassicCustomFieldActions
 
     [Action("Classic: Get checkbox custom field for quote",
         Description = "Retrieve a checkbox (boolean) custom field for a classic quote")]
-    public async Task<CustomField<bool?>> GetCheckboxCustomFieldForQuote(
+    public async Task<CustomBooleanField> GetCheckboxCustomFieldForQuote(
         [ActionParameter] QuoteIdentifier quoteIdentifier,
         [ActionParameter] CustomFieldIdentifier customFieldIdentifier)
         => await GetCheckboxCustomField(quoteIdentifier.QuoteId, customFieldIdentifier.Key);

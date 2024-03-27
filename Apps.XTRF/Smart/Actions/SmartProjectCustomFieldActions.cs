@@ -52,7 +52,7 @@ public class SmartProjectCustomFieldActions : BaseSmartCustomFieldActions
 
     [Action("Smart: Get checkbox custom field for project",
         Description = "Retrieve a checkbox (boolean) custom field for a smart project")]
-    public async Task<CustomField<bool?>> GetCheckboxCustomFieldForProject(
+    public async Task<CustomBooleanField> GetCheckboxCustomFieldForProject(
         [ActionParameter] ProjectIdentifier projectIdentifier,
         [ActionParameter] CustomFieldIdentifier customFieldIdentifier)
         => await GetCheckboxCustomField(projectIdentifier.ProjectId, customFieldIdentifier.Key);
