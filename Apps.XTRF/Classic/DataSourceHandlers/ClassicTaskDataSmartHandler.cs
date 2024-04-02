@@ -1,6 +1,6 @@
-﻿using RestSharp;
+﻿using Apps.XTRF.Classic.Models.Entities;
+using RestSharp;
 using Apps.XTRF.Classic.Models.Requests.ClassicProject;
-using Apps.XTRF.Classic.Models.Responses.ClassicProject;
 using Apps.XTRF.Shared.Api;
 using Apps.XTRF.Shared.Invocables;
 using Blackbird.Applications.Sdk.Common;
@@ -27,7 +27,7 @@ public class ClassicTaskDataSmartHandler : XtrfInvocable, IAsyncDataSourceHandle
         }
         
         var request = new XtrfRequest($"/projects/{_projectId}?embed=tasks", Method.Get, Creds);
-        var project = await Client.ExecuteWithErrorHandling<ProjectResponse>(request);
+        var project = await Client.ExecuteWithErrorHandling<ClassicProject>(request);
         
         return project.Tasks
             .Where(task => context.SearchString == null 
