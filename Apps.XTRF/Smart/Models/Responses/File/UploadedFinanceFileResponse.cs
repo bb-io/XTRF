@@ -66,8 +66,8 @@ public class UploadedFinanceFileResponse
         IgnoreMinimumCharge = dto.IgnoreMinimumCharge;
         MinimumCharge = dto.MinimumCharge ?? 0;
         Description = dto.Description;
-        Rate = dto.Rate;
-        Quantity = dto.Quantity;
+        Rate = (int)dto.Rate;
+        Quantity = (int)dto.Quantity;
         SourceLanguageId = dto.LanguageCombination.SourceLanguageId.ToString();
         TargetLanguageId = dto.LanguageCombination.TargetLanguageId.ToString();
     }
@@ -87,8 +87,8 @@ public class UploadedFinanceFileDto
     public bool IgnoreMinimumCharge { get; set; }
     public int? MinimumCharge { get; set; }
     public string Description { get; set; }
-    public int Rate { get; set; }
-    public int Quantity { get; set; }
+    public double Rate { get; set; }
+    public double Quantity { get; set; }
     public LanguageCombinationDto LanguageCombination { get; set; }
 }
 
