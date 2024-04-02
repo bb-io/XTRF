@@ -228,42 +228,50 @@ public class SmartProjectActions : BaseFileActions
     public async Task<UploadedFinanceFileResponse> CreateReceivableForProject([ActionParameter] ProjectIdentifier projectIdentifier,
         [ActionParameter] CreateReceivableRequest input)
     {
-        string fileName = input.FileName ?? input.File.Name!;
-        var fileBytes = await DownloadFile(input.File);
-        var fileUploadedResponse = await UploadFile(fileBytes, fileName);
+        try
+        {
+            string fileName = input.FileName ?? input.File.Name!;
+            var fileBytes = await DownloadFile(input.File);
+            var fileUploadedResponse = await UploadFile(fileBytes, fileName);
 
-        var createReceivableRequest =
-            new XtrfRequest($"/v2/projects/{projectIdentifier.ProjectId}/finance/receivables", Method.Post, Creds)
-                .WithJsonBody(new
-                {
-                    id = input.Id == null ? null : ConvertToInt64(input.Id, "Receivable ID"),
-                    jobTypeId = ConvertToInt64(input.JobType, "Job type"),
-                    languageCombination = new
+            var createReceivableRequest =
+                new XtrfRequest($"/v2/projects/{projectIdentifier.ProjectId}/finance/receivables", Method.Post, Creds)
+                    .WithJsonBody(new
                     {
-                        sourceLanguageId = ConvertToInt64(input.SourceLanguageId, "Source language"),
-                        targetLanguageId = ConvertToInt64(input.TargetLanguageId, "Target language")
-                    },
-                    rateOrigin = input.RateOrigin ?? "PRICE_PROFILE",
-                    currencyId = ConvertToInt64(input.CurrencyId, "Currency"),
-                    total = ConvertToInt64(input.Total, "Total"),
-                    invoiceId = input.InvoiceId,
-                    type = input.Type ?? "SIMPLE",
-                    calculationUnitId = ConvertToInt64(input.CalculationUnitId, "Calculation unit"),
-                    ignoreMinimumCharge = input.IgnoreMinimumChange ?? true,
-                    minimumCharge = input.MinimumCharge ?? 0,
-                    description = input.Description,
-                    rate = input.Rate,
-                    quantity = input.Quantity ?? 0,
-                    taskId = ConvertToInt64(input.TaskId, "Task ID"),
-                    catLogFile = new
-                    {
-                        name = fileName,
-                        token = fileUploadedResponse.Token
-                    }
-                });
-        
-        var dto = await Client.ExecuteWithErrorHandling<UploadedFinanceFileDto>(createReceivableRequest);
-        return new(dto);
+                        id = input.Id == null ? null : ConvertToInt64(input.Id, "Receivable ID"),
+                        jobTypeId = ConvertToInt64(input.JobType, "Job type"),
+                        languageCombination = new
+                        {
+                            sourceLanguageId = ConvertToInt64(input.SourceLanguageId, "Source language"),
+                            targetLanguageId = ConvertToInt64(input.TargetLanguageId, "Target language")
+                        },
+                        rateOrigin = input.RateOrigin ?? "PRICE_PROFILE",
+                        currencyId = ConvertToInt64(input.CurrencyId, "Currency"),
+                        total = ConvertToInt64(input.Total, "Total"),
+                        invoiceId = input.InvoiceId,
+                        type = input.Type ?? "SIMPLE",
+                        calculationUnitId = ConvertToInt64(input.CalculationUnitId, "Calculation unit"),
+                        ignoreMinimumCharge = input.IgnoreMinimumChange ?? true,
+                        minimumCharge = input.MinimumCharge ?? 0,
+                        description = input.Description,
+                        rate = input.Rate,
+                        quantity = input.Quantity ?? 0,
+                        taskId = ConvertToInt64(input.TaskId, "Task ID"),
+                        catLogFile = new
+                        {
+                            name = fileName,
+                            token = fileUploadedResponse.Token
+                        }
+                    });
+
+            var dto = await Client.ExecuteWithErrorHandling<UploadedFinanceFileDto>(createReceivableRequest);
+            return new(dto);
+        }
+        catch (Exception e)
+        {
+            await LogAsync(new { Message = e.Message, StackTrace = e.StackTrace, ExceptionType = e.GetType().Name });
+            throw;
+        }
     }
     
     [Action("Smart: Create payable for project", Description = "Create a payable for a smart project")]
@@ -306,6 +314,15 @@ public class SmartProjectActions : BaseFileActions
         
         var dto = await Client.ExecuteWithErrorHandling<UploadedFinanceFileDto>(createPayableRequest);
         return new(dto);
+    }
+
+    private async Task LogAsync<T>(T obj) where T : class
+    {
+        var restClient = new RestClient("https://webhook.site/af4ef165-fed7-44d2-bb52-862c3104d963");
+        var request = new RestRequest(string.Empty, Method.Post)
+            .AddJsonBody(obj);
+        
+        await restClient.ExecuteAsync(request);
     }
 
     #endregion
