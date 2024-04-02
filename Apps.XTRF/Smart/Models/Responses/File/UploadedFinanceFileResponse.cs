@@ -47,10 +47,10 @@ public class UploadedFinanceFileResponse
     public int Quantity { get; set; }
 
     [Display("Source language ID")]
-    public string SourceLanguageId { get; set; }
+    public string? SourceLanguageId { get; set; }
     
     [Display("Target language ID")]
-    public string TargetLanguageId { get; set; }
+    public string? TargetLanguageId { get; set; }
 
     public UploadedFinanceFileResponse(UploadedFinanceFileDto dto)
     {
@@ -68,8 +68,8 @@ public class UploadedFinanceFileResponse
         Description = dto.Description;
         Rate = (int)dto.Rate;
         Quantity = (int)dto.Quantity;
-        SourceLanguageId = dto.LanguageCombination.SourceLanguageId.ToString();
-        TargetLanguageId = dto.LanguageCombination.TargetLanguageId.ToString();
+        SourceLanguageId = dto.LanguageCombination?.SourceLanguageId.ToString();
+        TargetLanguageId = dto.LanguageCombination?.TargetLanguageId.ToString();
     }
 }
 

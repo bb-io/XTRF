@@ -228,9 +228,7 @@ public class SmartProjectActions : BaseFileActions
     public async Task<UploadedFinanceFileResponse> CreateReceivableForProject([ActionParameter] ProjectIdentifier projectIdentifier,
         [ActionParameter] CreateReceivableRequest input)
     {
-        try
-        {
-            string fileName = input.FileName ?? input.File.Name!;
+        string fileName = input.FileName ?? input.File.Name!;
             var fileBytes = await DownloadFile(input.File);
             var fileUploadedResponse = await UploadFile(fileBytes, fileName);
 
@@ -265,14 +263,7 @@ public class SmartProjectActions : BaseFileActions
                     });
 
             var dto = await Client.ExecuteWithErrorHandling<UploadedFinanceFileDto>(createReceivableRequest);
-            await LogAsync(dto);
             return new(dto);
-        }
-        catch (Exception e)
-        {
-            await LogAsync(new { Message = e.Message, StackTrace = e.StackTrace, ExceptionType = e.GetType().Name });
-            throw;
-        }
     }
     
     [Action("Smart: Create payable for project", Description = "Create a payable for a smart project")]
@@ -315,15 +306,6 @@ public class SmartProjectActions : BaseFileActions
         
         var dto = await Client.ExecuteWithErrorHandling<UploadedFinanceFileDto>(createPayableRequest);
         return new(dto);
-    }
-
-    private async Task LogAsync<T>(T obj) where T : class
-    {
-        var restClient = new RestClient("https://webhook.site/af4ef165-fed7-44d2-bb52-862c3104d963");
-        var request = new RestRequest(string.Empty, Method.Post)
-            .AddJsonBody(obj);
-        
-        await restClient.ExecuteAsync(request);
     }
 
     #endregion
