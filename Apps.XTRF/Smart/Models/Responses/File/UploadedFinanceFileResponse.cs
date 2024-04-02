@@ -59,12 +59,12 @@ public class UploadedFinanceFileResponse
         LanguageCombinationIdNumber = dto.LanguageCombinationIdNumber;
         RateOrigin = dto.RateOrigin;
         CurrencyId = dto.CurrencyId.ToString();
-        Total = dto.Total;
+        Total = (int)dto.Total;
         InvoiceId = dto.InvoiceId;
         Type = dto.Type;
         CalculationUnitId = dto.CalculationUnitId.ToString();
         IgnoreMinimumCharge = dto.IgnoreMinimumCharge;
-        MinimumCharge = dto.MinimumCharge;
+        MinimumCharge = dto.MinimumCharge ?? 0;
         Description = dto.Description;
         Rate = dto.Rate;
         Quantity = dto.Quantity;
@@ -80,24 +80,15 @@ public class UploadedFinanceFileDto
     public string LanguageCombinationIdNumber { get; set; }
     public string RateOrigin { get; set; }
     public int CurrencyId { get; set; }
-    public int Total { get; set; }
-
+    public double Total { get; set; }
     public string InvoiceId { get; set; }
-
     public string Type { get; set; }
-
     public int CalculationUnitId { get; set; }
-
     public bool IgnoreMinimumCharge { get; set; }
-
-    public int MinimumCharge { get; set; }
-
+    public int? MinimumCharge { get; set; }
     public string Description { get; set; }
-
     public int Rate { get; set; }
-
     public int Quantity { get; set; }
-    
     public LanguageCombinationDto LanguageCombination { get; set; }
 }
 
