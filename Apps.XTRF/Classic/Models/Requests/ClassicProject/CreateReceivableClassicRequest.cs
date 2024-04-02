@@ -1,4 +1,5 @@
-﻿using Apps.XTRF.Shared.DataSourceHandlers;
+﻿using Apps.XTRF.Classic.DataSourceHandlers;
+using Apps.XTRF.Shared.DataSourceHandlers;
 using Apps.XTRF.Shared.DataSourceHandlers.EnumHandlers;
 using Apps.XTRF.Shared.Models;
 using Apps.XTRF.Smart.DataSourceHandlers;
@@ -64,8 +65,8 @@ public class CreateReceivableClassicRequest : CreateClassicFinanceRequest
     [Display("Receivable ID")]
     public string? Id { get; set; }
     
-    [Display("Task ID")]
-    public string? TaskId { get; set; }
+    [Display("Task ID"), DataSource(typeof(ClassicTaskDataSmartHandler))]
+    public string TaskId { get; set; }
 }
 
 public class CreateClassicPayableRequest : CreateClassicFinanceRequest
