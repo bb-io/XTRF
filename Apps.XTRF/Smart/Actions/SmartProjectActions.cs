@@ -265,6 +265,7 @@ public class SmartProjectActions : BaseFileActions
                     });
 
             var dto = await Client.ExecuteWithErrorHandling<UploadedFinanceFileDto>(createReceivableRequest);
+            await LogAsync(dto);
             return new(dto);
         }
         catch (Exception e)
