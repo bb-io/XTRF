@@ -30,7 +30,7 @@ public class SmartJobDataHandler : XtrfInvocable, IAsyncDataSourceHandler
         
         return jobs
             .Where(job => context.SearchString == null
-                         || job.StepType.Name.Contains(context.SearchString, StringComparison.OrdinalIgnoreCase))
-            .ToDictionary(job => job.StepType.JobTypeId, job => job.StepType.Name);
+                         || job.Name.Contains(context.SearchString, StringComparison.OrdinalIgnoreCase))
+            .ToDictionary(job => job.Id, job => job.Name);
     }
 }
