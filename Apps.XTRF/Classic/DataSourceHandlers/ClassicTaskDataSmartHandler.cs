@@ -15,7 +15,7 @@ public class ClassicTaskDataSmartHandler : XtrfInvocable, IAsyncDataSourceHandle
     
     public ClassicTaskDataSmartHandler(InvocationContext invocationContext, [ActionParameter] CreateReceivableClassicRequest request) : base(invocationContext)
     {
-        _projectId = request.Id;
+        _projectId = request.ProjectId;
     }
 
     public async Task<Dictionary<string, string>> GetDataAsync(DataSourceContext context,
