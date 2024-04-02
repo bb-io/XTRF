@@ -225,15 +225,14 @@ public class SmartProjectActions : BaseFileActions
     }
     
     [Action("Smart: Create receivable for project", Description = "Create a receivable for a smart project")]
-    public async Task<UploadedFinanceFileResponse> CreateReceivableForProject([ActionParameter] ProjectIdentifier projectIdentifier,
-        [ActionParameter] CreateReceivableRequest input)
+    public async Task<UploadedFinanceFileResponse> CreateReceivableForProject([ActionParameter] CreateReceivableRequest input)
     {
         string fileName = input.FileName ?? input.File.Name!;
             var fileBytes = await DownloadFile(input.File);
             var fileUploadedResponse = await UploadFile(fileBytes, fileName);
 
             var createReceivableRequest =
-                new XtrfRequest($"/v2/projects/{projectIdentifier.ProjectId}/finance/receivables", Method.Post, Creds)
+                new XtrfRequest($"/v2/projects/{input.ProjectId}/finance/receivables", Method.Post, Creds)
                     .WithJsonBody(new
                     {
                         id = input.Id == null ? null : ConvertToInt64(input.Id, "Receivable ID"),

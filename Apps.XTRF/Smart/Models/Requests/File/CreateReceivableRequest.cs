@@ -1,4 +1,5 @@
 ﻿using Apps.XTRF.Shared.DataSourceHandlers;
+using Apps.XTRF.Shared.DataSourceHandlers.EnumHandlers;
 using Apps.XTRF.Shared.Models;
 using Blackbird.Applications.Sdk.Common;
 using Blackbird.Applications.Sdk.Common.Dynamic;
@@ -7,6 +8,9 @@ namespace Apps.XTRF.Smart.Models.Requests.File;
 
 public class CreateFinanceRequest : FileWrapper
 {
+    [Display("Project ID")]
+    public string ProjectId { get; set; }
+    
     [Display("Source language of language combination")]
     [DataSource(typeof(LanguageDataHandler))]
     public string? SourceLanguageId { get; set; }
@@ -18,10 +22,10 @@ public class CreateFinanceRequest : FileWrapper
     [Display("File name")]
     public string? FileName { get; set; }
 
-    [Display("Job type")]
+    [Display("Job type"), DataSource(typeof(JobTypeDataHandler))]
     public string JobType { get; set; }
 
-    [Display("Rate origin")]
+    [Display("Rate origin"), DataSource(typeof(RateOriginDataHandler))]
     public string? RateOrigin { get; set; }
     
     [Display("Currency ID")]
@@ -33,6 +37,7 @@ public class CreateFinanceRequest : FileWrapper
     [Display("Invoice ID")]
     public string? InvoiceId { get; set; }
     
+    [Display("Type"), DataSource(typeof(FinanceTypeDataHandler))]
     public string? Type { get; set; }
     
     [Display("Calculation unit ID")]
