@@ -71,7 +71,7 @@ public class ClassicProjectActions : BaseFileActions
                 customerId = ConvertToInt64(input.CustomerId, "Customer ID"),
                 serviceId = ConvertToInt64(input.ServiceId, "Service ID"),
                 specializationId = ConvertToInt64(input.SpecializationId, "Specialization"),
-                name = input.Name,
+                input.Name,
                 sourceLanguageId = ConvertToInt64(input.SourceLanguageId, "Source language"),
                 targetLanguagesIds = ConvertToInt64Enumerable(input.TargetLanguages, "Target languages"),
                 dates = new

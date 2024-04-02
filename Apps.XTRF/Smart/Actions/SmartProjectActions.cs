@@ -190,8 +190,8 @@ public class SmartProjectActions : BaseFileActions
         var fileBytes = await DownloadFile(input.File);
         uploadFileRequest.AddFile("file", fileBytes, input.File.Name!.Sanitize());
         var fileIdentifier = await Client.ExecuteWithErrorHandling<FileIdentifier>(uploadFileRequest);
-
-        var addFileRequest = new XtrfRequest($"/v2/projects/{projectIdentifier.ProjectId}/files/add", Method.Put, Creds)
+        
+        var addFileRequest = new XtrfRequest($"/v2/projects/{projectIdentifier.ProjectId}/finance/receivables", Method.Put, Creds)
             .WithJsonBody(new
             {
                 files = new[]
@@ -222,6 +222,90 @@ public class SmartProjectActions : BaseFileActions
 
         await Client.ExecuteWithErrorHandling(addFileRequest);
         return fileIdentifier;
+    }
+    
+    [Action("Smart: Create receivable for project", Description = "Create a receivable for a smart project")]
+    public async Task<UploadedFinanceFileResponse> CreateReceivableForProject([ActionParameter] ProjectIdentifier projectIdentifier,
+        [ActionParameter] CreateReceivableRequest input)
+    {
+        string fileName = input.FileName ?? input.File.Name!;
+        var fileBytes = await DownloadFile(input.File);
+        var fileUploadedResponse = await UploadFile(fileBytes, fileName);
+
+        var createReceivableRequest =
+            new XtrfRequest($"/v2/projects/{projectIdentifier.ProjectId}/finance/receivables", Method.Post, Creds)
+                .WithJsonBody(new
+                {
+                    id = input.Id == null ? null : ConvertToInt64(input.Id, "Receivable ID"),
+                    jobTypeId = ConvertToInt64(input.JobType, "Job type"),
+                    languageCombination = new
+                    {
+                        sourceLanguageId = ConvertToInt64(input.SourceLanguageId, "Source language"),
+                        targetLanguageId = ConvertToInt64(input.TargetLanguageId, "Target language")
+                    },
+                    rateOrigin = input.RateOrigin ?? "PRICE_PROFILE",
+                    currencyId = ConvertToInt64(input.CurrencyId, "Currency"),
+                    total = ConvertToInt64(input.Total, "Total"),
+                    invoiceId = input.InvoiceId,
+                    type = input.Type ?? "SIMPLE",
+                    calculationUnitId = ConvertToInt64(input.CalculationUnitId, "Calculation unit"),
+                    ignoreMinimumCharge = input.IgnoreMinimumChange ?? true,
+                    minimumCharge = input.MinimumCharge ?? 0,
+                    description = input.Description,
+                    rate = input.Rate,
+                    quantity = input.Quantity ?? 0,
+                    taskId = ConvertToInt64(input.TaskId, "Task ID"),
+                    catLogFile = new
+                    {
+                        name = fileName,
+                        token = fileUploadedResponse.Token
+                    }
+                });
+        
+        var dto = await Client.ExecuteWithErrorHandling<UploadedFinanceFileDto>(createReceivableRequest);
+        return new(dto);
+    }
+    
+    [Action("Smart: Create payable for project", Description = "Create a payable for a smart project")]
+    public async Task<UploadedFinanceFileResponse> CreatePayableForProject([ActionParameter] ProjectIdentifier projectIdentifier,
+        [ActionParameter] CreatePayableRequest input)
+    {
+        string fileName = input.FileName ?? input.File.Name!;
+        var fileBytes = await DownloadFile(input.File);
+        var fileUploadedResponse = await UploadFile(fileBytes, fileName);
+
+        var createPayableRequest =
+            new XtrfRequest($"/v2/projects/{projectIdentifier.ProjectId}/finance/payables", Method.Post, Creds)
+                .WithJsonBody(new
+                {
+                    id = input.Id == null ? null : ConvertToInt64(input.Id, "Payable ID"),
+                    jobTypeId = ConvertToInt64(input.JobType, "Job type"),
+                    languageCombination = new
+                    {
+                        sourceLanguageId = ConvertToInt64(input.SourceLanguageId, "Source language"),
+                        targetLanguageId = ConvertToInt64(input.TargetLanguageId, "Target language")
+                    },
+                    rateOrigin = input.RateOrigin ?? "PRICE_PROFILE",
+                    currencyId = ConvertToInt64(input.CurrencyId, "Currency"),
+                    total = ConvertToInt64(input.Total, "Total"),
+                    invoiceId = input.InvoiceId,
+                    type = input.Type ?? "SIMPLE",
+                    calculationUnitId = ConvertToInt64(input.CalculationUnitId, "Calculation unit"),
+                    ignoreMinimumCharge = input.IgnoreMinimumChange ?? true,
+                    minimumCharge = input.MinimumCharge ?? 0,
+                    description = input.Description,
+                    rate = input.Rate,
+                    quantity = input.Quantity ?? 0,
+                    taskId = ConvertToInt64(input.TaskId, "Task ID"),
+                    catLogFile = new
+                    {
+                        name = fileName,
+                        token = fileUploadedResponse.Token
+                    }
+                });
+        
+        var dto = await Client.ExecuteWithErrorHandling<UploadedFinanceFileDto>(createPayableRequest);
+        return new(dto);
     }
 
     #endregion
