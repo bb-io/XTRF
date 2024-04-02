@@ -1,6 +1,7 @@
 ﻿using Apps.XTRF.Shared.DataSourceHandlers;
 using Apps.XTRF.Shared.DataSourceHandlers.EnumHandlers;
 using Apps.XTRF.Shared.Models;
+using Apps.XTRF.Smart.DataSourceHandlers;
 using Blackbird.Applications.Sdk.Common;
 using Blackbird.Applications.Sdk.Common.Dynamic;
 
@@ -56,19 +57,22 @@ public class CreateFinanceRequest : FileWrapper
     public string? Rate { get; set; }
 
     public int? Quantity { get; set; }
-
-    [Display("Task ID")]
-    public string? TaskId { get; set; }
 }
 
 public class CreateReceivableRequest : CreateFinanceRequest
 {
     [Display("Receivable ID")]
     public string? Id { get; set; }
+    
+    [Display("Task ID")]
+    public string? TaskId { get; set; }
 }
 
 public class CreatePayableRequest : CreateFinanceRequest
 {
     [Display("Payable ID")]
     public string? Id { get; set; }
+    
+    [Display("Job ID"), DataSource(typeof(SmartJobDataHandler))]
+    public string JobId { get; set; }
 }
