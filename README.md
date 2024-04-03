@@ -190,11 +190,11 @@ With this functionality, you can easily transfer CAT files between the Phrase an
 
 Here's an example to demonstrate how this feature works:
 
-![phrase-xtrf-1](image/README/phrase-xtrf-1.png)
+![phrase-xtrf-1](image/phrase-xtrf-1.png)
 
-![phrase-xtrf-2](image/README/phrase-xtrf-2.png)
+![phrase-xtrf-2](image/phrase-xtrf-2.png)
 
-![phrase-xtrf-2](image/README/phrase-xtrf-2.png)
+![phrase-xtrf-2](image/phrase-xtrf-2.png)
 
 ## Feedback
 
