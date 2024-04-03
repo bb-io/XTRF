@@ -35,6 +35,8 @@ XTRF is a comprehensive translation management system that streamlines and autom
 - **Update number custom field for project** Update a number custom field for a classic project
 - **Update project** Update a classic project, specifying only the fields that require updating
 - **Update text or selection custom field for project** Update a text or selection custom field for a classic project
+- **Create payable for project** Create a payable for a classic project
+- **Create receivable for project** Create a receivable for a classic project
 
 ### Classic - Quote
 
@@ -132,6 +134,8 @@ XTRF is a comprehensive translation management system that streamlines and autom
 - **Update project** Update a smart project, specifying only the fields that require updating
 - **Update text or selection custom field for project** Update a text or selection custom field for a smart project
 - **Upload file to project** Upload a file to a smart project
+- **Create receivable for project** Create a receivable for a smart project
+- **Create payable for project** Create a payable for a smart project
 
 ### Smart - Quote
 
@@ -177,6 +181,20 @@ XTRF is a comprehensive translation management system that streamlines and autom
 For example, to trigger a bird on project status changes with the custom field _My text field_ set to _Some value_, select the **On project status changed** event in the bird editor. Then, choose the optional input _Filter string_ and enter _customFields.My_text_field=Some value_:
 
 ![Filtering example](image/filtering_example.png)
+
+## Receivable and payable for project
+
+Our app allows you to import CAT files into XTRF using specific actions such as **Create receivable for project** and **Create payable for project** for both smart and classic projects. This feature enables you to seamlessly integrate CAT tools with XTRF, streamlining your translation workflow.
+
+With this functionality, you can easily transfer CAT files between the Phrase and XTRF apps, ensuring smooth collaboration and efficient project management.
+
+Here's an example to demonstrate how this feature works:
+
+![phrase-xtrf-1](image/README/phrase-xtrf-1.png)
+
+![phrase-xtrf-2](image/README/phrase-xtrf-2.png)
+
+![phrase-xtrf-2](image/README/phrase-xtrf-2.png)
 
 ## Feedback
 

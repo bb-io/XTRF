@@ -2,7 +2,6 @@
 using Apps.XTRF.Shared.DataSourceHandlers;
 using Apps.XTRF.Shared.DataSourceHandlers.EnumHandlers;
 using Apps.XTRF.Shared.Models;
-using Apps.XTRF.Smart.DataSourceHandlers;
 using Blackbird.Applications.Sdk.Common;
 using Blackbird.Applications.Sdk.Common.Dynamic;
 
