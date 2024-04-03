@@ -194,7 +194,7 @@ Here's an example to demonstrate how this feature works:
 
 ![phrase-xtrf-2](image/phrase-xtrf-2.png)
 
-![phrase-xtrf-2](image/phrase-xtrf-2.png)
+![phrase-xtrf-2](image/phrase-xtrf-3.png)
 
 ## Feedback
 
