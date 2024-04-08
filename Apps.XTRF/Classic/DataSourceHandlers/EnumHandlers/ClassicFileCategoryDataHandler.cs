@@ -1,10 +1,10 @@
-﻿using Blackbird.Applications.Sdk.Utils.Sdk.DataSourceHandlers;
+﻿using Blackbird.Applications.Sdk.Common.Dictionaries;
 
 namespace Apps.XTRF.Classic.DataSourceHandlers.EnumHandlers;
 
-public class ClassicFileCategoryDataHandler : EnumDataHandler
+public class ClassicFileCategoryDataHandler : IStaticDataSourceHandler
 {
-    protected override Dictionary<string, string> EnumValues => new()
+    private static Dictionary<string, string> EnumValues => new()
     {
         { "TM", "Translation memory" },
         { "REF", "Reference file" },
@@ -12,4 +12,9 @@ public class ClassicFileCategoryDataHandler : EnumDataHandler
         { "DICTIONARY", "Dictionary" },
         { "LOG_FILE", "Log file" }
     };
+
+    public Dictionary<string, string> GetData()
+    {
+        return EnumValues;
+    }
 }

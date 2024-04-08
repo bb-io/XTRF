@@ -1,10 +1,10 @@
-﻿using Blackbird.Applications.Sdk.Utils.Sdk.DataSourceHandlers;
+﻿using Blackbird.Applications.Sdk.Common.Dictionaries;
 
 namespace Apps.XTRF.Smart.DataSourceHandlers.EnumHandlers;
 
-public class SmartFileCategoryDataHandler : EnumDataHandler
+public class SmartFileCategoryDataHandler : IStaticDataSourceHandler
 {
-    protected override Dictionary<string, string> EnumValues => new()
+    private static Dictionary<string, string> EnumValues => new()
     {
         { "BILINGUAL_DOC", "Bilingual document" },
         { "CAT_ANALYSIS", "CAT analysis" },
@@ -23,4 +23,9 @@ public class SmartFileCategoryDataHandler : EnumDataHandler
         { "TRANSLATED_DOCUMENT", "Translated document" },
         { "TM", "Translation memory" }
     };
+
+    public Dictionary<string, string> GetData()
+    {
+        return EnumValues;
+    }
 }

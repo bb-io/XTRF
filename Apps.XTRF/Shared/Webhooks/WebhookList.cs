@@ -6,6 +6,7 @@ using Apps.XTRF.Shared.DataSourceHandlers.EnumHandlers;
 using Apps.XTRF.Shared.Invocables;
 using Apps.XTRF.Shared.Webhooks.Models.Payloads;
 using Blackbird.Applications.Sdk.Common;
+using Blackbird.Applications.Sdk.Common.Dictionaries;
 using Blackbird.Applications.Sdk.Common.Dynamic;
 using Blackbird.Applications.Sdk.Common.Invocation;
 
@@ -28,7 +29,7 @@ public class WebhookList : XtrfInvocable
     [Webhook("On project status changed", typeof(ProjectStatusChangedHandler),
         Description = "Triggered when the status of an XTRF project is changed")]
     public Task<WebhookResponse<ProjectStatusChangedPayload>> ProjectStatusChangedHandler(WebhookRequest webhookRequest,
-        [WebhookParameter] [Display("Project status")] [DataSource(typeof(ProjectStatusDataHandler))]
+        [WebhookParameter] [Display("Project status")] [StaticDataSource(typeof(ProjectStatusDataHandler))]
         string? status)
         => HandleWebhook<ProjectStatusChangedPayload>(webhookRequest, 
             status != null ? payload => payload.Status.Equals(status, StringComparison.OrdinalIgnoreCase) : null);
@@ -41,7 +42,7 @@ public class WebhookList : XtrfInvocable
     [Webhook("On quote status changed", typeof(QuoteStatusChangedHandler),
         Description = "Triggered when the status of an XTRF quote is changed")]
     public Task<WebhookResponse<QuoteStatusChangedPayload>> QuoteStatusChangedHandler(WebhookRequest webhookRequest,
-        [WebhookParameter] [Display("Quote status")] [DataSource(typeof(QuoteStatusDataHandler))]
+        [WebhookParameter] [Display("Quote status")] [StaticDataSource(typeof(QuoteStatusDataHandler))]
         string? status)
         => HandleWebhook<QuoteStatusChangedPayload>(webhookRequest,
             status != null ? payload => payload.Status.Equals(status, StringComparison.OrdinalIgnoreCase) : null);
@@ -49,7 +50,7 @@ public class WebhookList : XtrfInvocable
     [Webhook("On job status changed", typeof(JobStatusChangedHandler),
         Description = "Triggered when the status of an XTRF job is changed")]
     public Task<WebhookResponse<JobStatusChangedPayload>> JobStatusChangedHandler(WebhookRequest webhookRequest,
-        [WebhookParameter] [Display("Job status")] [DataSource(typeof(JobStatusDataHandler))]
+        [WebhookParameter] [Display("Job status")] [StaticDataSource(typeof(JobStatusDataHandler))]
         string? status)
         => HandleWebhook<JobStatusChangedPayload>(webhookRequest,
             status != null ? payload => payload.Status.Equals(status, StringComparison.OrdinalIgnoreCase) : null);

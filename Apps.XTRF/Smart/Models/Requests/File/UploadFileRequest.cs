@@ -2,13 +2,14 @@
 using Apps.XTRF.Shared.Models;
 using Apps.XTRF.Smart.DataSourceHandlers.EnumHandlers;
 using Blackbird.Applications.Sdk.Common;
+using Blackbird.Applications.Sdk.Common.Dictionaries;
 using Blackbird.Applications.Sdk.Common.Dynamic;
 
 namespace Apps.XTRF.Smart.Models.Requests.File;
 
 public class UploadFileRequest : FileWrapper
 {
-    [DataSource(typeof(SmartFileCategoryDataHandler))]
+    [StaticDataSource(typeof(SmartFileCategoryDataHandler))]
     public string Category { get; set; }   
     
     [Display("Language")]
