@@ -3,6 +3,7 @@ using Apps.XTRF.Shared.DataSourceHandlers.EnumHandlers;
 using Apps.XTRF.Shared.Models;
 using Apps.XTRF.Smart.DataSourceHandlers;
 using Blackbird.Applications.Sdk.Common;
+using Blackbird.Applications.Sdk.Common.Dictionaries;
 using Blackbird.Applications.Sdk.Common.Dynamic;
 
 namespace Apps.XTRF.Smart.Models.Requests.File;
@@ -26,7 +27,7 @@ public class CreateFinanceRequest : FileWrapper
     [Display("Job type"), DataSource(typeof(JobTypeDataHandler))]
     public string JobType { get; set; }
 
-    [Display("Rate origin"), DataSource(typeof(RateOriginDataHandler))]
+    [Display("Rate origin"), StaticDataSource(typeof(RateOriginDataHandler))]
     public string? RateOrigin { get; set; }
     
     [Display("Currency ID")]
@@ -38,7 +39,7 @@ public class CreateFinanceRequest : FileWrapper
     [Display("Invoice ID")]
     public string? InvoiceId { get; set; }
     
-    [Display("Type"), DataSource(typeof(FinanceTypeDataHandler))]
+    [Display("Type"), StaticDataSource(typeof(FinanceTypeDataHandler))]
     public string? Type { get; set; }
     
     [Display("Calculation unit ID")]

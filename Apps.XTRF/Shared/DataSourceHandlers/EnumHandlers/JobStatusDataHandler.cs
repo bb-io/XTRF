@@ -1,13 +1,13 @@
-﻿using Blackbird.Applications.Sdk.Utils.Sdk.DataSourceHandlers;
+﻿using Blackbird.Applications.Sdk.Common.Dictionaries;
 
 namespace Apps.XTRF.Shared.DataSourceHandlers.EnumHandlers;
 
 /// <summary>
 /// Data source handler that should be used for webhook input
 /// </summary>
-public class JobStatusDataHandler : EnumDataHandler
+public class JobStatusDataHandler : IStaticDataSourceHandler
 {
-    protected override Dictionary<string, string> EnumValues => new()
+    private static Dictionary<string, string> EnumValues => new()
     {
         { "OPEN", "Open" },
         { "ACCEPTED", "Accepted" },
@@ -16,4 +16,9 @@ public class JobStatusDataHandler : EnumDataHandler
         { "CANCELLED", "Cancelled" },
         { "OFFERS_SENT", "Offers sent" }
     };
+
+    public Dictionary<string, string> GetData()
+    {
+        return EnumValues;
+    }
 }

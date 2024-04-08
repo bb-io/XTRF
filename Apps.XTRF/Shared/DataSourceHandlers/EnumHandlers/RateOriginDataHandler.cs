@@ -1,14 +1,19 @@
-﻿using Blackbird.Applications.Sdk.Utils.Sdk.DataSourceHandlers;
+﻿using Blackbird.Applications.Sdk.Common.Dictionaries;
 
 namespace Apps.XTRF.Shared.DataSourceHandlers.EnumHandlers;
 
-public class RateOriginDataHandler : EnumDataHandler
+public class RateOriginDataHandler : IStaticDataSourceHandler
 {
-    protected override Dictionary<string, string> EnumValues => new()
+    private static Dictionary<string, string> EnumValues => new()
     {
         { "PRICE_PROFILE", "Price profile" },
         { "PRICE_LIST", "Price list" },
         { "FILLED_MANUALLY", "Filled manually" },
         { "AUTOCALCULATED", "Autocalculated" }
     };
+
+    public Dictionary<string, string> GetData()
+    {
+        return EnumValues;
+    }
 }
