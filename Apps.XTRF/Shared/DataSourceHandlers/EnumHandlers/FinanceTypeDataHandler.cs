@@ -2,14 +2,12 @@
 
 namespace Apps.XTRF.Shared.DataSourceHandlers.EnumHandlers;
 
-public class QuoteStatusDataHandler : IStaticDataSourceHandler
+public class FinanceTypeDataHandler : IStaticDataSourceHandler
 {
     private static Dictionary<string, string> EnumValues => new()
     {
-        { "PENDING", "Pending" },
-        { "SENT", "Sent" },
-        { "APPROVED", "Approved" },
-        { "REJECTED", "Rejected" }
+        { "SIMPLE", "Simple" },
+        { "CAT", "Cat" },
     };
 
     public Dictionary<string, string> GetData()

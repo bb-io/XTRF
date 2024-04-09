@@ -1,4 +1,5 @@
-﻿using Apps.XTRF.Shared.Api;
+﻿using Apps.XTRF.Classic.Models.Responses.File;
+using Apps.XTRF.Shared.Api;
 using Apps.XTRF.Shared.Models.Entities;
 using Blackbird.Applications.Sdk.Common;
 using Blackbird.Applications.Sdk.Common.Authentication;
@@ -47,5 +48,15 @@ public class XtrfInvocable : BaseInvocable
         var request = new XtrfRequest("/users/me/timeZone", Method.Get, Creds);
         var timeZoneInfo = await Client.ExecuteWithErrorHandling<XtrfTimeZoneInfo>(request);
         return timeZoneInfo;
+    }
+    
+    protected async Task<FileUploadedResponse> UploadFile(byte[] fileBytes, string filename)
+    {
+        var contentType = MimeTypes.GetMimeType(filename);
+        var request = new XtrfRequest("/files", Method.Post, Creds)
+            .AddHeader("Content-Type", "multipart/form-data")
+            .AddFile("file", fileBytes, filename, contentType);
+        
+        return await Client.ExecuteWithErrorHandling<FileUploadedResponse>(request);
     }
 }

@@ -57,7 +57,7 @@ public class ClassicJobActions : BaseFileActions
         await Client.ExecuteWithErrorHandling(addOutputFileToJobRequest);
         return jobIdentifier;
     }
-
+    
     #endregion
     
     #region Put
