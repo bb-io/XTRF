@@ -15,14 +15,12 @@ namespace Apps.XTRF.Shared.Api;
 public class XtrfCustomerPortalClient(List<AuthenticationCredentialsProvider> credentials, string token) : BlackBirdRestClient(new RestClientOptions(UrlHelper.BuildCustomerUrl(credentials.Get(CredsNames.Url).Value)))
 {
     private const string TokenKey = "XTRF-CP-Auth-Token";
-    private const string JsessionCookie = "JSESSIONID";
-    
+
     public async Task<T> ExecuteRequestAsync<T>(string endpoint, Method method, object? bodyObj)
     {
         var request = new RestRequest(endpoint, method)
             .AddHeader(TokenKey, token);
         
-        request.Resource = UrlHelper.BuildCustomerRequestUrl(Options.BaseUrl!.ToString(), endpoint, token);
         if (bodyObj is not null)
         {
             request.WithJsonBody(bodyObj);
@@ -38,8 +36,6 @@ public class XtrfCustomerPortalClient(List<AuthenticationCredentialsProvider> cr
             .AddHeader(TokenKey, token)
             .AddFile("file", fileBytes, fileName, "multipart/form-data");
         
-        request.Resource = UrlHelper.BuildCustomerRequestUrl(Options.BaseUrl!.ToString(), endpoint, token);
-
         var response = await ExecuteWithErrorHandling<T>(request);
         return response;
     }

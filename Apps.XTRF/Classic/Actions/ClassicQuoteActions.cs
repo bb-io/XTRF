@@ -13,6 +13,7 @@ using Blackbird.Applications.Sdk.Common.Actions;
 using Blackbird.Applications.Sdk.Common.Invocation;
 using Blackbird.Applications.SDK.Extensions.FileManagement.Interfaces;
 using Blackbird.Applications.Sdk.Utils.Extensions.Http;
+using Newtonsoft.Json;
 using RestSharp;
 
 namespace Apps.XTRF.Classic.Actions;
@@ -57,7 +58,8 @@ public class ClassicQuoteActions(InvocationContext invocationContext, IFileManag
         var customerActions = new CustomerActions(invocationContext);
         var contactPerson = await customerActions.GetContactPerson(request);
         var tokenResponse = await GetPersonAccessToken(contactPerson?.Contact?.Emails?.Primary ?? throw new Exception("Contact person has no primary email."));
-        var customerPortalClient = GetCustomerPortalClient(tokenResponse.Token);    
+        var customerPortalClient = GetCustomerPortalClient(tokenResponse.Token);
+        var officeId = (await GetDefaultOffice(contactPerson.Contact.Emails.Primary)).Id;
         
         var obj = new
         {
@@ -80,19 +82,21 @@ public class ClassicQuoteActions(InvocationContext invocationContext, IFileManag
             additionalPersonIds = request.AdditionalPersonIds == null 
                 ? new List<int>() 
                 : request.AdditionalPersonIds.Select(int.Parse).ToList(),
-            files = await customerPortalClient.UploadFilesAsync(request.Files, fileManagementClient),
+            files = request.Files == null 
+                ? new List<FileUpload>() 
+                : await customerPortalClient.UploadFilesAsync(request.Files, fileManagementClient),
             referenceFiles = request.ReferenceFiles == null 
                 ? new List<FileUpload>() 
                 : await customerPortalClient.UploadFilesAsync(request.ReferenceFiles, fileManagementClient),
             customFields = new List<string>(),
             officeId = request.OfficeId != null 
                 ? int.Parse(request.OfficeId) 
-                : (await GetDefaultOffice(request, customerPortalClient)).Id,
+                : officeId,
             budgetCode = request.BudgetCode ?? string.Empty,
             catToolType = request.CatToolType ?? "TRADOS"
         };
         
-        var quoteDto = await customerPortalClient.ExecuteRequestAsync<Apps.XTRF.Classic.Models.Entities.Quote>("/v2/quotes", Method.Post, obj);
+        var quoteDto = await customerPortalClient.ExecuteRequestAsync<Quote>("/v2/quotes", Method.Post, obj);
         return new(quoteDto);
     }
 
@@ -151,8 +155,10 @@ public class ClassicQuoteActions(InvocationContext invocationContext, IFileManag
     
     #region Utils
     
-    public async Task<FullOfficeDto> GetDefaultOffice(PersonIdentifier personIdentifier, XtrfCustomerPortalClient customerPortalClient)
+    public async Task<FullOfficeDto> GetDefaultOffice(string emailOrLogin)
     {
+        var accessToken = await GetPersonAccessToken(emailOrLogin);
+        var customerPortalClient = GetCustomerPortalClient(accessToken.Token);
         var officeDto = await customerPortalClient.ExecuteRequestAsync<FullOfficeDto>($"/offices/default", Method.Get, null);
         return officeDto;
     }

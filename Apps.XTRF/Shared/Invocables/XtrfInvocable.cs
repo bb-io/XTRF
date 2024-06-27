@@ -6,6 +6,7 @@ using Blackbird.Applications.Sdk.Common;
 using Blackbird.Applications.Sdk.Common.Authentication;
 using Blackbird.Applications.Sdk.Common.Invocation;
 using Blackbird.Applications.Sdk.Utils.Extensions.Http;
+using Newtonsoft.Json;
 using RestSharp;
 
 namespace Apps.XTRF.Shared.Invocables;
@@ -71,7 +72,8 @@ public class XtrfInvocable : BaseInvocable
     {
         var request = new XtrfRequest("/customers/persons/accessToken", Method.Post, Creds)
             .WithJsonBody(new { loginOrEmail });
-        
-        return await Client.ExecuteWithErrorHandling<PersonAccessToken>(request);
+
+        var response = await Client.ExecuteWithErrorHandling(request);
+        return JsonConvert.DeserializeObject<PersonAccessToken>(response.Content!)!;
     }
 }

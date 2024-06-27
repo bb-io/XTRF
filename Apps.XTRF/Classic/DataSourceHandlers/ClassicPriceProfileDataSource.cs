@@ -28,7 +28,7 @@ public class ClassicPriceProfileDataSource(InvocationContext invocationContext, 
         FullOfficeDto officeDto;
         if (string.IsNullOrEmpty(request.OfficeId))
         {
-            officeDto = await quoteActions.GetDefaultOffice(request, customerPortalClient);
+            officeDto = await quoteActions.GetDefaultOffice(contactPerson.Contact.Emails.Primary);
         }
         else
         {

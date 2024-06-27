@@ -16,7 +16,7 @@ public class QuoteCreateRequest : PersonIdentifier
     [Display("Customer project number")]
     public string? CustomerProjectNumber { get; set; }
     
-    public IEnumerable<FileReference> Files { get; set; }
+    public IEnumerable<FileReference>? Files { get; set; }
 
     [Display("Service ID"), DataSource(typeof(ClassicServiceDataSourceHandler))]
     public string ServiceId { get; set; }
