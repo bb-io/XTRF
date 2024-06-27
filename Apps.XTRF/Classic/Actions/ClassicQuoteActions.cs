@@ -67,7 +67,9 @@ public class ClassicQuoteActions(InvocationContext invocationContext, IFileManag
             customerProjectNumber = request.CustomerProjectNumber,
             serviceId = int.Parse(request.ServiceId),
             sourceLanguageId = int.Parse(request.SourceLanguageId),
-            targetLanguageIds = request.TargetLanguageIds.Select(int.Parse).ToList(),
+            targetLanguageIds = request.TargetLanguageIds == null 
+                ? new List<int>() 
+                : request.TargetLanguageIds.Select(int.Parse).ToList(),
             specializationId = int.Parse(request.SpecializationId),
             deliveryDate = new
             {
