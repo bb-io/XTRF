@@ -2,25 +2,24 @@
 using Apps.XTRF.Classic.Models.Identifiers;
 using Apps.XTRF.Classic.Models.Requests.ClassicQuote;
 using Apps.XTRF.Classic.Models.Responses.ClassicQuote;
+using Apps.XTRF.Shared.Actions;
 using Apps.XTRF.Shared.Api;
 using Apps.XTRF.Shared.Constants;
 using Apps.XTRF.Shared.Invocables;
 using Apps.XTRF.Shared.Models.Identifiers;
+using Apps.XTRF.Utils;
 using Blackbird.Applications.Sdk.Common;
 using Blackbird.Applications.Sdk.Common.Actions;
 using Blackbird.Applications.Sdk.Common.Invocation;
+using Blackbird.Applications.SDK.Extensions.FileManagement.Interfaces;
 using Blackbird.Applications.Sdk.Utils.Extensions.Http;
 using RestSharp;
 
 namespace Apps.XTRF.Classic.Actions;
 
 [ActionList]
-public class ClassicQuoteActions : XtrfInvocable
+public class ClassicQuoteActions(InvocationContext invocationContext, IFileManagementClient fileManagementClient) : XtrfInvocable(invocationContext)
 {
-    public ClassicQuoteActions(InvocationContext invocationContext) : base(invocationContext)
-    {
-    }
-
     #region Get
 
     [Action("Classic: Get quote", Description = "Get information about classic quote")]
@@ -50,6 +49,51 @@ public class ClassicQuoteActions : XtrfInvocable
             });
         await Client.ExecuteWithErrorHandling(request);
         return quoteIdentifier;
+    }
+    
+    [Action("Classic: Create quote", Description = "Create a new classic quote")]
+    public async Task<CustomerQuoteResponse> CreateQuote([ActionParameter] QuoteCreateRequest request)
+    {
+        var customerActions = new CustomerActions(invocationContext);
+        var contactPerson = await customerActions.GetContactPerson(request);
+        var tokenResponse = await GetPersonAccessToken(contactPerson?.Contact?.Emails?.Primary ?? throw new Exception("Contact person has no primary email."));
+        var customerPortalClient = GetCustomerPortalClient(tokenResponse.Token);    
+        
+        var obj = new
+        {
+            name = request.QuoteName,
+            customerProjectNumber = request.CustomerProjectNumber,
+            serviceId = int.Parse(request.ServiceId),
+            sourceLanguageId = int.Parse(request.SourceLanguageId),
+            targetLanguageIds = request.TargetLanguageIds.Select(int.Parse).ToList(),
+            specializationId = int.Parse(request.SpecializationId),
+            deliveryDate = new
+            {
+                time = request.DeliveryDate.HasValue 
+                    ? new DateTimeOffset(request.DeliveryDate.Value).ToUnixTimeMilliseconds() 
+                    : DateTime.Now.AddDays(7).ToUnixTimeMilliseconds()
+            },
+            notes = request.Note ?? string.Empty,
+            priceProfileId = int.Parse(request.PriceProfileId),
+            personId = int.Parse(request.PersonId),
+            sendBackToId = request.SendBackToId == null ? int.Parse(request.PersonId) : int.Parse(request.SendBackToId),
+            additionalPersonIds = request.AdditionalPersonIds == null 
+                ? new List<int>() 
+                : request.AdditionalPersonIds.Select(int.Parse).ToList(),
+            files = await customerPortalClient.UploadFilesAsync(request.Files, fileManagementClient),
+            referenceFiles = request.ReferenceFiles == null 
+                ? new List<FileUpload>() 
+                : await customerPortalClient.UploadFilesAsync(request.ReferenceFiles, fileManagementClient),
+            customFields = new List<string>(),
+            officeId = request.OfficeId != null 
+                ? int.Parse(request.OfficeId) 
+                : (await GetDefaultOffice(request, customerPortalClient)).Id,
+            budgetCode = request.BudgetCode ?? string.Empty,
+            catToolType = request.CatToolType ?? "TRADOS"
+        };
+        
+        var quoteDto = await customerPortalClient.ExecuteRequestAsync<Apps.XTRF.Classic.Models.Entities.Quote>("/v2/quotes", Method.Post, obj);
+        return new(quoteDto);
     }
 
     [Action("Classic: Start quote", Description = "Start a classic quote")]
@@ -103,5 +147,21 @@ public class ClassicQuoteActions : XtrfInvocable
         await Client.ExecuteWithErrorHandling(request);
     }
 
+    #endregion
+    
+    #region Utils
+    
+    public async Task<FullOfficeDto> GetDefaultOffice(PersonIdentifier personIdentifier, XtrfCustomerPortalClient customerPortalClient)
+    {
+        var officeDto = await customerPortalClient.ExecuteRequestAsync<FullOfficeDto>($"/offices/default", Method.Get, null);
+        return officeDto;
+    }
+    
+    public async Task<FullOfficeDto> GetOfficeById(string officeId, XtrfCustomerPortalClient customerPortalClient)
+    {
+        var officeDto = await customerPortalClient.ExecuteRequestAsync<FullOfficeDto>($"/offices/{officeId}", Method.Get, null);
+        return officeDto;
+    }
+    
     #endregion
 }

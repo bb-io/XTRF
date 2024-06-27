@@ -1,4 +1,5 @@
-﻿using Apps.XTRF.Shared.Api;
+﻿using Apps.XTRF.Classic.Models.Entities;
+using Apps.XTRF.Shared.Api;
 using Apps.XTRF.Shared.Constants;
 using Apps.XTRF.Shared.Extensions;
 using Apps.XTRF.Shared.Invocables;
@@ -15,12 +16,8 @@ using RestSharp;
 namespace Apps.XTRF.Shared.Actions;
 
 [ActionList]
-public class CustomerActions : XtrfInvocable
+public class CustomerActions(InvocationContext invocationContext) : XtrfInvocable(invocationContext)
 {
-    public CustomerActions(InvocationContext invocationContext) : base(invocationContext)
-    {
-    }
-
     #region Get
 
     [Action("Get customers", Description = "Get all customers on this XTRF instance")]
@@ -219,4 +216,10 @@ public class CustomerActions : XtrfInvocable
     }
 
     #endregion
+    
+    public async Task<Person> GetContactPerson(PersonIdentifier personIdentifier)
+    {
+        var request = new XtrfRequest($"/customers/persons/{personIdentifier.PersonId}", Method.Get, Creds);
+        return await Client.ExecuteWithErrorHandling<Person>(request);
+    }
 }
