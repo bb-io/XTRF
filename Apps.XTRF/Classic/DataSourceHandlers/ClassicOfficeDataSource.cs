@@ -2,13 +2,14 @@
 using Apps.XTRF.Shared.Actions;
 using Apps.XTRF.Shared.Invocables;
 using Apps.XTRF.Shared.Models.Identifiers;
+using Blackbird.Applications.Sdk.Common;
 using Blackbird.Applications.Sdk.Common.Dynamic;
 using Blackbird.Applications.Sdk.Common.Invocation;
 using RestSharp;
 
 namespace Apps.XTRF.Classic.DataSourceHandlers;
 
-public class ClassicOfficeDataSource(InvocationContext invocationContext, PersonIdentifier request)
+public class ClassicOfficeDataSource(InvocationContext invocationContext, [ActionParameter] PersonIdentifier request)
     : XtrfInvocable(invocationContext), IAsyncDataSourceHandler
 {
     public async Task<Dictionary<string, string>> GetDataAsync(DataSourceContext context, CancellationToken cancellationToken)

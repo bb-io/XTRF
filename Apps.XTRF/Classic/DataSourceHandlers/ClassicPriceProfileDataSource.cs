@@ -3,12 +3,13 @@ using Apps.XTRF.Classic.Models.Entities;
 using Apps.XTRF.Classic.Models.Requests.ClassicQuote;
 using Apps.XTRF.Shared.Actions;
 using Apps.XTRF.Shared.Invocables;
+using Blackbird.Applications.Sdk.Common;
 using Blackbird.Applications.Sdk.Common.Dynamic;
 using Blackbird.Applications.Sdk.Common.Invocation;
 
 namespace Apps.XTRF.Classic.DataSourceHandlers;
 
-public class ClassicPriceProfileDataSource(InvocationContext invocationContext, QuoteCreateRequest request)
+public class ClassicPriceProfileDataSource(InvocationContext invocationContext, [ActionParameter] QuoteCreateRequest request)
     : XtrfInvocable(invocationContext), IAsyncDataSourceHandler
 {
     public async Task<Dictionary<string, string>> GetDataAsync(DataSourceContext context, CancellationToken cancellationToken)
