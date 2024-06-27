@@ -1,9 +1,12 @@
-﻿using Apps.XTRF.Classic.Models.Responses.File;
+﻿using Apps.XTRF.Classic.Models.Entities;
+using Apps.XTRF.Classic.Models.Responses.File;
 using Apps.XTRF.Shared.Api;
 using Apps.XTRF.Shared.Models.Entities;
 using Blackbird.Applications.Sdk.Common;
 using Blackbird.Applications.Sdk.Common.Authentication;
 using Blackbird.Applications.Sdk.Common.Invocation;
+using Blackbird.Applications.Sdk.Utils.Extensions.Http;
+using Newtonsoft.Json;
 using RestSharp;
 
 namespace Apps.XTRF.Shared.Invocables;
@@ -18,6 +21,11 @@ public class XtrfInvocable : BaseInvocable
     protected XtrfInvocable(InvocationContext invocationContext) : base(invocationContext)
     {
         Client = new(Creds);
+    }
+    
+    public XtrfCustomerPortalClient GetCustomerPortalClient(string token)
+    {
+        return new XtrfCustomerPortalClient(Creds.ToList(), token);
     }
 
     protected long? ConvertToInt64(string? input, string parameterName)
@@ -58,5 +66,14 @@ public class XtrfInvocable : BaseInvocable
             .AddFile("file", fileBytes, filename, contentType);
         
         return await Client.ExecuteWithErrorHandling<FileUploadedResponse>(request);
+    }
+
+    protected async Task<PersonAccessToken> GetPersonAccessToken(string loginOrEmail)
+    {
+        var request = new XtrfRequest("/customers/persons/accessToken", Method.Post, Creds)
+            .WithJsonBody(new { loginOrEmail });
+
+        var response = await Client.ExecuteWithErrorHandling(request);
+        return JsonConvert.DeserializeObject<PersonAccessToken>(response.Content!)!;
     }
 }

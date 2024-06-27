@@ -57,6 +57,7 @@ XTRF is a comprehensive translation management system that streamlines and autom
 - **Update number custom field for quote** Update a number custom field for a classic quote
 - **Update quote instructions** Update instructions of a given quote, specifying only the fields that require updating
 - **Update text or selection custom field for quote** Update a text or selection custom field for a classic quote
+- **Create quote** Create a new classic quote based on provided data
 
 ### Classic - Task
 
