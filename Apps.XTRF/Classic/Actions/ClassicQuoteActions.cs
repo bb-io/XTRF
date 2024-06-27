@@ -64,7 +64,7 @@ public class ClassicQuoteActions(InvocationContext invocationContext, IFileManag
         var obj = new
         {
             name = request.QuoteName,
-            customerProjectNumber = request.CustomerProjectNumber,
+            customerProjectNumber = request.CustomerProjectNumber ?? string.Empty,
             serviceId = int.Parse(request.ServiceId),
             sourceLanguageId = int.Parse(request.SourceLanguageId),
             targetLanguageIds = request.TargetLanguageIds == null 
@@ -93,6 +93,8 @@ public class ClassicQuoteActions(InvocationContext invocationContext, IFileManag
             budgetCode = request.BudgetCode ?? string.Empty,
             catToolType = request.CatToolType ?? "TRADOS"
         };
+        
+        var json = JsonConvert.SerializeObject(obj, Formatting.Indented);
         
         var quoteDto = await customerPortalClient.ExecuteRequestAsync<Quote>("/v2/quotes", Method.Post, obj);
         return new(quoteDto);
