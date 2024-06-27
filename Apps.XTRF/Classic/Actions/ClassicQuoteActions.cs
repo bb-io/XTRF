@@ -84,12 +84,8 @@ public class ClassicQuoteActions(InvocationContext invocationContext, IFileManag
             additionalPersonIds = request.AdditionalPersonIds == null 
                 ? new List<int>() 
                 : request.AdditionalPersonIds.Select(int.Parse).ToList(),
-            files = request.Files == null 
-                ? new List<FileUpload>() 
-                : await customerPortalClient.UploadFilesAsync(request.Files, fileManagementClient),
-            referenceFiles = request.ReferenceFiles == null 
-                ? new List<FileUpload>() 
-                : await customerPortalClient.UploadFilesAsync(request.ReferenceFiles, fileManagementClient),
+            files = new List<FileUpload>(),
+            referenceFiles = new List<FileUpload>(),
             customFields = new List<string>(),
             officeId = request.OfficeId != null 
                 ? int.Parse(request.OfficeId) 

@@ -15,8 +15,6 @@ public class QuoteCreateRequest : PersonIdentifier
     
     [Display("Customer project number")]
     public string? CustomerProjectNumber { get; set; }
-    
-    public IEnumerable<FileReference>? Files { get; set; }
 
     [Display("Service ID"), DataSource(typeof(ClassicServiceDataSourceHandler))]
     public string ServiceId { get; set; }
@@ -44,9 +42,6 @@ public class QuoteCreateRequest : PersonIdentifier
 
     [Display("Additional person IDs"), DataSource(typeof(ClassicPersonDataSource))]
     public IEnumerable<string>? AdditionalPersonIds { get; set; }
-    
-    [Display("Additional email addresses")]
-    public IEnumerable<FileReference>? ReferenceFiles { get; set; }
 
     [Display("Office ID"), DataSource(typeof(ClassicOfficeDataSource))]
     public string? OfficeId { get; set; }
