@@ -25,7 +25,7 @@ public class QuoteCreateRequest : PersonIdentifier
     public string SourceLanguageId { get; set; }
     
     [Display("Target language IDs"), DataSource(typeof(ClassicLanguageDataSource))]
-    public IEnumerable<string> TargetLanguageIds { get; set; }
+    public IEnumerable<string>? TargetLanguageIds { get; set; }
     
     [Display("Specialization ID"), DataSource(typeof(ClassicSpecializationDataSource))]
     public string SpecializationId { get; set; }
