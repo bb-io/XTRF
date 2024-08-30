@@ -1,16 +1,20 @@
 ﻿using Apps.XTRF.Shared.Models.Entities;
+using Blackbird.Applications.Sdk.Common;
 
 namespace Apps.XTRF.Classic.Models.Entities;
 
 public class Person
 {
-    public int Id { get; set; }
+    [Display("Person ID")]
+    public string Id { get; set; } = string.Empty;
     
-    public string Name { get; set; }
+    public string Name { get; set; } = string.Empty;
     
-    public string LastName { get; set; }
+    [Display(("Last name"))]
+    public string LastName { get; set; } = string.Empty;
     
-    public Contact Contact { get; set; }
+    public Contact Contact { get; set; } = new();
     
-    public int? PositionId { get; set; }
+    [Display("Position ID")]
+    public string PositionId { get; set; } = string.Empty;
 }

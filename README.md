@@ -94,6 +94,30 @@ XTRF is a comprehensive translation management system that streamlines and autom
 - **Update number custom field for customer** Update a number custom field for a customer
 - **Update text or selection custom field for customer** Update a text or selection custom field for a customer
 
+### Provider
+
+- **Search providers** Search for providers based on the given criteria.
+- **Get provider** Get information about a specific provider.
+- **Delete provider** Delete the provider with the given ID.
+- **Send invitation to provider** Send an invitation to the provider with the given ID.
+
+### Provider invoice
+
+- **Search provider invoices** Search for provider invoices based on the given criteria.
+- **Get provider invoice** Get provider invoice by ID.
+- **Create provider invoice** Create a provider invoice.
+- **Update provider invoice** Update provider invoice by ID.
+- **Send provider invoice** Send provider invoice by specified ID.
+- **Download provider invoice** Generates provider invoice document (PDF).
+- **Delete provider invoice** Delete provider invoice by ID.
+
+### Provider person
+
+- **Search provider persons** Search for provider persons based on the given criteria.
+- **Get provider person** Get provider person by ID.
+- **Remove provider person** Remove provider person by ID.
+- **Send invitation to provider person** Send provider person invitation by ID.
+
 ### Smart - File 
 
 - **Download file** Download the content of a specific file
