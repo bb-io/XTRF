@@ -15,7 +15,7 @@ public class ProviderActions(InvocationContext invocationContext) : XtrfInvocabl
     [Action("Search providers", Description = "Search for providers based on the given criteria")]
     public async Task<ProviderSearchResponse> SearchProvidersAsync([ActionParameter] ProviderSearchRequest request)
     {
-        var xtrfRequest = new XtrfRequest("/providers/ids", Method.Post, Creds);
+        var xtrfRequest = new XtrfRequest("/providers/ids", Method.Get, Creds);
         var ids = await Client.ExecuteWithErrorHandling<List<int>>(xtrfRequest);
         
         var response = new ProviderSearchResponse();
@@ -52,9 +52,9 @@ public class ProviderActions(InvocationContext invocationContext) : XtrfInvocabl
     }
     
     [Action("Send invitation to provider", Description = "Send invitation to provider with the given ID")]
-    public async Task<SendInvitationToProviderResponse> SendInvitationToProviderAsync([ActionParameter] ProviderIdentifier identifier)
+    public async Task<SendInvitationResponse> SendInvitationToProviderAsync([ActionParameter] ProviderIdentifier identifier)
     {
         var request = new XtrfRequest($"/providers/{identifier.ProviderId}/notification/invitation", Method.Post, Creds);
-        return await Client.ExecuteWithErrorHandling<SendInvitationToProviderResponse>(request);
+        return await Client.ExecuteWithErrorHandling<SendInvitationResponse>(request);
     }
 }

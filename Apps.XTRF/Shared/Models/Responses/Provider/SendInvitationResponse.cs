@@ -2,7 +2,7 @@
 
 namespace Apps.XTRF.Shared.Models.Responses.Provider;
 
-public class SendInvitationToProviderResponse
+public class SendInvitationResponse
 {
     [Display("Providers with invited person count")]
     public double ProvidersWithInvitedPersonCount { get; set; }
