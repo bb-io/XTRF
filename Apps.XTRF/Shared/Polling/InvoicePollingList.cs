@@ -31,7 +31,7 @@ public class InvoicePollingList(InvocationContext invocationContext) : XtrfInvoc
 
         var customerInvoices = await GetCustomerInvoicesAsync(new()
         {
-            UpdatedSince = DateTime.UtcNow
+            UpdatedSince = request.Memory.LastInteractionDate
         });
         
         return new()
@@ -64,7 +64,7 @@ public class InvoicePollingList(InvocationContext invocationContext) : XtrfInvoc
 
         var customerInvoices = await GetVendorInvoicesAsync(new()
         {
-            UpdatedSince = DateTime.UtcNow
+            UpdatedSince = request.Memory.LastInteractionDate
         });
         
         return new()
