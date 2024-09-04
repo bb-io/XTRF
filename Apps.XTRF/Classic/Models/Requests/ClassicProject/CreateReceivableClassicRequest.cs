@@ -65,7 +65,7 @@ public class CreateReceivableClassicRequest : CreateClassicFinanceRequest
     [Display("Receivable ID")]
     public string? Id { get; set; }
     
-    [Display("Task ID"), DataSource(typeof(ClassicTaskDataSmartHandler))]
+    [Display("Task ID"), DataSource(typeof(ClassicTaskDataHandler))]
     public string TaskId { get; set; }
 }
 

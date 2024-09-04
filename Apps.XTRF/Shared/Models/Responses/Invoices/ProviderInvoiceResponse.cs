@@ -1,6 +1,4 @@
-﻿using Apps.XTRF.Utils;
-using Blackbird.Applications.Sdk.Common;
-using Newtonsoft.Json;
+﻿using Blackbird.Applications.Sdk.Common;
 
 namespace Apps.XTRF.Shared.Models.Responses.Invoices;
 

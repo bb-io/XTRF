@@ -9,14 +9,12 @@ using Blackbird.Applications.Sdk.Common.Invocation;
 
 namespace Apps.XTRF.Classic.DataSourceHandlers;
 
-public class ClassicTaskDataSmartHandler : XtrfInvocable, IAsyncDataSourceHandler
+public class ClassicTaskDataHandler(
+    InvocationContext invocationContext,
+    [ActionParameter] CreateReceivableClassicRequest request)
+    : XtrfInvocable(invocationContext), IAsyncDataSourceHandler
 {
-    private readonly string? _projectId;
-    
-    public ClassicTaskDataSmartHandler(InvocationContext invocationContext, [ActionParameter] CreateReceivableClassicRequest request) : base(invocationContext)
-    {
-        _projectId = request.ProjectId;
-    }
+    private readonly string? _projectId = request.ProjectId;
 
     public async Task<Dictionary<string, string>> GetDataAsync(DataSourceContext context,
         CancellationToken cancellationToken)
