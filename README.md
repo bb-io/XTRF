@@ -111,6 +111,17 @@ XTRF is a comprehensive translation management system that streamlines and autom
 - **Download provider invoice** Generates provider invoice document (PDF).
 - **Delete provider invoice** Delete provider invoice by ID.
 
+### Customer Invoice
+
+- **Search customer invoices** Search for customer invoices based on the given criteria.
+- **Get customer invoice** Get customer invoice by ID.
+- **Create customer invoice** Create a customer invoice.
+- **Delete customer invoice** Delete customer invoice by ID.
+- **Download customer invoice** Download customer invoice document (PDF) by ID.
+- **Send reminder for customer invoice** Send a reminder for customer invoice by specified ID.
+- **Duplicate customer invoice** Duplicate a customer invoice by specified ID.
+- **Export customer invoice** Export customer invoice by ID to json file to be imported in external system.
+
 ### Provider person
 
 - **Search provider persons** Search for provider persons based on the given criteria.
