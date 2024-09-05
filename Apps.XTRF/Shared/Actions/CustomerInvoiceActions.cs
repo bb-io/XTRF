@@ -1,4 +1,5 @@
 ﻿using System.Text;
+using Apps.XTRF.Classic.Models.Responses.ClassicTask;
 using Apps.XTRF.Shared.Api;
 using Apps.XTRF.Shared.Invocables;
 using Apps.XTRF.Shared.Models;
@@ -17,10 +18,12 @@ using RestSharp;
 namespace Apps.XTRF.Shared.Actions;
 
 [ActionList]
-public class CustomerInvoiceActions(InvocationContext invocationContext, IFileManagementClient fileManagementClient) : XtrfInvocable(invocationContext)
+public class CustomerInvoiceActions(InvocationContext invocationContext, IFileManagementClient fileManagementClient)
+    : XtrfInvocable(invocationContext)
 {
     [Action("Search customer invoices", Description = "Search for customer invoices based on the given criteria")]
-    public async Task<CustomerInvoiceSearchResponse> SearchCustomerInvoicesAsync([ActionParameter] CustomerInvoiceSearchRequest request)
+    public async Task<CustomerInvoiceSearchResponse> SearchCustomerInvoicesAsync(
+        [ActionParameter] CustomerInvoiceSearchRequest request)
     {
         var xtrfRequest = new XtrfRequest("/accounting/customers/invoices", Method.Get, Creds);
         if (request.UpdatedSince.HasValue)
@@ -28,49 +31,54 @@ public class CustomerInvoiceActions(InvocationContext invocationContext, IFileMa
             var unixTimestamp = ((DateTimeOffset)request.UpdatedSince.Value).ToUnixTimeMilliseconds();
             xtrfRequest.AddQueryParameter("updatedSince", unixTimestamp.ToString());
         }
-        
+
         var invoices = await Client.ExecuteWithErrorHandling<List<CustomerInvoiceResponse>>(xtrfRequest);
         return new()
         {
             Invoices = invoices
         };
     }
-    
+
     [Action("Get customer invoice", Description = "Get customer invoice by ID")]
-    public async Task<CustomerInvoiceResponse> GetCustomerInvoiceAsync([ActionParameter] CustomerInvoiceIdentifier request)
+    public async Task<CustomerInvoiceResponse> GetCustomerInvoiceAsync(
+        [ActionParameter] CustomerInvoiceIdentifier request)
     {
-        var xtrfRequest = new XtrfRequest($"/accounting/customers/invoices/{request.CustomerInvoiceId}", Method.Get, Creds);
+        var xtrfRequest = new XtrfRequest($"/accounting/customers/invoices/{request.CustomerInvoiceId}?embed=tasks",
+            Method.Get, Creds);
         var invoice = await Client.ExecuteWithErrorHandling<CustomerInvoiceResponse>(xtrfRequest);
-        
-        var paymentRequest = new XtrfRequest($"/accounting/customers/invoices/{request.CustomerInvoiceId}/payments", Method.Get, Creds);
+
+        var timeZoneInfo = await GetTimeZoneInfo();
+        invoice.TasksResponses = invoice.TasksDto.Select(t => new TaskResponse(t, timeZoneInfo)).ToList();
+
+        var paymentRequest = new XtrfRequest($"/accounting/customers/invoices/{request.CustomerInvoiceId}/payments",
+            Method.Get, Creds);
         var payments = await Client.ExecuteWithErrorHandling<List<PaymentResponse>>(paymentRequest);
         invoice.Payments = payments;
-        
+
         return invoice;
     }
-    
-    [Action("Export customer invoice", Description = "Export customer invoice by ID to json file to be imported in external system")]
+
+    [Action("Export customer invoice",
+        Description = "Export customer invoice by ID to json file to be imported in external system")]
     public async Task<FileReference> ExportCustomerInvoiceAsync([ActionParameter] ExportCustomerInvoiceRequest request)
     {
         var invoice = await GetCustomerInvoiceAsync(request);
-        var lines = invoice.Payments.Select(l => new
-        {
-            description = l.Notes ?? "Payment",
-            quantity = 1, 
-            unit_price = l.Amount,
-            amount = l.Amount
-        }).ToList();
-
-        var taxesAmount = invoice.TotalGross - invoice.TotalNetto;
-        var taxes = taxesAmount == 0 ? new List<object>() :
-        [
-            new
+        var lines = invoice.TasksResponses.Count == 1
+            ? invoice.TasksResponses.Select(l => new
             {
-                description = "Total taxes",
-                amount = taxesAmount
-            }
-        ];
-        
+                description = l.Name,
+                quantity = 1,
+                unit_price = invoice.TasksValue,
+                amount = invoice.TasksValue
+            }).ToList()
+            : invoice.TasksResponses.Select(l => new
+            {
+                description = l.Name,
+                quantity = 1,
+                unit_price = 0d,
+                amount = 0d
+            }).ToList();
+
         var jsonInvoice = new List<object>
         {
             new
@@ -81,26 +89,27 @@ public class CustomerInvoiceActions(InvocationContext invocationContext, IFileMa
                 currency = request.Currency,
                 lines,
                 sub_total = lines.Sum(l => l.amount),
-                taxes,
-                total = invoice.TotalGross,
+                taxes = new List<object>(),
+                total = invoice.TasksValue,
                 custom_fields = new Dictionary<string, string>()
             }
         };
-        
+
         var json = new
         {
             invoices = jsonInvoice
         };
-        
+
         var jsonString = JsonConvert.SerializeObject(json);
         var stream = new MemoryStream(Encoding.UTF8.GetBytes(jsonString));
         stream.Position = 0;
-        
+
         return await fileManagementClient.UploadAsync(stream, "application/json", $"{request.CustomerInvoiceId}.json");
     }
-    
+
     [Action("Create customer invoice", Description = "Create customer invoice")]
-    public async Task<CustomerInvoiceResponse> CreateCustomerInvoiceAsync([ActionParameter] CreateCustomerInvoiceRequest request)
+    public async Task<CustomerInvoiceResponse> CreateCustomerInvoiceAsync(
+        [ActionParameter] CreateCustomerInvoiceRequest request)
     {
         var xtrfRequest = new XtrfRequest("/accounting/customers/invoices", Method.Post, Creds)
             .AddJsonBody(new
@@ -109,45 +118,51 @@ public class CustomerInvoiceActions(InvocationContext invocationContext, IFileMa
                 tasksIds = request.TaskIds ?? new List<string>(),
                 prepaymentIds = request.PrepaymentIds ?? new List<string>()
             });
-        
+
         return await Client.ExecuteWithErrorHandling<CustomerInvoiceResponse>(xtrfRequest);
     }
-    
+
     [Action("Delete customer invoice", Description = "Delete customer invoice by ID")]
     public async Task DeleteCustomerInvoiceAsync([ActionParameter] CustomerInvoiceIdentifier request)
     {
-        var xtrfRequest = new XtrfRequest($"/accounting/customers/invoices/{request.CustomerInvoiceId}", Method.Delete, Creds);
+        var xtrfRequest = new XtrfRequest($"/accounting/customers/invoices/{request.CustomerInvoiceId}", Method.Delete,
+            Creds);
         await Client.ExecuteWithErrorHandling(xtrfRequest);
     }
-    
+
     [Action("Download customer invoice", Description = "Download customer invoice by ID")]
     public async Task<FileReference> DownloadCustomerInvoiceAsync([ActionParameter] CustomerInvoiceIdentifier request)
     {
-        var xtrfRequest = new XtrfRequest($"/accounting/customers/invoices/{request.CustomerInvoiceId}/document", Method.Get, Creds);
+        var xtrfRequest = new XtrfRequest($"/accounting/customers/invoices/{request.CustomerInvoiceId}/document",
+            Method.Get, Creds);
         var response = await Client.ExecuteWithErrorHandling<UrlEntity>(xtrfRequest);
-        
+
         var restClient = new RestClient(response.Url);
         var downloadResponse = await restClient.ExecuteAsync(new RestRequest(string.Empty));
         var rawBytes = downloadResponse.RawBytes!;
-        
+
         var stream = new MemoryStream(rawBytes);
         stream.Position = 0;
-        
+
         return await fileManagementClient.UploadAsync(stream, "application/pdf", $"{request.CustomerInvoiceId}.pdf");
     }
-    
+
     [Action("Send reminder for customer invoice", Description = "Send reminder for customer invoice by ID")]
     public async Task SendReminderForCustomerInvoiceAsync([ActionParameter] CustomerInvoiceIdentifier request)
     {
-        var xtrfRequest = new XtrfRequest($"/accounting/customers/invoices/{request.CustomerInvoiceId}/sendReminder", Method.Post, Creds);
+        var xtrfRequest = new XtrfRequest($"/accounting/customers/invoices/{request.CustomerInvoiceId}/sendReminder",
+            Method.Post, Creds);
         await Client.ExecuteWithErrorHandling(xtrfRequest);
     }
-    
+
     [Action("Duplicate customer invoice", Description = "Duplicate customer invoice by ID")]
-    public async Task<CustomerInvoiceResponse> DuplicateCustomerInvoiceAsync([ActionParameter] ClientInvoiceDuplicateRequest request)
+    public async Task<CustomerInvoiceResponse> DuplicateCustomerInvoiceAsync(
+        [ActionParameter] ClientInvoiceDuplicateRequest request)
     {
         var endpoint = $"/accounting/customers/invoices/{request.CustomerInvoiceId}/duplicate";
-        endpoint += request.DuplicateAsProForma.HasValue && request.DuplicateAsProForma.Value ? "/proForma" : string.Empty;
+        endpoint += request.DuplicateAsProForma.HasValue && request.DuplicateAsProForma.Value
+            ? "/proForma"
+            : string.Empty;
         var xtrfRequest = new XtrfRequest(endpoint, Method.Post, Creds);
         return await Client.ExecuteWithErrorHandling<CustomerInvoiceResponse>(xtrfRequest);
     }

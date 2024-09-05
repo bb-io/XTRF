@@ -1,5 +1,8 @@
-﻿using Apps.XTRF.Shared.Models.Responses.Invoices;
+﻿using Apps.XTRF.Classic.Models.Entities;
+using Apps.XTRF.Classic.Models.Responses.ClassicTask;
+using Apps.XTRF.Shared.Models.Responses.Invoices;
 using Blackbird.Applications.Sdk.Common;
+using Newtonsoft.Json;
 
 public class CustomerInvoiceResponse
 {
@@ -49,6 +52,12 @@ public class CustomerInvoiceResponse
     public CustomerDetailsResponse CustomerDetails { get; set; } = new();
     
     public List<PaymentResponse> Payments { get; set; } = new();
+
+    [DefinitionIgnore, JsonProperty("tasks")]
+    public List<ClassicTask> TasksDto { get; set; } = new();
+
+    [Display("Tasks")]
+    public List<TaskResponse> TasksResponses { get; set; } = new();
 }
 
 public class PaymentTermsResponse
