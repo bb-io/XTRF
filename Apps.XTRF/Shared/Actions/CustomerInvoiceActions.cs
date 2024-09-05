@@ -77,7 +77,7 @@ public class CustomerInvoiceActions(InvocationContext invocationContext, IFileMa
             {
                 customer_name = invoice.CustomerDetails.Name,
                 invoice_number = invoice.InvoiceNumber,
-                invoice_date = invoice.Dates.FinalDate,
+                invoice_date = invoice.Dates.FinalDate?.Date ?? DateTime.MinValue,
                 currency = request.Currency,
                 lines,
                 sub_total = lines.Sum(l => l.amount),
