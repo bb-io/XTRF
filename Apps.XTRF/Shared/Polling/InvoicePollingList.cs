@@ -17,32 +17,46 @@ public class InvoicePollingList(InvocationContext invocationContext) : XtrfInvoc
     public async Task<PollingEventResponse<DateMemory, CustomerInvoiceSearchResponse>> OnClientInvoicesCreated(
         PollingEventRequest<DateMemory> request)
     {
-        if (request.Memory is null)
+        try
         {
+            if (request.Memory is null)
+            {
+                return new()
+                {
+                    FlyBird = false,
+                    Memory = new()
+                    {
+                        LastInteractionDate = DateTime.UtcNow
+                    }
+                };
+            }
+
+            var customerInvoices = await GetCustomerInvoicesAsync(new()
+            {
+                UpdatedSince = request.Memory.LastInteractionDate
+            });
+            
+            await Logger.LogAsync(new
+            {
+                customerInvoices,
+                request.Memory
+            });
+
             return new()
             {
-                FlyBird = false,
+                FlyBird = customerInvoices.Invoices.Any(),
+                Result = customerInvoices,
                 Memory = new()
                 {
                     LastInteractionDate = DateTime.UtcNow
                 }
             };
         }
-
-        var customerInvoices = await GetCustomerInvoicesAsync(new()
+        catch (Exception e)
         {
-            UpdatedSince = request.Memory.LastInteractionDate
-        });
-        
-        return new()
-        {
-            FlyBird = customerInvoices.Invoices.Any(),
-            Result = customerInvoices,
-            Memory = new()
-            {
-                LastInteractionDate = DateTime.UtcNow
-            }
-        };
+            await Logger.LogAsync(e);
+            throw;
+        }
     }
     
     [PollingEvent("On vendor invoices created",
