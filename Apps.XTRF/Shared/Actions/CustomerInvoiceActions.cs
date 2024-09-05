@@ -83,6 +83,7 @@ public class CustomerInvoiceActions(InvocationContext invocationContext, IFileMa
                 sub_total = lines.Sum(l => l.amount),
                 taxes,
                 total = invoice.TotalGross,
+                custom_fields = new Dictionary<string, string>()
             }
         };
         
