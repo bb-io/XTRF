@@ -49,6 +49,55 @@ public class CustomerInvoiceActions(InvocationContext invocationContext, IFileMa
         return invoice;
     }
     
+    [Action("Export customer invoice", Description = "Export customer invoice by ID to json file to be imported in external system")]
+    public async Task<FileReference> ExportCustomerInvoiceAsync([ActionParameter] ExportCustomerInvoiceRequest request)
+    {
+        var invoice = await GetCustomerInvoiceAsync(request);
+        var lines = invoice.Payments.Select(l => new
+        {
+            description = l.Notes ?? "Payment",
+            quantity = 1, 
+            unit_price = l.Amount,
+            amount = l.Amount
+        }).ToList();
+
+        var taxesAmount = invoice.TotalGross - invoice.TotalNetto;
+        var taxes = taxesAmount == 0 ? new List<object>() :
+        [
+            new
+            {
+                description = "Total taxes",
+                amount = taxesAmount
+            }
+        ];
+        
+        var jsonInvoice = new List<object>
+        {
+            new
+            {
+                customer_name = invoice.CustomerDetails.Name,
+                invoice_number = invoice.InvoiceNumber,
+                invoice_date = invoice.Dates.FinalDate,
+                currency = request.Currency,
+                lines,
+                sub_total = lines.Sum(l => l.amount),
+                taxes,
+                total = invoice.TotalGross,
+            }
+        };
+        
+        var json = new
+        {
+            invoices = jsonInvoice
+        };
+        
+        var jsonString = JsonConvert.SerializeObject(json);
+        var stream = new MemoryStream(Encoding.UTF8.GetBytes(jsonString));
+        stream.Position = 0;
+        
+        return await fileManagementClient.UploadAsync(stream, "application/json", $"{request.CustomerInvoiceId}.json");
+    }
+    
     [Action("Create customer invoice", Description = "Create customer invoice")]
     public async Task<CustomerInvoiceResponse> CreateCustomerInvoiceAsync([ActionParameter] CreateCustomerInvoiceRequest request)
     {
