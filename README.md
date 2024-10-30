@@ -206,6 +206,9 @@ XTRF is a comprehensive translation management system that streamlines and autom
 - **On project status changed** Triggered when the status of an XTRF project is changed
 - **On quote created** Triggered when a new XTRF quote is created
 - **On quote status changed** Triggered when the status of an XTRF quote is changed
+- **On client invoices created** Triggered when new client invoices are created. Checks for new invoices based on specified interval
+- **On client invoices status changed** Triggered when status of any client invoice has changed
+- **On vendor invoices created** Triggered when new vendor invoices are created. Checks for new invoices based on specified interval
 
 ## Using filter strings in events
 

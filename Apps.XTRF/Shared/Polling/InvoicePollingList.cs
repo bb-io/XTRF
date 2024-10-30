@@ -45,6 +45,45 @@ public class InvoicePollingList(InvocationContext invocationContext) : XtrfInvoc
         };
     }
     
+    [PollingEvent("On client invoices status changed",
+        "Triggered when status of any client invoice has changed.")]
+    public async Task<PollingEventResponse<StatusMemory, CustomerInvoiceSearchResponse>> OnClientInvoicesStatusChanged(
+        PollingEventRequest<StatusMemory> request)
+    {
+        var customerInvoices = await GetCustomerInvoicesAsync(new());
+        var statusMap = customerInvoices.Invoices.ToDictionary(x => x.Id, x => x.Status);
+        
+        if (request.Memory is null)
+        {
+            return new()
+            {
+                FlyBird = false,
+                Memory = new()
+                {
+                    StatusMap = statusMap
+                }
+            };
+        }
+
+        var changedInvoices = customerInvoices.Invoices
+            .Where(x =>
+                request.Memory.StatusMap.Where(y => y.Key == x.Id).Select(x => x.Value).FirstOrDefault() != x.Status)
+            .ToList();
+
+        return new()
+        {
+            FlyBird = changedInvoices.Any(),
+            Result = new()
+            {
+                Invoices = changedInvoices
+            },
+            Memory = new()
+            {
+                StatusMap = statusMap
+            }
+        };
+    }
+    
     [PollingEvent("On vendor invoices created",
         "Triggered when new vendor invoices are created. Checks for new invoices based on specified interval.")]
     public async Task<PollingEventResponse<DateMemory, ProviderInvoiceSearchResponse>> OnVendorInvoicesCreated(
