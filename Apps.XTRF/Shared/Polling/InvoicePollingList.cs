@@ -48,7 +48,7 @@ public class InvoicePollingList(InvocationContext invocationContext) : XtrfInvoc
     [PollingEvent("On client invoices status changed",
         "Triggered when status of any client invoice has changed.")]
     public async Task<PollingEventResponse<StatusMemory, CustomerInvoiceSearchResponse>> OnClientInvoicesStatusChanged(
-        PollingEventRequest<StatusMemory> request)
+        PollingEventRequest<StatusMemory> request, [PollingEventParameter] InvoiceStatusChangedInput input)
     {
         var customerInvoices = await GetCustomerInvoicesAsync(new());
         var statusMap = customerInvoices.Invoices.ToDictionary(x => x.Id, x => x.Status);
@@ -68,6 +68,8 @@ public class InvoicePollingList(InvocationContext invocationContext) : XtrfInvoc
         var changedInvoices = customerInvoices.Invoices
             .Where(x =>
                 request.Memory.StatusMap.Where(y => y.Key == x.Id).Select(x => x.Value).FirstOrDefault() != x.Status)
+            .Where(x => input.Status is null || x.Status == input.Status)
+            .Where(x => input.InvoiceId is null || x.Id == input.InvoiceId)
             .ToList();
 
         return new()
