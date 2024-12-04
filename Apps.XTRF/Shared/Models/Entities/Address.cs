@@ -14,7 +14,10 @@ public class Address
     
     [Display("Postal code")]
     public string PostalCode { get; set; }
-    
+
+    [Display("Province ID")]
+    public string ProvinceId { get; set; }
+
     [Display("Country ID")]
     public string CountryId { get; set; }
 }
