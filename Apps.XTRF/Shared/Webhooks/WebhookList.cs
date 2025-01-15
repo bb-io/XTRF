@@ -33,7 +33,7 @@ public class WebhookList(InvocationContext invocationContext) : XtrfInvocable(in
         var result = await HandleWebhook<ProjectStatusChangedPayload>(webhookRequest, 
             status != null ? payload => payload.Status.Equals(status, StringComparison.OrdinalIgnoreCase) : null);
         
-        if (result.Result != null && projectOptionalRequest.ProjectId != null && !result.Result.Id.Equals(projectOptionalRequest.ProjectId))
+        if (result.Result != null && projectOptionalRequest.ProjectId != null && !result.Result.InternalId.Equals(projectOptionalRequest.ProjectId))
         {
             return GetPreflightResponse<ProjectStatusChangedPayload>();
         }
@@ -56,7 +56,7 @@ public class WebhookList(InvocationContext invocationContext) : XtrfInvocable(in
         var result = await HandleWebhook<QuoteStatusChangedPayload>(webhookRequest,
             status != null ? payload => payload.Status.Equals(status, StringComparison.OrdinalIgnoreCase) : null);
         
-        if (result.Result != null && quoteOptionalRequest.QuoteId != null && !result.Result.Id.Equals(quoteOptionalRequest.QuoteId)) 
+        if (result.Result != null && quoteOptionalRequest.QuoteId != null && !result.Result.InternalId.Equals(quoteOptionalRequest.QuoteId)) 
         {
             return GetPreflightResponse<QuoteStatusChangedPayload>();
         }
