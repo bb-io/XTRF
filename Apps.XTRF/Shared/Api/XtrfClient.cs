@@ -24,18 +24,23 @@ public class XtrfClient : BlackBirdRestClient
 
     protected override Exception ConfigureErrorException(RestResponse response)
     {
-        if (response.ContentType?.Contains("application/json") == true)
+        if (response.ContentType?.Contains("application/json") == true || (response.Content.TrimStart().StartsWith("{") || response.Content.TrimStart().StartsWith("[")))
         {
             var errorResponse = JsonConvert.DeserializeObject<ErrorResponse>(response.Content);
             return new PluginApplicationException(errorResponse.ErrorMessage);
         }
-        else
+        else if (response.ContentType?.Contains("text/html", StringComparison.OrdinalIgnoreCase) == true || response.Content.StartsWith("<"))
         {
             var title = ExtractHtmlTagContent(response.Content, "title");
             var body = ExtractHtmlTagContent(response.Content, "body");
 
             var errorMessage = $"{title}: \nError Description: {body}";
             return new PluginApplicationException(errorMessage);
+        }
+        else
+        {
+            var errorMessage = $"Error: {response.ContentType}. Response Content: {response.Content}";
+            throw new PluginApplicationException(errorMessage);
         }
     }
 
