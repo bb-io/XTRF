@@ -24,7 +24,28 @@ public class XtrfClient : BlackBirdRestClient
 
     protected override Exception ConfigureErrorException(RestResponse response)
     {
-        var errorResponse = JsonConvert.DeserializeObject<ErrorResponse>(response.Content);
-        return new PluginApplicationException(errorResponse.ErrorMessage);
+        if (response.ContentType?.Contains("application/json") == true)
+        {
+            var errorResponse = JsonConvert.DeserializeObject<ErrorResponse>(response.Content);
+            return new PluginApplicationException(errorResponse.ErrorMessage);
+        }
+        else
+        {
+            var title = ExtractHtmlTagContent(response.Content, "title");
+            var body = ExtractHtmlTagContent(response.Content, "body");
+
+            var errorMessage = $"{title}: \nError Description: {body}";
+            return new PluginApplicationException(errorMessage);
+        }
+    }
+
+
+    private string ExtractHtmlTagContent(string html, string tagName)
+    {
+        if (string.IsNullOrEmpty(html)) return string.Empty;
+
+        var regex = new System.Text.RegularExpressions.Regex($"<{tagName}.*?>(.*?)</{tagName}>", System.Text.RegularExpressions.RegexOptions.IgnoreCase);
+        var match = regex.Match(html);
+        return match.Success ? match.Groups[1].Value.Trim() : "N/A";
     }
 }
