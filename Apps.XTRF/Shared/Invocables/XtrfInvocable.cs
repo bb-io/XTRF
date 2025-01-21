@@ -4,6 +4,7 @@ using Apps.XTRF.Shared.Api;
 using Apps.XTRF.Shared.Models.Entities;
 using Blackbird.Applications.Sdk.Common;
 using Blackbird.Applications.Sdk.Common.Authentication;
+using Blackbird.Applications.Sdk.Common.Exceptions;
 using Blackbird.Applications.Sdk.Common.Invocation;
 using Blackbird.Applications.Sdk.Utils.Extensions.Http;
 using Newtonsoft.Json;
@@ -36,7 +37,7 @@ public class XtrfInvocable : BaseInvocable
         var isSuccessful = long.TryParse(input, out var result);
 
         if (!isSuccessful)
-            throw new Exception($"{parameterName} must be a valid number.");
+            throw new PluginMisconfigurationException($"{parameterName} must be a valid number.");
 
         return result;
     }
@@ -46,7 +47,7 @@ public class XtrfInvocable : BaseInvocable
         var result = input?.Select(value =>
             long.TryParse(value, out var longValue)
                 ? longValue
-                : throw new Exception($"{parameterName} must contain valid numbers.")).ToArray();
+                : throw new PluginMisconfigurationException($"{parameterName} must contain valid numbers.")).ToArray();
         
         return result;
     }
