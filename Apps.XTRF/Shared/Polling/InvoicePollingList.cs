@@ -1,4 +1,5 @@
-﻿using Apps.XTRF.Shared.Api;
+﻿using Apps.XTRF.Classic.Models.Responses.ClassicTask;
+using Apps.XTRF.Shared.Api;
 using Apps.XTRF.Shared.Invocables;
 using Apps.XTRF.Shared.Models.Requests.Invoice;
 using Apps.XTRF.Shared.Models.Responses.Invoices;
@@ -72,12 +73,34 @@ public class InvoicePollingList(InvocationContext invocationContext) : XtrfInvoc
             .Where(x => input.InvoiceId is null || x.Id == input.InvoiceId)
             .ToList();
 
+        var invoicesWithDetails = new List<CustomerInvoiceResponse>();
+        if (changedInvoices.Any())
+        {
+            foreach (var item in changedInvoices)
+            {
+                var xtrfRequest = new XtrfRequest($"/accounting/customers/invoices/{item.Id}?embed=tasks",
+            Method.Get, Creds);
+                var invoice = await Client.ExecuteWithErrorHandling<CustomerInvoiceResponse>(xtrfRequest);
+
+                var timeZoneInfo = await GetTimeZoneInfo();
+                invoice.TasksResponses = invoice.TasksDto.Select(t => new TaskResponse(t, timeZoneInfo)).ToList();
+
+                var paymentRequest = new XtrfRequest($"/accounting/customers/invoices/{item.Id}/payments",
+                    Method.Get, Creds);
+                var payments = await Client.ExecuteWithErrorHandling<List<PaymentResponse>>(paymentRequest);
+                invoice.Payments = payments;
+
+                invoice.TaskIds = invoice.TasksDto.Select(x => x.IdNumber).ToList();
+                invoicesWithDetails.Add(invoice);
+            }
+        }
+
         return new()
         {
             FlyBird = changedInvoices.Any(),
             Result = new()
             {
-                Invoices = changedInvoices
+                Invoices = invoicesWithDetails.Any() ? invoicesWithDetails : changedInvoices
             },
             Memory = new()
             {
