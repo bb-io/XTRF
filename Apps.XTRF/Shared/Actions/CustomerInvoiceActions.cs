@@ -55,6 +55,7 @@ public class CustomerInvoiceActions(InvocationContext invocationContext, IFileMa
         var payments = await Client.ExecuteWithErrorHandling<List<PaymentResponse>>(paymentRequest);
         invoice.Payments = payments;
 
+        invoice.TaskIds = invoice.TasksDto.Select(x => x.Id).ToList();
         return invoice;
     }
 
