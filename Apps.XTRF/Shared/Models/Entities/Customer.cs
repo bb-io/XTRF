@@ -14,6 +14,9 @@ public class Customer : SimpleCustomer
 {
     [Display("Full name")] 
     public string FullName { get; set; }
+
+    [Display("ID Number")]
+    public string idNumber { get; set; }
     
     public string Notes { get; set; }
 
