@@ -142,6 +142,63 @@ public class InvoicePollingList(InvocationContext invocationContext) : XtrfInvoc
         };
     }
 
+    [PollingEvent("On vendor invoices status changed",
+    "Triggered when status of any vendor invoice has changed. Checks for vendor invoices with a specific status if provided.")]
+    public async Task<PollingEventResponse<StatusMemory, ProviderInvoiceSearchResponse>> OnVendorInvoicesStatusChanged(
+    PollingEventRequest<StatusMemory> request, [PollingEventParameter] InvoiceStatusChangedInput input)
+    {
+        var vendorInvoices = await GetVendorInvoicesAsync(new());
+        var statusMap = vendorInvoices.Invoices.ToDictionary(x => x.Id, x => x.Status);
+
+        if (request.Memory is null)
+        {
+            return new PollingEventResponse<StatusMemory, ProviderInvoiceSearchResponse>
+            {
+                FlyBird = false,
+                Memory = new StatusMemory
+                {
+                    StatusMap = statusMap
+                }
+            };
+        }
+
+        var changedInvoices = vendorInvoices.Invoices
+            .Where(x =>
+                request.Memory.StatusMap.TryGetValue(x.Id, out var previousStatus) ? previousStatus != x.Status : true)
+            .Where(x => input.Status is null || x.Status == input.Status)
+            .Where(x => input.InvoiceId is null || x.Id == input.InvoiceId)
+            .ToList();
+
+        var invoicesWithDetails = new List<ProviderInvoiceResponse>();
+        if (changedInvoices.Any())
+        {
+            foreach (var item in changedInvoices)
+            {
+                var detailsRequest = new XtrfRequest($"/accounting/providers/invoices/{item.Id}", Method.Get, Creds);
+                var invoice = await Client.ExecuteWithErrorHandling<ProviderInvoiceResponse>(detailsRequest);
+
+                var paymentRequest = new XtrfRequest($"/accounting/providers/invoices/{item.Id}/payments", Method.Get, Creds);
+                var payments = await Client.ExecuteWithErrorHandling<List<PaymentResponse>>(paymentRequest);
+                invoice.Payments = payments;
+
+                invoicesWithDetails.Add(invoice);
+            }
+        }
+
+        return new PollingEventResponse<StatusMemory, ProviderInvoiceSearchResponse>
+        {
+            FlyBird = changedInvoices.Any(),
+            Result = new ProviderInvoiceSearchResponse
+            {
+                Invoices = invoicesWithDetails.Any() ? invoicesWithDetails : changedInvoices
+            },
+            Memory = new StatusMemory
+            {
+                StatusMap = statusMap
+            }
+        };
+    }
+
     private async Task<CustomerInvoiceSearchResponse> GetCustomerInvoicesAsync(CustomerInvoiceSearchRequest request)
     {
         var xtrfRequest = new XtrfRequest("/accounting/customers/invoices", Method.Get, Creds);
