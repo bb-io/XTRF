@@ -145,7 +145,7 @@ public class InvoicePollingList(InvocationContext invocationContext) : XtrfInvoc
     [PollingEvent("On vendor invoices status changed",
     "Triggered when status of any vendor invoice has changed. Checks for vendor invoices with a specific status if provided.")]
     public async Task<PollingEventResponse<StatusMemory, ProviderInvoiceSearchResponse>> OnVendorInvoicesStatusChanged(
-    PollingEventRequest<StatusMemory> request, [PollingEventParameter] InvoiceStatusChangedInput input)
+    PollingEventRequest<StatusMemory> request, [PollingEventParameter] VendorInvoiceStatusChangedInput input)
     {
         var vendorInvoices = await GetVendorInvoicesAsync(new());
         var statusMap = vendorInvoices.Invoices.ToDictionary(x => x.Id, x => x.Status);
