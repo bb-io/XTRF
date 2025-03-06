@@ -209,6 +209,7 @@ XTRF is a comprehensive translation management system that streamlines and autom
 - **On client invoices created** Triggered when new client invoices are created. Checks for new invoices based on specified interval
 - **On client invoices status changed** Triggered when status of any client invoice has changed
 - **On vendor invoices created** Triggered when new vendor invoices are created. Checks for new invoices based on specified interval
+- **On vendor invoices status changed** Triggered when status of any vendor invoice has changed
 
 ## Using filter strings in events
 
