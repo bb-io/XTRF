@@ -43,6 +43,6 @@ namespace Apps.XTRF.Shared.Models.Responses.Provider.Persons
         [Display("Field key")]
         public string Key { get; set; } = string.Empty;
 
-        public object? Value { get; set; }
+        public string Value { get; set; }
     }
 }
