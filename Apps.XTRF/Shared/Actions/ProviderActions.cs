@@ -62,7 +62,7 @@ public class ProviderActions(InvocationContext invocationContext) : XtrfInvocabl
 
 
 
-    [Action("Run macro", Description = "Run a macro by ID, optionally passing a list of item IDs")]
+    [Action("Run macros", Description = "Run a macro by ID, optionally passing a list of item IDs")]
     public async Task<RunMacroResponse> RunMacroAsync([ActionParameter] RunMacroRequest request)
     {
         var items = (request.Items ?? Enumerable.Empty<string>())

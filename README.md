@@ -100,6 +100,7 @@ XTRF is a comprehensive translation management system that streamlines and autom
 - **Get provider** Get information about a specific provider.
 - **Delete provider** Delete the provider with the given ID.
 - **Send invitation to provider** Send an invitation to the provider with the given ID.
+- **Run macros** Run macros on the provider with the given ID.
 
 ### Provider invoice
 
