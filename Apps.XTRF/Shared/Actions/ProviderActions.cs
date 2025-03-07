@@ -1,6 +1,8 @@
 ﻿using Apps.XTRF.Shared.Api;
 using Apps.XTRF.Shared.Invocables;
+using Apps.XTRF.Shared.Models.Requests.Macros;
 using Apps.XTRF.Shared.Models.Requests.Provider;
+using Apps.XTRF.Shared.Models.Responses.Macros;
 using Apps.XTRF.Shared.Models.Responses.Provider;
 using Blackbird.Applications.Sdk.Common;
 using Blackbird.Applications.Sdk.Common.Actions;
@@ -56,5 +58,25 @@ public class ProviderActions(InvocationContext invocationContext) : XtrfInvocabl
     {
         var request = new XtrfRequest($"/providers/{identifier.ProviderId}/notification/invitation", Method.Post, Creds);
         return await Client.ExecuteWithErrorHandling<SendInvitationResponse>(request);
+    }
+
+
+
+    [Action("Run macros", Description = "Run a macro by ID, optionally passing a list of item IDs")]
+    public async Task<RunMacroResponse> RunMacroAsync([ActionParameter] RunMacroRequest request)
+    {
+        var items = (request.Items ?? Enumerable.Empty<string>())
+       .Select(int.Parse)
+       .ToList();
+        var body = new
+        {
+            ids = items,
+            async = request.Async ?? true
+        };
+
+        var xtrfRequest = new XtrfRequest($"/macros/{request.MacroId}/run", Method.Post, Creds);
+        xtrfRequest.AddJsonBody(body);
+
+        return await Client.ExecuteWithErrorHandling<RunMacroResponse>(xtrfRequest);
     }
 }
