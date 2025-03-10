@@ -17,7 +17,7 @@ namespace Tests.XTRF
         {
             var customerActions = new CustomerActions(InvocationContext);
 
-            await Assert.ThrowsExceptionAsync<PluginMisconfigurationException>(async () => await customerActions.GetCustomer(new Apps.XTRF.Shared.Models.Identifiers.CustomerIdentifier() { CustomerId = "" }));
+            await Assert.ThrowsExceptionAsync<PluginMisconfigurationException>(async () => await customerActions.GetCustomer(new Apps.XTRF.Shared.Models.Identifiers.CustomerIdentifier() { CustomerId = " " }));
         }
     }
 }

@@ -28,6 +28,8 @@ public class CustomerCustomFieldActions : BaseClassicCustomFieldActions
     public async Task<ListCustomFieldsResponse> ListCustomFieldsForCustomer(
         [ActionParameter] CustomerIdentifier customerIdentifier)
     {
+        customerIdentifier.CustomerId = customerIdentifier.CustomerId?.Trim();
+        customerIdentifier.CustomerId = customerIdentifier.CustomerId?.Trim();
         if (customerIdentifier.CustomerId == null || customerIdentifier.CustomerId == string.Empty)
         {
             throw new PluginMisconfigurationException("Customer ID cannot be empty, please provide a customer ID.");
@@ -41,6 +43,7 @@ public class CustomerCustomFieldActions : BaseClassicCustomFieldActions
         [ActionParameter] CustomerIdentifier customerIdentifier,
         [ActionParameter] CustomFieldIdentifier customFieldIdentifier)
     {
+        customerIdentifier.CustomerId = customerIdentifier.CustomerId?.Trim();
         if (customerIdentifier.CustomerId == null || customerIdentifier.CustomerId == string.Empty)
         {
             throw new PluginMisconfigurationException("Customer ID cannot be empty, please provide a customer ID.");
@@ -54,6 +57,7 @@ public class CustomerCustomFieldActions : BaseClassicCustomFieldActions
         [ActionParameter] CustomerIdentifier customerIdentifier,
         [ActionParameter] CustomFieldIdentifier customFieldIdentifier)
     {
+        customerIdentifier.CustomerId = customerIdentifier.CustomerId?.Trim();
         if (customerIdentifier.CustomerId == null || customerIdentifier.CustomerId == string.Empty)
         {
             throw new PluginMisconfigurationException("Customer ID cannot be empty, please provide a customer ID.");
@@ -67,6 +71,7 @@ public class CustomerCustomFieldActions : BaseClassicCustomFieldActions
         [ActionParameter] CustomerIdentifier customerIdentifier,
         [ActionParameter] CustomFieldIdentifier customFieldIdentifier)
     {
+        customerIdentifier.CustomerId = customerIdentifier.CustomerId?.Trim();
         if (customerIdentifier.CustomerId == null || customerIdentifier.CustomerId == string.Empty)
         {
             throw new PluginMisconfigurationException("Customer ID cannot be empty, please provide a customer ID.");
@@ -80,6 +85,7 @@ public class CustomerCustomFieldActions : BaseClassicCustomFieldActions
         [ActionParameter] CustomerIdentifier customerIdentifier,
         [ActionParameter] CustomFieldIdentifier customFieldIdentifier)
     {
+        customerIdentifier.CustomerId = customerIdentifier.CustomerId?.Trim();
         if (customerIdentifier.CustomerId == null || customerIdentifier.CustomerId == string.Empty)
         {
             throw new PluginMisconfigurationException("Customer ID cannot be empty, please provide a customer ID.");
@@ -93,6 +99,7 @@ public class CustomerCustomFieldActions : BaseClassicCustomFieldActions
         [ActionParameter] CustomerIdentifier customerIdentifier,
         [ActionParameter] CustomFieldIdentifier customFieldIdentifier)
     {
+        customerIdentifier.CustomerId = customerIdentifier.CustomerId?.Trim();
         if (customerIdentifier.CustomerId == null || customerIdentifier.CustomerId == string.Empty)
         {
             throw new PluginMisconfigurationException("Customer ID cannot be empty, please provide a customer ID.");
@@ -111,6 +118,7 @@ public class CustomerCustomFieldActions : BaseClassicCustomFieldActions
         [ActionParameter] CustomFieldIdentifier customFieldIdentifier,
         [ActionParameter] [Display("Value")] string value)
     {
+        customerIdentifier.CustomerId = customerIdentifier.CustomerId?.Trim();
         if (customerIdentifier.CustomerId == null || customerIdentifier.CustomerId == string.Empty)
         {
             throw new PluginMisconfigurationException("Customer ID cannot be empty, please provide a customer ID.");
@@ -125,6 +133,7 @@ public class CustomerCustomFieldActions : BaseClassicCustomFieldActions
         [ActionParameter] CustomFieldIdentifier customFieldIdentifier,
         [ActionParameter] [Display("Value")] decimal value)
     {
+        customerIdentifier.CustomerId = customerIdentifier.CustomerId?.Trim();
         if (customerIdentifier.CustomerId == null || customerIdentifier.CustomerId == string.Empty)
         {
             throw new PluginMisconfigurationException("Customer ID cannot be empty, please provide a customer ID.");
@@ -140,6 +149,7 @@ public class CustomerCustomFieldActions : BaseClassicCustomFieldActions
         [ActionParameter] CustomFieldIdentifier customFieldIdentifier,
         [ActionParameter] [Display("Value")] DateTime value)
     {
+        customerIdentifier.CustomerId = customerIdentifier.CustomerId?.Trim();
         if (customerIdentifier.CustomerId == null || customerIdentifier.CustomerId == string.Empty)
         {
             throw new PluginMisconfigurationException("Customer ID cannot be empty, please provide a customer ID.");
@@ -158,6 +168,7 @@ public class CustomerCustomFieldActions : BaseClassicCustomFieldActions
         [ActionParameter] CustomFieldIdentifier customFieldIdentifier,
         [ActionParameter] [Display("Value")] bool value)
     {
+        customerIdentifier.CustomerId = customerIdentifier.CustomerId?.Trim();
         if (customerIdentifier.CustomerId == null || customerIdentifier.CustomerId == string.Empty)
         {
             throw new PluginMisconfigurationException("Customer ID cannot be empty, please provide a customer ID.");
@@ -173,6 +184,7 @@ public class CustomerCustomFieldActions : BaseClassicCustomFieldActions
         [ActionParameter] CustomFieldIdentifier customFieldIdentifier,
         [ActionParameter] [Display("Value")] IEnumerable<string> value)
     {
+        customerIdentifier.CustomerId = customerIdentifier.CustomerId?.Trim();
         if (customerIdentifier.CustomerId == null || customerIdentifier.CustomerId == string.Empty)
         {
             throw new PluginMisconfigurationException("Customer ID cannot be empty, please provide a customer ID.");
