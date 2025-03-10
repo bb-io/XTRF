@@ -45,8 +45,6 @@ public class ProviderPersonActions(InvocationContext invocationContext) : XtrfIn
         var xtrfRequest = new XtrfRequest($"/providers/persons/{request.ProviderPersonId}", Method.Get, Creds);
         var response = await Client.ExecuteWithErrorHandling<ProviderPersonDto>(xtrfRequest);
 
-        //var customFieldsList = response.CustomFields.Where(f => f.Value is not IEnumerable<object>).Select(x => new CustomFieldResponse { Key = x.Key, Name = x.Name, Type = x.Type, Value = x.Value?.ToString() ?? string.Empty }).ToList();
-
         return new ProviderPersonResponse()
         {
             Id = response.Id,
@@ -57,7 +55,6 @@ public class ProviderPersonActions(InvocationContext invocationContext) : XtrfIn
             Gender = response.Gender,
             Active = response.Active,
             MotherTonguesIds = response.MotherTonguesIds,
-            //CustomFields = customFieldsList,
             ProviderId = response.ProviderId,
         };
     }

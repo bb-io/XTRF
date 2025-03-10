@@ -26,23 +26,7 @@ namespace Apps.XTRF.Shared.Models.Responses.Provider.Persons
         [Display("Mother tongue IDs")]
         public List<string> MotherTonguesIds { get; set; } = new();
 
-        //[Display("Custom fields")]
-        //public List<CustomFieldResponse> CustomFields { get; set; } = new();
-
         [Display("Provider ID")]
         public string ProviderId { get; set; } = string.Empty;
-    }
-
-    public class CustomFieldResponse
-    {
-        public string Type { get; set; } = string.Empty;
-
-        [Display("Field name")]
-        public string Name { get; set; } = string.Empty;
-
-        [Display("Field key")]
-        public string Key { get; set; } = string.Empty;
-
-        public string Value { get; set; }
     }
 }

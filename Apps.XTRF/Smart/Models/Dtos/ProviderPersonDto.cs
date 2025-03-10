@@ -25,19 +25,6 @@ namespace Apps.XTRF.Smart.Models.Dtos
 
         public List<string> MotherTonguesIds { get; set; } = new();
 
-        //public List<CustomFieldDto> CustomFields { get; set; } = new();
-
         public string ProviderId { get; set; } = string.Empty;
-    }
-
-    public class CustomFieldDto
-    {
-        public string Type { get; set; } = string.Empty;
-
-        public string Name { get; set; } = string.Empty;
-
-        public string Key { get; set; } = string.Empty;
-
-        public string? Value { get; set; }
     }
 }
