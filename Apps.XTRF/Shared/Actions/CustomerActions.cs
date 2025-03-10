@@ -84,7 +84,7 @@ public class CustomerActions(InvocationContext invocationContext) : XtrfInvocabl
     public async Task<ContactPerson> CreateCustomerContact([ActionParameter] CustomerIdentifier customer,
         [ActionParameter] CreateContactRequest input)
     {
-        customerIdentifier.CustomerId = customerIdentifier.CustomerId?.Trim();
+        customer.CustomerId = customer.CustomerId?.Trim();
         if (customer.CustomerId == null || customer.CustomerId == string.Empty)
         {
             throw new PluginMisconfigurationException("Customer ID cannot be empty, please provide a customer ID.");
@@ -229,7 +229,7 @@ public class CustomerActions(InvocationContext invocationContext) : XtrfInvocabl
     [Action("Delete customer", Description = "Delete specific customer")]
     public Task DeleteCustomer([ActionParameter] CustomerIdentifier customer)
     {
-        customerIdentifier.CustomerId = customerIdentifier.CustomerId?.Trim();
+        customer.CustomerId = customer.CustomerId?.Trim();
         if (customer.CustomerId == null || customer.CustomerId == string.Empty)
         {
             throw new PluginMisconfigurationException("Customer ID cannot be empty, please provide a customer ID.");
