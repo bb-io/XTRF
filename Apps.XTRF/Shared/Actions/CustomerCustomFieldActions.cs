@@ -29,7 +29,6 @@ public class CustomerCustomFieldActions : BaseClassicCustomFieldActions
         [ActionParameter] CustomerIdentifier customerIdentifier)
     {
         customerIdentifier.CustomerId = customerIdentifier.CustomerId?.Trim();
-        customerIdentifier.CustomerId = customerIdentifier.CustomerId?.Trim();
         if (customerIdentifier.CustomerId == null || customerIdentifier.CustomerId == string.Empty)
         {
             throw new PluginMisconfigurationException("Customer ID cannot be empty, please provide a customer ID.");
