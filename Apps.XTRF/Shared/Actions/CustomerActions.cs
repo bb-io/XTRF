@@ -9,6 +9,7 @@ using Apps.XTRF.Shared.Models.Requests.Customer;
 using Apps.XTRF.Shared.Models.Responses.Customer;
 using Blackbird.Applications.Sdk.Common;
 using Blackbird.Applications.Sdk.Common.Actions;
+using Blackbird.Applications.Sdk.Common.Exceptions;
 using Blackbird.Applications.Sdk.Common.Invocation;
 using Blackbird.Applications.Sdk.Utils.Extensions.Http;
 using RestSharp;
@@ -40,6 +41,10 @@ public class CustomerActions(InvocationContext invocationContext) : XtrfInvocabl
     [Action("Get customer details", Description = "Get information about specific customer")]
     public async Task<Customer> GetCustomer([ActionParameter] CustomerIdentifier customerIdentifier)
     {
+        if (customerIdentifier.CustomerId == null || customerIdentifier.CustomerId == string.Empty)
+        {
+            throw new PluginMisconfigurationException("Customer ID cannot be empty, please provide a customer ID.");
+        }
         var request = new XtrfRequest($"/customers/{customerIdentifier.CustomerId}?embed=persons", Method.Get, Creds);
         var customer = await Client.ExecuteWithErrorHandling<Customer>(request);
         return customer;
