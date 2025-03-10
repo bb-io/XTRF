@@ -57,6 +57,7 @@ public class CustomerActions(InvocationContext invocationContext) : XtrfInvocabl
     [Action("Create customer", Description = "Create a new customer")]
     public async Task<Customer> CreateCustomer([ActionParameter] CreateCustomerRequest input)
     {
+
         var request = new XtrfRequest("/customers", Method.Post, Creds)
             .WithJsonBody(new
             {
@@ -82,6 +83,11 @@ public class CustomerActions(InvocationContext invocationContext) : XtrfInvocabl
     public async Task<ContactPerson> CreateCustomerContact([ActionParameter] CustomerIdentifier customer,
         [ActionParameter] CreateContactRequest input)
     {
+        if (customer.CustomerId == null || customer.CustomerId == string.Empty)
+        {
+            throw new PluginMisconfigurationException("Customer ID cannot be empty, please provide a customer ID.");
+        }
+
         var request = new XtrfRequest("/customers/persons", Method.Post, Creds)
             .WithJsonBody(new
             {
@@ -112,6 +118,10 @@ public class CustomerActions(InvocationContext invocationContext) : XtrfInvocabl
     public async Task<Customer> UpdateCustomer([ActionParameter] CustomerIdentifier customerIdentifier,
         [ActionParameter] UpdateCustomerRequest input)
     {
+        if (customerIdentifier.CustomerId == null || customerIdentifier.CustomerId == string.Empty)
+        {
+            throw new PluginMisconfigurationException("Customer ID cannot be empty, please provide a customer ID.");
+        }
         var getCustomerRequest = 
             new XtrfRequest($"/customers/{customerIdentifier.CustomerId}?embed=persons", Method.Get, Creds);
         var customer = await Client.ExecuteWithErrorHandling<Customer>(getCustomerRequest);
@@ -216,6 +226,11 @@ public class CustomerActions(InvocationContext invocationContext) : XtrfInvocabl
     [Action("Delete customer", Description = "Delete specific customer")]
     public Task DeleteCustomer([ActionParameter] CustomerIdentifier customer)
     {
+        if (customer.CustomerId == null || customer.CustomerId == string.Empty)
+        {
+            throw new PluginMisconfigurationException("Customer ID cannot be empty, please provide a customer ID.");
+        }
+
         var request = new XtrfRequest($"/customers/{customer.CustomerId}", Method.Delete, Creds);
         return Client.ExecuteWithErrorHandling(request);
     }
