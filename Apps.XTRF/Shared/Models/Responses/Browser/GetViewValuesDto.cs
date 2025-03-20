@@ -11,19 +11,17 @@ namespace Apps.XTRF.Shared.Models.Responses.Browser
     public class GetViewValuesDto
     {
         public Header Header { get; set; }
-
-        public Dictionary<string, Row> Rows { get; set; }
-
-        public object Deferred { get; set; }
+        public IEnumerable<Row> Rows { get; set; }
+        //public object Deferred { get; set; }
     }
 
     public class Header
     {
-        public Pagination Pagination { get; set; }
+        //public Pagination Pagination { get; set; }
         public IEnumerable<Column> Columns { get; set; }
-        public HeaderLinks Links { get; set; }
-        public bool EditLinkAvailable { get; set; }
-        public bool DisplayLinkAvailable { get; set; }
+        //public HeaderLinks Links { get; set; }
+        //public bool EditLinkAvailable { get; set; }
+        //public bool DisplayLinkAvailable { get; set; }
     }
 
     public class Pagination
@@ -45,14 +43,14 @@ namespace Apps.XTRF.Shared.Models.Responses.Browser
 
     public class Column
     {
-        public string Type { get; set; }
+        //public string Type { get; set; }
         public string Name { get; set; }
         public string Header { get; set; }
-        public bool Sortable { get; set; }
-        public bool Deferred { get; set; }
-        public Dictionary<string, string> Links { get; set; }
-        public string InternalHeader { get; set; }
-        public string FullHeader { get; set; }
+        //public bool Sortable { get; set; }
+        //public bool Deferred { get; set; }
+        //public Dictionary<string, string> Links { get; set; }
+        //public string InternalHeader { get; set; }
+        //public string FullHeader { get; set; }
     }
 
     public class HeaderLinks

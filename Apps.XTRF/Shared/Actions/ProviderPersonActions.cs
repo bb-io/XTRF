@@ -97,12 +97,12 @@ public class ProviderPersonActions(InvocationContext invocationContext) : XtrfIn
                 .Where((col, index) => selectedIndices.Contains(index))
                 .ToList();
 
-            foreach (var key in result.Rows.Keys.ToList())
+            var rowsList = result.Rows.ToList();
+            foreach (var row in rowsList)
             {
-                var row = result.Rows[key];
-                row.Columns = selectedIndices.Select(i => row.Columns[i]).ToList();
-                result.Rows[key] = row;
+                row.Columns = selectedIndices.Select(idx => row.Columns[idx]).ToList();
             }
+            result.Rows = rowsList;
         }
 
         var response = new GetViewValuesResponse
@@ -110,7 +110,7 @@ public class ProviderPersonActions(InvocationContext invocationContext) : XtrfIn
             ViewId = request.ViewId,
             Header = result.Header,
             Rows = result.Rows,
-            Deferred = result.Deferred
+
         };
 
         return response;
