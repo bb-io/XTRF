@@ -19,6 +19,7 @@ namespace Apps.XTRF.Shared.Actions
             var xtrfRequest = new XtrfRequest($"/browser?viewId={request.ViewId}", Method.Get, Creds);
             var result = await Client.ExecuteWithErrorHandling<GetViewValuesDto>(xtrfRequest);
 
+
             if (request.Columns != null && request.Columns.Any())
             {
                 var headerColumns = result.Header.Columns.ToList();
@@ -52,10 +53,6 @@ namespace Apps.XTRF.Shared.Actions
                     }
                 }
 
-                result.Header.Columns = requestedMapping
-                    .Select(rm => headerColumns[rm.Index])
-                    .ToList();
-
                 var filteredRows = new List<Row>();
                 foreach (var row in result.Rows.Values)
                 {
@@ -74,7 +71,6 @@ namespace Apps.XTRF.Shared.Actions
                     }
                     if (allMatch)
                     {
-                        row.Columns = requestedMapping.Select(m => row.Columns.ElementAt(m.Index)).ToList();
                         filteredRows.Add(row);
                     }
                 }
