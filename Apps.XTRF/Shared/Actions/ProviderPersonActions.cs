@@ -97,20 +97,22 @@ public class ProviderPersonActions(InvocationContext invocationContext) : XtrfIn
                 .Where((col, index) => selectedIndices.Contains(index))
                 .ToList();
 
-            var rowsList = result.Rows.ToList();
+            var rowsList = result.Rows.Values.ToList();
             foreach (var row in rowsList)
             {
                 row.Columns = selectedIndices.Select(idx => row.Columns[idx]).ToList();
             }
-            result.Rows = rowsList;
+            result.Rows = rowsList
+                        .Select((row, index) => new { row, index })
+                        .ToDictionary(x => x.index.ToString(), x => x.row);
         }
 
         var response = new GetViewValuesResponse
         {
             ViewId = request.ViewId,
             Header = result.Header,
-            Rows = result.Rows,
-
+            Rows = result.Rows.Values,
+            Deferred = null 
         };
 
         return response;

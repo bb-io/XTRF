@@ -1,17 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Data.Common;
-using System.Linq;
-using System.Reflection.PortableExecutable;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace Apps.XTRF.Shared.Models.Responses.Browser
+﻿namespace Apps.XTRF.Shared.Models.Responses.Browser
 {
     public class GetViewValuesDto
     {
         public Header Header { get; set; }
-        public IEnumerable<Row> Rows { get; set; }
+        public Dictionary<string, Row> Rows { get; set; }
         //public object Deferred { get; set; }
     }
 
