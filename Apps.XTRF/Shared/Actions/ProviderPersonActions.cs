@@ -74,48 +74,4 @@ public class ProviderPersonActions(InvocationContext invocationContext) : XtrfIn
         var xtrfRequest = new XtrfRequest($"/providers/persons/{request.ProviderPersonId}/notification/invitation", Method.Post, Creds);
         return await Client.ExecuteWithErrorHandling<SendInvitationResponse>(xtrfRequest);
     }
-
-
-
-    [Action("Get view values", Description = "Retrive values by the ID of your view with a specified columns")]
-    public async Task<GetViewValuesResponse> GetViewValuesAsync([ActionParameter] GetViewValuesRequest request)
-    {
-        var xtrfRequest = new XtrfRequest($"/browser?viewId={request.ViewId}", Method.Get, Creds);
-        var result = await Client.ExecuteWithErrorHandling<GetViewValuesDto>(xtrfRequest);
-
-        if (request.Columns != null && request.Columns.Any())
-        {
-            var headerColumns = result.Header.Columns.ToList();
-
-            var selectedIndices = headerColumns
-                .Select((col, index) => new { col, index })
-                .Where(x => request.Columns.Contains(x.col.Name))
-                .Select(x => x.index)
-                .ToList();
-
-            result.Header.Columns = headerColumns
-                .Where((col, index) => selectedIndices.Contains(index))
-                .ToList();
-
-            var rowsList = result.Rows.Values.ToList();
-            foreach (var row in rowsList)
-            {
-                row.Columns = selectedIndices.Select(idx => row.Columns[idx]).ToList();
-            }
-            result.Rows = rowsList
-                        .Select((row, index) => new { row, index })
-                        .ToDictionary(x => x.index.ToString(), x => x.row);
-        }
-
-        var response = new GetViewValuesResponse
-        {
-            ViewId = request.ViewId,
-            Header = result.Header,
-            Rows = result.Rows.Values,
-            Deferred = null 
-        };
-
-        return response;
-    }
-
 }

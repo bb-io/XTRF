@@ -27,9 +27,13 @@ namespace Tests.XTRF
         [TestMethod]
         public async Task GetViewValues_ValidInput_ReturnsResult()
         {
-            var action = new ProviderPersonActions(InvocationContext);
-            var response = await action.GetViewValuesAsync( new Apps.XTRF.Shared.Models.Requests.Browser.GetViewValuesRequest { ViewId="17918"});
-
+            var action = new ViewActions(InvocationContext);
+            var response = await action.GetViewValuesAsync( 
+                new Apps.XTRF.Shared.Models.Requests.Browser.GetViewValuesRequest { ViewId="17918", Columns= ["activitiesIdNumbers"] });
+            foreach (var row in response.Rows)
+            {
+                Console.WriteLine($"{row.Id} - {string.Join(", ", row.Columns)}");
+            }
             Assert.IsNotNull(response);
         }
     }

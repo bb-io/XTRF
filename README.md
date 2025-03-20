@@ -123,6 +123,10 @@ XTRF is a comprehensive translation management system that streamlines and autom
 - **Duplicate customer invoice** Duplicate a customer invoice by specified ID.
 - **Export customer invoice** Export customer invoice by ID to json file to be imported in external system.
 
+### View
+
+- **Get view values** Get information about a specific view.
+
 ### Provider person
 
 - **Search provider persons** Search for provider persons based on the given criteria.

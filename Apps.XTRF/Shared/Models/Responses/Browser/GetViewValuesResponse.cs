@@ -7,10 +7,9 @@ namespace Apps.XTRF.Shared.Models.Responses.Browser
         [Display("View ID")]
         public string ViewId { get; set; }
 
-        public Header Header { get; set; }
+        //public Header Header { get; set; }
 
+        [Display("Raws value")]
         public IEnumerable<Row> Rows { get; set; }
-
-        public object Deferred { get; set; }
     }
 }
