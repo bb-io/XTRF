@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Apps.XTRF.Classic.Actions;
 using Apps.XTRF.Shared.Actions;
+using Apps.XTRF.Shared.Models.Requests.Browser;
 using XTRF.Base;
 
 namespace Tests.XTRF
@@ -28,8 +29,15 @@ namespace Tests.XTRF
         public async Task GetViewValues_ValidInput_ReturnsResult()
         {
             var action = new ViewActions(InvocationContext);
-            var response = await action.GetViewValuesAsync( 
-                new Apps.XTRF.Shared.Models.Requests.Browser.GetViewValuesRequest { ViewId="17918", Columns= ["activitiesIdNumbers"] });
+
+            var response = await action.GetViewValuesAsync(
+            new GetViewValuesRequest
+            {
+                ViewId = "17918",
+                Columns = ["internalNumber", "activitiesIdNumbers"],
+                ColumnsValue = ["2024/3697", "FR2024-9-953-2/3"]
+            });
+
             foreach (var row in response.Rows)
             {
                 Console.WriteLine($"{row.Id} - {string.Join(", ", row.Columns)}");

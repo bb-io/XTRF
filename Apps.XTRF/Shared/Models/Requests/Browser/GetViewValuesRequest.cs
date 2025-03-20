@@ -9,5 +9,8 @@ namespace Apps.XTRF.Shared.Models.Requests.Browser
 
         [Display("Columns")]
         public IEnumerable<string>? Columns { get; set; }
+
+        [Display("Column value")]
+        public IEnumerable<string>? ColumnsValue { get; set; }
     }
 }

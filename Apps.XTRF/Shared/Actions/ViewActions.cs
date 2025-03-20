@@ -23,22 +23,63 @@ namespace Apps.XTRF.Shared.Actions
             {
                 var headerColumns = result.Header.Columns.ToList();
 
-                var selectedIndices = headerColumns
-                .Select((col, index) => new { col, index })
-                .Where(x => request.Columns.Any(r => string.Equals(r.Trim(), x.col.Name.Trim(), StringComparison.OrdinalIgnoreCase)))
-                .Select(x => x.index)
-                .ToList();
+                var headerMapping = headerColumns
+                    .Select((col, index) => new { Name = col.Name.Trim().ToLowerInvariant(), Index = index })
+                    .ToDictionary(x => x.Name, x => x.Index);
 
-                result.Header.Columns = headerColumns
-                .Where((col, index) => selectedIndices.Contains(index))
-                .ToList();
+                var requestedMapping = new List<(string ColumnName, int Index, string? RequestedValue)>();
 
-                var rowsList = result.Rows.Values.ToList();
-                foreach (var row in rowsList)
+                if (request.ColumnsValue != null && request.ColumnsValue.Any() && request.Columns.Count() == request.ColumnsValue.Count())
                 {
-                    row.Columns = selectedIndices.Select(idx => row.Columns.ElementAt(idx)).ToList();
+                    foreach (var pair in request.Columns.Zip(request.ColumnsValue, (col, val) => (col, val)))
+                    {
+                        var normCol = pair.col.Trim().ToLowerInvariant();
+                        if (headerMapping.TryGetValue(normCol, out var idx))
+                        {
+                            requestedMapping.Add((pair.col, idx, pair.val.Trim()));
+                        }
+                    }
                 }
-                result.Rows = rowsList
+                else
+                {
+                    foreach (var col in request.Columns)
+                    {
+                        var normCol = col.Trim().ToLowerInvariant();
+                        if (headerMapping.TryGetValue(normCol, out var idx))
+                        {
+                            requestedMapping.Add((col, idx, null));
+                        }
+                    }
+                }
+
+                result.Header.Columns = requestedMapping
+                    .Select(rm => headerColumns[rm.Index])
+                    .ToList();
+
+                var filteredRows = new List<Row>();
+                foreach (var row in result.Rows.Values)
+                {
+                    bool allMatch = true;
+                    foreach (var mapping in requestedMapping)
+                    {
+                        var value = row.Columns.ElementAt(mapping.Index).Trim();
+                        if (mapping.RequestedValue != null)
+                        {
+                            if (!string.Equals(value, mapping.RequestedValue, StringComparison.OrdinalIgnoreCase))
+                            {
+                                allMatch = false;
+                                break;
+                            }
+                        }
+                    }
+                    if (allMatch)
+                    {
+                        row.Columns = requestedMapping.Select(m => row.Columns.ElementAt(m.Index)).ToList();
+                        filteredRows.Add(row);
+                    }
+                }
+
+                result.Rows = filteredRows
                     .Select((row, index) => new { row, index })
                     .ToDictionary(x => x.index.ToString(), x => x.row);
             }
