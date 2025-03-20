@@ -87,7 +87,7 @@ namespace Apps.XTRF.Shared.Actions
             var response = new GetViewValuesResponse
             {
                 ViewId = request.ViewId,
-                Rows = result.Rows.Values
+                Row = result.Rows.Values.FirstOrDefault()
             };
 
             return response;

@@ -38,10 +38,7 @@ namespace Tests.XTRF
                 ColumnsValue = ["2024/3697", "FR2024-9-953-2/3"]
             });
 
-            foreach (var row in response.Rows)
-            {
-                Console.WriteLine($"{row.Id} - {string.Join(", ", row.Columns)}");
-            }
+                Console.WriteLine($"{response.Row.Id} - {string.Join(", ", response.Row.Columns)}");
             Assert.IsNotNull(response);
         }
     }
