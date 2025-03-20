@@ -1,6 +1,8 @@
 ﻿using Apps.XTRF.Shared.Api;
 using Apps.XTRF.Shared.Invocables;
+using Apps.XTRF.Shared.Models.Requests.Browser;
 using Apps.XTRF.Shared.Models.Requests.Provider;
+using Apps.XTRF.Shared.Models.Responses.Browser;
 using Apps.XTRF.Shared.Models.Responses.Provider;
 using Apps.XTRF.Shared.Models.Responses.Provider.Persons;
 using Apps.XTRF.Smart.Models.Dtos;
@@ -72,4 +74,46 @@ public class ProviderPersonActions(InvocationContext invocationContext) : XtrfIn
         var xtrfRequest = new XtrfRequest($"/providers/persons/{request.ProviderPersonId}/notification/invitation", Method.Post, Creds);
         return await Client.ExecuteWithErrorHandling<SendInvitationResponse>(xtrfRequest);
     }
+
+
+
+    [Action("Get view values", Description = "Retrive values by the ID of your view with a specified columns")]
+    public async Task<GetViewValuesResponse> GetViewValuesAsync([ActionParameter] GetViewValuesRequest request)
+    {
+        var xtrfRequest = new XtrfRequest($"/browser?viewId={request.ViewId}", Method.Get, Creds);
+        var result = await Client.ExecuteWithErrorHandling<GetViewValuesDto>(xtrfRequest);
+
+        if (request.Columns != null && request.Columns.Any())
+        {
+            var headerColumns = result.Header.Columns.ToList();
+
+            var selectedIndices = headerColumns
+                .Select((col, index) => new { col, index })
+                .Where(x => request.Columns.Contains(x.col.Name))
+                .Select(x => x.index)
+                .ToList();
+
+            result.Header.Columns = headerColumns
+                .Where((col, index) => selectedIndices.Contains(index))
+                .ToList();
+
+            foreach (var key in result.Rows.Keys.ToList())
+            {
+                var row = result.Rows[key];
+                row.Columns = selectedIndices.Select(i => row.Columns[i]).ToList();
+                result.Rows[key] = row;
+            }
+        }
+
+        var response = new GetViewValuesResponse
+        {
+            ViewId = request.ViewId,
+            Header = result.Header,
+            Rows = result.Rows,
+            Deferred = result.Deferred
+        };
+
+        return response;
+    }
+
 }

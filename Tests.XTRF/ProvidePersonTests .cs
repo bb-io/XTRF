@@ -23,5 +23,14 @@ namespace Tests.XTRF
 
             Assert.IsNotNull(response);
         }
+
+        [TestMethod]
+        public async Task GetViewValues_ValidInput_ReturnsResult()
+        {
+            var action = new ProviderPersonActions(InvocationContext);
+            var response = await action.GetViewValuesAsync( new Apps.XTRF.Shared.Models.Requests.Browser.GetViewValuesRequest { ViewId="17918"});
+
+            Assert.IsNotNull(response);
+        }
     }
 }
