@@ -1,6 +1,8 @@
 ﻿using Apps.XTRF.Shared.Api;
 using Apps.XTRF.Shared.Invocables;
+using Apps.XTRF.Shared.Models.Requests.Browser;
 using Apps.XTRF.Shared.Models.Requests.Provider;
+using Apps.XTRF.Shared.Models.Responses.Browser;
 using Apps.XTRF.Shared.Models.Responses.Provider;
 using Apps.XTRF.Shared.Models.Responses.Provider.Persons;
 using Apps.XTRF.Smart.Models.Dtos;
