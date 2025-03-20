@@ -1,4 +1,6 @@
-﻿using Blackbird.Applications.Sdk.Common;
+﻿using Apps.XTRF.Shared.DataSourceHandlers;
+using Blackbird.Applications.Sdk.Common;
+using Blackbird.Applications.Sdk.Common.Dynamic;
 
 namespace Apps.XTRF.Shared.Models.Requests.Browser
 {
@@ -8,6 +10,7 @@ namespace Apps.XTRF.Shared.Models.Requests.Browser
         public string ViewId { get; set; }
 
         [Display("Columns")]
+        [DataSource(typeof(ColumnNameDataHandler))]
         public IEnumerable<string>? Columns { get; set; }
 
         [Display("Column value")]
