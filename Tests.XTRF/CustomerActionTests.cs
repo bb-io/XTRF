@@ -19,5 +19,13 @@ namespace Tests.XTRF
 
             await Assert.ThrowsExceptionAsync<PluginMisconfigurationException>(async () => await customerActions.GetCustomer(new Apps.XTRF.Shared.Models.Identifiers.CustomerIdentifier() { CustomerId = " " }));
         }
+
+        [TestMethod]
+        public async Task CustomerDetails_ValidInput_ReturnsCustomerDetails()
+        {
+            var customerActions = new CustomerActions(InvocationContext);
+            var customer = await customerActions.GetCustomer(new Apps.XTRF.Shared.Models.Identifiers.CustomerIdentifier() { CustomerId = "22487" });
+            Assert.IsNotNull(customer);
+        }
     }
 }
