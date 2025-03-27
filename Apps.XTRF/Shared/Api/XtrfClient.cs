@@ -15,6 +15,7 @@ public class XtrfClient : BlackBirdRestClient
     protected override JsonSerializerSettings JsonSettings => JsonConfig.Settings;
 
     public XtrfClient(IEnumerable<AuthenticationCredentialsProvider> creds) : base(
+
         new()
         {
             BaseUrl = (creds.Get(CredsNames.Url).Value + "/home-api").ToUri()
@@ -23,7 +24,30 @@ public class XtrfClient : BlackBirdRestClient
     }
     public override async Task<T> ExecuteWithErrorHandling<T>(RestRequest request)
     {
-        string content = (await ExecuteWithErrorHandling(request)).Content;
+        var response = await ExecuteWithErrorHandling(request);
+        var content = response.Content;
+
+        if (response.ContentType?.Contains("text/html", StringComparison.OrdinalIgnoreCase) == true || content.TrimStart().StartsWith("<"))
+        {
+            var title = ExtractHtmlTagContent(content, "title");
+            var body = ExtractHtmlTagContent(content, "body");
+            var message = $"{title}: \nError Description: {body}";
+
+            if (title.ToLower().Contains("sign in") || title.ToLower().Contains("log in"))
+            {
+                throw new PluginApplicationException("Failed to authenticate to the XTRF service. Please check your account permissions and try again");
+            }
+
+            if (typeof(T) == typeof(string))
+            {
+                return (T)(object)message;
+            }
+            else
+            {
+                throw new PluginApplicationException(message);
+            }
+        }
+
         T val = JsonConvert.DeserializeObject<T>(content, JsonSettings);
         if (val == null)
         {
@@ -31,17 +55,6 @@ public class XtrfClient : BlackBirdRestClient
         }
 
         return val;
-    }
-
-    public override async Task<RestResponse> ExecuteWithErrorHandling(RestRequest request)
-    {
-        RestResponse restResponse = await ExecuteAsync(request);
-        if (!restResponse.IsSuccessStatusCode)
-        {
-            throw ConfigureErrorException(restResponse);
-        }
-
-        return restResponse;
     }
     protected override Exception ConfigureErrorException(RestResponse response)
     {

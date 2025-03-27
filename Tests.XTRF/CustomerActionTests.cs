@@ -1,16 +1,11 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Apps.XTRF.Shared.Actions;
+﻿using Apps.XTRF.Shared.Actions;
 using Blackbird.Applications.Sdk.Common.Exceptions;
 using XTRF.Base;
 
 namespace Tests.XTRF
 {
     [TestClass]
-    public class CustomerActionTests :TestBase
+    public class CustomerActionTests : TestBase
     {
         [TestMethod]
         public async Task CustomerDetails_NoInput_ThrowsMisconfiguredException()
