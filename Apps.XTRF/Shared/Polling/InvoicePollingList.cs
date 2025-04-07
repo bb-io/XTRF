@@ -52,7 +52,7 @@ public class InvoicePollingList(InvocationContext invocationContext) : XtrfInvoc
         PollingEventRequest<StatusMemory> request, [PollingEventParameter] InvoiceStatusChangedInput input)
     {
         var customerInvoices = await GetCustomerInvoicesAsync(new());
-        var statusMap = customerInvoices.Invoices.ToDictionary(x => x.Id, x => x.Status);
+        var statusMap = customerInvoices.Invoices.Where(x => x !=null).ToDictionary(x => x.Id, x => x.Status);
         
         if (request.Memory is null)
         {
@@ -82,15 +82,18 @@ public class InvoicePollingList(InvocationContext invocationContext) : XtrfInvoc
             Method.Get, Creds);
                 var invoice = await Client.ExecuteWithErrorHandling<CustomerInvoiceResponse>(xtrfRequest);
 
+                if (invoice == null)
+                    continue;
+
                 var timeZoneInfo = await GetTimeZoneInfo();
-                invoice.TasksResponses = invoice.TasksDto.Select(t => new TaskResponse(t, timeZoneInfo)).ToList();
+                invoice.TasksResponses = invoice.TasksDto?.Select(t => new TaskResponse(t, timeZoneInfo)).ToList() ?? new List<TaskResponse>();
 
                 var paymentRequest = new XtrfRequest($"/accounting/customers/invoices/{item.Id}/payments",
                     Method.Get, Creds);
                 var payments = await Client.ExecuteWithErrorHandling<List<PaymentResponse>>(paymentRequest);
-                invoice.Payments = payments;
+                invoice.Payments = payments ?? new List<PaymentResponse>();
 
-                invoice.TaskNames = invoice.TasksDto.Select(x => x.Name).ToList();
+                invoice.TaskNames = invoice.TasksDto?.Select(x => x.Name).ToList() ?? new List<string>();
                 invoicesWithDetails.Add(invoice);
             }
         }
