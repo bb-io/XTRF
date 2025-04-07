@@ -12,7 +12,6 @@ public class ConnectionDefinition : IConnectionDefinition
         {
             Name = "API Token",
             AuthenticationType = ConnectionAuthenticationType.Undefined,
-            ConnectionUsage = ConnectionUsage.Webhooks,
             ConnectionProperties = new List<ConnectionProperty>()
             {
                 new(CredsNames.Url) { DisplayName = "Url" },
@@ -24,16 +23,7 @@ public class ConnectionDefinition : IConnectionDefinition
     public IEnumerable<AuthenticationCredentialsProvider> CreateAuthorizationCredentialsProviders(
         Dictionary<string, string> values)
     {
-        yield return new AuthenticationCredentialsProvider(
-            AuthenticationCredentialsRequestLocation.None,
-            CredsNames.Url, 
-            values[CredsNames.Url]
-        );
-
-        yield return new AuthenticationCredentialsProvider(
-            AuthenticationCredentialsRequestLocation.None,
-            CredsNames.ApiToken,
-            values[CredsNames.ApiToken]
-        );
+        yield return new AuthenticationCredentialsProvider(CredsNames.Url, values[CredsNames.Url]);
+        yield return new AuthenticationCredentialsProvider(CredsNames.ApiToken, values[CredsNames.ApiToken]);
     }
 }

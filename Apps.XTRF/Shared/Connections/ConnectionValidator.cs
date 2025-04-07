@@ -1,6 +1,8 @@
 ﻿using Apps.XTRF.Shared.Api;
+using Apps.XTRF.Shared.Constants;
 using Blackbird.Applications.Sdk.Common.Authentication;
 using Blackbird.Applications.Sdk.Common.Connections;
+using Blackbird.Applications.Sdk.Utils.Extensions.Sdk;
 using RestSharp;
 
 namespace Apps.XTRF.Shared.Connections;
@@ -15,11 +17,13 @@ public class ConnectionValidator : IConnectionValidator
 
         try
         {
-            await client.ExecuteWithErrorHandling(request);
-
+            var result = await client.ExecuteWithErrorHandling(request);
+            bool isJsonContent = !string.IsNullOrEmpty(result.ContentType) && 
+                                 result.ContentType.Contains("json", StringComparison.OrdinalIgnoreCase);
             return new()
             {
-                IsValid = true
+                IsValid = isJsonContent,
+                Message = isJsonContent ? string.Empty : "Invalid credentials",
             };
         }
         catch (Exception ex)
