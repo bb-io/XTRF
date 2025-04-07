@@ -4,7 +4,7 @@
         <ImplicitUsings>enable</ImplicitUsings>
         <Nullable>enable</Nullable>
         <Product>XTRF</Product>
-        <Version>2.1.13</Version>
+        <Version>2.1.14</Version>
         <Description>Translation project management made easy</Description>
         <AssemblyName>Apps.XTRF</AssemblyName>
     </PropertyGroup>
@@ -22,10 +22,5 @@
     </ItemGroup>
     <ItemGroup>
         <Folder Include="Smart\Models" />
-    </ItemGroup>
-    <ItemGroup>
-      <Content Include="..\README.md">
-        <Link>README.md</Link>
-      </Content>
     </ItemGroup>
 </Project>
