@@ -93,6 +93,12 @@ public class WebhookList(InvocationContext invocationContext) : XtrfInvocable(in
             {
                 return GetPreflightResponse<JobStatusChangedPayload>();
             }
+
+            if (jobOptionalRequest.JobType != null &&
+                !result.Result.JobType.Equals(jobOptionalRequest.JobType, StringComparison.OrdinalIgnoreCase))
+            {
+                return GetPreflightResponse<JobStatusChangedPayload>();
+            }
         }
         
         return result;
