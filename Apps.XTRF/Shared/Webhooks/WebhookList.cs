@@ -79,7 +79,7 @@ public class WebhookList(InvocationContext invocationContext) : XtrfInvocable(in
         if (result.Result != null)
         {
             if (projectOptionalRequest.ProjectId != null &&
-                !result.Result.ProjectId.Equals(projectOptionalRequest.ProjectId))
+                !result.Result.ProjectInternalId.Equals(projectOptionalRequest.ProjectId))
             {
                 return GetPreflightResponse<JobStatusChangedPayload>();
             }
