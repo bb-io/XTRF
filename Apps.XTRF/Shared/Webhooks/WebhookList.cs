@@ -79,7 +79,7 @@ public class WebhookList(InvocationContext invocationContext) : XtrfInvocable(in
         if (result.Result != null)
         {
             if (projectOptionalRequest.ProjectId != null &&
-                !result.Result.ProjectId.Equals(projectOptionalRequest.ProjectId))
+                !result.Result.ProjectInternalId.Equals(projectOptionalRequest.ProjectId))
             {
                 return GetPreflightResponse<JobStatusChangedPayload>();
             }
@@ -90,6 +90,12 @@ public class WebhookList(InvocationContext invocationContext) : XtrfInvocable(in
             }
 
             if (jobOptionalRequest.JobId != null && !result.Result.JobId.Equals(jobOptionalRequest.JobId))
+            {
+                return GetPreflightResponse<JobStatusChangedPayload>();
+            }
+
+            if (jobOptionalRequest.JobType != null &&
+               !result.Result.JobType.Contains(jobOptionalRequest.JobType, StringComparison.OrdinalIgnoreCase))
             {
                 return GetPreflightResponse<JobStatusChangedPayload>();
             }
