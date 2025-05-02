@@ -33,6 +33,10 @@ public class JobStatusChangedPayload
     [Display("Job type")]
     public string JobType { get; set; }
 
+    [JsonProperty("jobTypeId")]
+    [Display("Job type ID")]
+    public string JobTypeId { get; set; }
+
     [JsonProperty("status")]
     public string Status { get; set; }
 
