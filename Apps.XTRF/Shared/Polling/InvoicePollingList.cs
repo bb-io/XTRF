@@ -151,7 +151,8 @@ public class InvoicePollingList(InvocationContext invocationContext) : XtrfInvoc
     PollingEventRequest<StatusMemory> request, [PollingEventParameter] VendorInvoiceStatusChangedInput input)
     {
         var vendorInvoices = await GetVendorInvoicesAsync(new());
-        var statusMap = vendorInvoices.Invoices.ToDictionary(x => x.Id, x => x.Status);
+        var invoicesList = vendorInvoices?.Invoices ?? new List<ProviderInvoiceResponse>();
+        var statusMap = invoicesList.ToDictionary(x => x.Id, x => x.Status);
 
         if (request.Memory is null)
         {
@@ -165,11 +166,13 @@ public class InvoicePollingList(InvocationContext invocationContext) : XtrfInvoc
             };
         }
 
-        var changedInvoices = vendorInvoices.Invoices
+        var previousMap = request.Memory.StatusMap ?? new Dictionary<string, string>();
+
+        var changedInvoices = invoicesList
             .Where(x =>
-                request.Memory.StatusMap.TryGetValue(x.Id, out var previousStatus) ? previousStatus != x.Status : true)
-            .Where(x => input.Status is null || x.Status == input.Status)
-            .Where(x => input.InvoiceId is null || x.Id == input.InvoiceId)
+                previousMap.TryGetValue(x.Id, out var prev) ? prev != x.Status : true)
+            .Where(x => input?.Status == null || x.Status == input.Status)
+            .Where(x => input?.InvoiceId == null || x.Id == input.InvoiceId)
             .ToList();
 
         var invoicesWithDetails = new List<ProviderInvoiceResponse>();
@@ -182,7 +185,7 @@ public class InvoicePollingList(InvocationContext invocationContext) : XtrfInvoc
 
                 var paymentRequest = new XtrfRequest($"/accounting/providers/invoices/{item.Id}/payments", Method.Get, Creds);
                 var payments = await Client.ExecuteWithErrorHandling<List<PaymentResponse>>(paymentRequest);
-                invoice.Payments = payments;
+                invoice.Payments = payments ?? new List<PaymentResponse>();
 
                 invoicesWithDetails.Add(invoice);
             }
