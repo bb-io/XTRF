@@ -1,12 +1,14 @@
 ﻿using Apps.XTRF.Shared.DataSourceHandlers;
+using Apps.XTRF.Shared.DataSourceHandlers.EnumHandlers;
 using Blackbird.Applications.Sdk.Common;
+using Blackbird.Applications.Sdk.Common.Dictionaries;
 using Blackbird.Applications.Sdk.Common.Dynamic;
 
 namespace Apps.XTRF.Classic.Models.Requests.ClassicJob;
 
 public class UpdateJobRequest
 {
-    [DataSource(typeof(JobStatusDataHandler))]
+    [StaticDataSource(typeof(StaticJobStatusDataHandler))]
     public string? Status { get; set; }
     
     [Display("Vendor ID")]

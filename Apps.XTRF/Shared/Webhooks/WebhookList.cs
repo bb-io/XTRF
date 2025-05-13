@@ -67,7 +67,7 @@ public class WebhookList(InvocationContext invocationContext) : XtrfInvocable(in
     [Webhook("On job status changed", typeof(JobStatusChangedHandler),
         Description = "Triggered when the status of an XTRF job is changed")]
     public async Task<WebhookResponse<JobStatusChangedPayload>> JobStatusChangedHandler(WebhookRequest webhookRequest,
-        [WebhookParameter] [Display("Job status")] [StaticDataSource(typeof(JobStatusDataHandler))]
+        [WebhookParameter] [Display("Job status")] [StaticDataSource(typeof(StaticJobStatusDataHandler))]
         string? status,
         [WebhookParameter] ProjectOptionalRequest projectOptionalRequest,
         [WebhookParameter] TaskOptionalRequest taskOptionalRequest,
@@ -84,7 +84,7 @@ public class WebhookList(InvocationContext invocationContext) : XtrfInvocable(in
                 return GetPreflightResponse<JobStatusChangedPayload>();
             }
 
-            if (taskOptionalRequest.TaskId != null && !result.Result.TaskId.Equals(taskOptionalRequest.TaskId))
+            if (taskOptionalRequest.TaskId != null && !result.Result.TaskInternalId.Equals(taskOptionalRequest.TaskId))
             {
                 return GetPreflightResponse<JobStatusChangedPayload>();
             }
