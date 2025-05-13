@@ -5,7 +5,7 @@ namespace Apps.XTRF.Shared.DataSourceHandlers.EnumHandlers;
 /// <summary>
 /// Data source handler that should be used for webhook input
 /// </summary>
-public class JobStatusDataHandler : IStaticDataSourceHandler
+public class StaticJobStatusDataHandler : IStaticDataSourceHandler
 {
     private static Dictionary<string, string> EnumValues => new()
     {
