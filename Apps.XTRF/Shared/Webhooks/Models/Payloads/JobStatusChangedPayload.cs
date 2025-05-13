@@ -6,7 +6,7 @@ namespace Apps.XTRF.Shared.Webhooks.Models.Payloads;
 public class JobStatusChangedPayload
 {
     [JsonProperty("project id")]
-    [Display("Dispalyed project ID")] 
+    [Display("Displayed project ID")] 
     public string ProjectId { get; set; }
 
     [JsonProperty("project internal id")]
@@ -22,7 +22,7 @@ public class JobStatusChangedPayload
     public string TaskInternalId { get; set; }
 
     [JsonProperty("job id")]
-    [Display("Dispalyed job ID")]
+    [Display("Displayed job ID")]
     public string JobId { get; set; }
 
     [JsonProperty("job internal id")]
