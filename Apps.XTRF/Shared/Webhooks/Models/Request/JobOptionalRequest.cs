@@ -9,7 +9,7 @@ public class JobOptionalRequest
     [Display("Job ID")]
     public string? JobId { get; set; }
 
-    [Display("Job type")]
+    [Display("Job type name")]
     [DataSource(typeof(JobTypeNameDataHandler))]
-    public string? JobType { get; set; }
+    public string? JobTypeName { get; set; }
 }

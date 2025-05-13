@@ -24,7 +24,7 @@ public class CreateFinanceRequest : FileWrapper
     [Display("File name")]
     public string? FileName { get; set; }
 
-    [Display("Job type"), DataSource(typeof(JobTypeDataHandler))]
+    [Display("Job type ID"), DataSource(typeof(JobTypeDataHandler))]
     public string JobType { get; set; }
 
     [Display("Rate origin"), StaticDataSource(typeof(RateOriginDataHandler))]

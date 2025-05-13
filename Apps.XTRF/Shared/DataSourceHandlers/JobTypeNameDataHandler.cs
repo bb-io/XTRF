@@ -10,7 +10,7 @@ using RestSharp;
 
 namespace Apps.XTRF.Shared.DataSourceHandlers;
 
-public class JobTypeDataHandler(InvocationContext invocationContext) : XtrfInvocable(invocationContext), IAsyncDataSourceHandler
+public class JobTypeNameDataHandler(InvocationContext invocationContext) : XtrfInvocable(invocationContext), IAsyncDataSourceHandler
 {
     public async Task<Dictionary<string, string>> GetDataAsync(DataSourceContext context,
         CancellationToken cancellationToken)
@@ -24,7 +24,7 @@ public class JobTypeDataHandler(InvocationContext invocationContext) : XtrfInvoc
         return jobTypes!
             .Where(jobType => context.SearchString == null
                          || jobType.Name.Contains(context.SearchString, StringComparison.OrdinalIgnoreCase))
-            .DistinctBy(x => x.Id)
-            .ToDictionary(jobType => jobType.Id.ToString()!, jobType => jobType.Name);
+            .DistinctBy(x => x.Name)
+            .ToDictionary(jobType => jobType.Name, jobType => jobType.Name);
     }
 }

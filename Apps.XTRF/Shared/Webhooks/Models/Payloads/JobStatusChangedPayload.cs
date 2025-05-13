@@ -30,12 +30,8 @@ public class JobStatusChangedPayload
     public string JobInternalId { get; set; }
 
     [JsonProperty("job type")]
-    [Display("Job type")]
+    [Display("Job type name")]
     public string JobType { get; set; }
-
-    [JsonProperty("jobTypeId")]
-    [Display("Job type ID")]
-    public string JobTypeId { get; set; }
 
     [JsonProperty("status")]
     public string Status { get; set; }
@@ -45,6 +41,7 @@ public class JobStatusChangedPayload
     public string PreviousStatus { get; set; }
 
     [JsonProperty("vendor")]
+    [Display("Vendor name")]
     public string Vendor { get; set; }
 
     [JsonProperty("actual start date and time")]
