@@ -3,6 +3,7 @@ using Apps.XTRF.Shared.Extensions;
 using Apps.XTRF.Shared.Invocables;
 using Apps.XTRF.Shared.Models.Entities;
 using Apps.XTRF.Shared.Models.Entities.Enums;
+using Blackbird.Applications.Sdk.Common.Exceptions;
 using Blackbird.Applications.Sdk.Common.Invocation;
 using Newtonsoft.Json.Linq;
 using RestSharp;
@@ -84,7 +85,7 @@ public abstract class BaseCustomFieldActions : XtrfInvocable
         var customField = response.FirstOrDefault(field => field.Key == key);
 
         if (customField == null)
-            throw new Exception($"No custom field exists with {key} key.");
+            throw new PluginApplicationException($"No custom field exists with {key} key.");
         
         return customField;
     }
