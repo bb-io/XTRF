@@ -184,7 +184,7 @@ public class ClassicTaskActions : BaseFileActions
 
     [Action("Classic: Update task in quote", Description = "Update a task within the quote, specifying only the " +
                                                            "fields that require updating")]
-    public async Task<TaskResponse> UpdateTaskInProject([ActionParameter] QuoteIdentifier quoteIdentifier,
+    public async Task<TaskResponse> UpdateTaskInQuote([ActionParameter] QuoteIdentifier quoteIdentifier,
         [ActionParameter] ClassicTaskIdentifier taskIdentifier, [ActionParameter] UpdateTaskRequest input)
     {
         var task = await GetTask(quoteIdentifier, taskIdentifier);
