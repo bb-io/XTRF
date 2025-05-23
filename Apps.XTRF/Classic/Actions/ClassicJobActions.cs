@@ -14,6 +14,8 @@ using Blackbird.Applications.Sdk.Common.Invocation;
 using Blackbird.Applications.SDK.Extensions.FileManagement.Interfaces;
 using Blackbird.Applications.Sdk.Utils.Extensions.Http;
 using RestSharp;
+using Blackbird.Applications.Sdk.Common.Dictionaries;
+using Apps.XTRF.Shared.DataSourceHandlers.EnumHandlers;
 
 namespace Apps.XTRF.Classic.Actions;
 
@@ -41,8 +43,11 @@ public class ClassicJobActions : BaseFileActions
     #region Post
 
     [Action("Classic: Upload output file for job", Description = "Upload an output file for a job")]
-    public async Task<JobIdentifier> UploadOutputFile([ActionParameter] JobIdentifier jobIdentifier, 
-        [ActionParameter] FileWrapper file)
+    public async Task<JobIdentifier> UploadOutputFile(
+        [ActionParameter] JobIdentifier jobIdentifier, 
+        [ActionParameter] FileWrapper file, 
+        [ActionParameter][StaticDataSource(typeof(ClassicFileTypeDataSource))][Display("File category")] string? category
+        )
     {
         var uploadFileRequest = new XtrfRequest("/files", Method.Post, Creds);
         var fileBytes = await DownloadFile(file.File);
@@ -52,7 +57,8 @@ public class ClassicJobActions : BaseFileActions
         var addOutputFileToJobRequest = new XtrfRequest($"/jobs/{jobIdentifier.JobId}/files/output", Method.Post, Creds)
             .WithJsonBody(new
             {
-                token = uploadFileResponse.Token
+                token = uploadFileResponse.Token,
+                category
             });
         await Client.ExecuteWithErrorHandling(addOutputFileToJobRequest);
         return jobIdentifier;
