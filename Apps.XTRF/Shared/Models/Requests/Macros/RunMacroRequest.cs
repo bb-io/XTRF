@@ -17,5 +17,7 @@ namespace Apps.XTRF.Shared.Models.Requests.Macros
 
         [Display("Run asynchronously")]
         public bool? Async { get; set; }
+
+        public string? Parameters { get; set; }
     }
 }

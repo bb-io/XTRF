@@ -6,8 +6,10 @@ using Apps.XTRF.Shared.Models.Responses.Macros;
 using Apps.XTRF.Shared.Models.Responses.Provider;
 using Blackbird.Applications.Sdk.Common;
 using Blackbird.Applications.Sdk.Common.Actions;
+using Blackbird.Applications.Sdk.Common.Exceptions;
 using Blackbird.Applications.Sdk.Common.Invocation;
 using RestSharp;
+using System.Text.Json;
 
 namespace Apps.XTRF.Shared.Actions;
 
@@ -68,11 +70,29 @@ public class ProviderActions(InvocationContext invocationContext) : XtrfInvocabl
         var items = (request.Items ?? Enumerable.Empty<string>())
        .Select(int.Parse)
        .ToList();
-        var body = new
+        var body = new Dictionary<string, object>
         {
-            ids = items,
-            async = request.Async ?? true
+            { "ids", items },
+            { "async", request.Async ?? true }
         };
+
+        object parsedParams = null;
+        if (!string.IsNullOrWhiteSpace(request.Parameters))
+        {
+            try
+            {
+                parsedParams = JsonSerializer.Deserialize<JsonElement>(request.Parameters);
+            }
+            catch (JsonException ex)
+            {
+                throw new PluginMisconfigurationException("Invalid JSON in Parameters field", ex);
+            }
+        }
+
+        if (parsedParams != null)
+        {
+            body["params"] = parsedParams;
+        }
 
         var xtrfRequest = new XtrfRequest($"/macros/{request.MacroId}/run", Method.Post, Creds);
         xtrfRequest.AddJsonBody(body);
