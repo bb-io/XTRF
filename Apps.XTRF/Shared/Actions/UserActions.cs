@@ -17,7 +17,7 @@ namespace Apps.XTRF.Shared.Actions
     public class UserActions(InvocationContext invocationContext) : XtrfInvocable(invocationContext)
     {
 
-        [Action("Get user details", Description = "Get user details from the user ID")]
+        [Action("Get user details", Description = "Get user details given a user ID")]
         public async Task<GetUserResponse> GetUser([ActionParameter] GetUserRequest request)
         {
             var xtrfRequest = new XtrfRequest($"/users/{request.UserID}", Method.Get, Creds);
