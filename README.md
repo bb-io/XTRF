@@ -127,6 +127,10 @@ XTRF is a comprehensive translation management system that streamlines and autom
 
 - **Get view values** Get information about a specific view.
 
+### User
+
+- **Get user details** Get user details given a user ID.
+
 ### Provider person
 
 - **Search provider persons** Search for provider persons based on the given criteria.
