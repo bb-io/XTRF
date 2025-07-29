@@ -13,6 +13,7 @@ using Blackbird.Applications.Sdk.Common.Invocation;
 using Blackbird.Applications.SDK.Extensions.FileManagement.Interfaces;
 using Blackbird.Applications.Sdk.Utils.Extensions.Http;
 using RestSharp;
+using Blackbird.Applications.Sdk.Common.Exceptions;
 
 namespace Apps.XTRF.Classic.Actions;
 
@@ -30,6 +31,16 @@ public class ClassicTaskActions : BaseFileActions
     public async Task<TaskResponse> GetTaskInProject([ActionParameter] ProjectIdentifier projectIdentifier, 
         [ActionParameter] ClassicTaskIdentifier taskIdentifier)
     {
+        if (projectIdentifier == null || string.IsNullOrWhiteSpace(projectIdentifier.ProjectId))
+        {
+            throw new PluginMisconfigurationException("Project ID is null or empty. Please check your input and try again");
+        }
+
+        if (taskIdentifier == null || string.IsNullOrWhiteSpace(taskIdentifier.TaskId))
+        {
+            throw new PluginMisconfigurationException("Task ID is missing or invalid. Please check your input and try again");
+        }
+
         var task = await GetTask(projectIdentifier, taskIdentifier);
         var timeZoneInfo = await GetTimeZoneInfo();
         return new(task, timeZoneInfo);
@@ -66,7 +77,13 @@ public class ClassicTaskActions : BaseFileActions
     {
         var request = new XtrfRequest($"/projects/{projectIdentifier.ProjectId}?embed=tasks", Method.Get, Creds);
         var project = await Client.ExecuteWithErrorHandling<ClassicProject>(request);
-        var task = project.Tasks!.First(t => t.Id == taskIdentifier.TaskId);
+        var task = project.Tasks!.FirstOrDefault(t => t.Id == taskIdentifier.TaskId);
+
+        if (task == null)
+        {
+            throw new PluginMisconfigurationException($"Task with ID {taskIdentifier.TaskId} not found in project {projectIdentifier.ProjectId}. Please check your inputs and try again");
+        }
+
         return task;
     }
     
