@@ -13,80 +13,103 @@ namespace Apps.XTRF.Shared.Actions
     public class ViewActions(InvocationContext invocationContext) : XtrfInvocable(invocationContext)
     {
 
-        [Action("Get view values", Description = "Retrive values by the ID of your view with a specified columns")]
+        [Action("Get view values", Description = "Retrieve values by the ID of your view with specified columns")]
         public async Task<GetViewValuesResponse> GetViewValuesAsync([ActionParameter] GetViewValuesRequest request)
         {
-            var xtrfRequest = new XtrfRequest($"/browser?viewId={request.ViewId}", Method.Get, Creds);
-            var result = await Client.ExecuteWithErrorHandling<GetViewValuesDto>(xtrfRequest);
+            const int pageSize = 100; // valid values are 10 to 1000
+            int currentPage = 1;
+            Dictionary<string, int> headerMapping = new();
+            List<(string ColumnName, int Index, string? RequestedValue)>? requestedMapping = null;
 
-
-            if (request.Columns != null && request.Columns.Any())
+            while (true)
             {
-                var headerColumns = result.Header.Columns.ToList();
+                var xtrfRequest = new XtrfRequest(
+                    $"/browser?viewId={request.ViewId}&maxRows={pageSize}&page={currentPage}",
+                    Method.Get,
+                    Creds
+                );
 
-                var headerMapping = headerColumns
-                    .Select((col, index) => new { Name = col.Name.Trim().ToLowerInvariant(), Index = index })
-                    .ToDictionary(x => x.Name, x => x.Index);
+                var result = await Client.ExecuteWithErrorHandling<GetViewValuesDto>(xtrfRequest);
 
-                var requestedMapping = new List<(string ColumnName, int Index, string? RequestedValue)>();
-
-                if (request.ColumnsValue != null && request.ColumnsValue.Any() && request.Columns.Count() == request.ColumnsValue.Count())
+                if (currentPage == 1 && request.Columns != null && request.Columns.Any())
                 {
-                    foreach (var pair in request.Columns.Zip(request.ColumnsValue, (col, val) => (col, val)))
+                    var headerColumns = result.Header.Columns.ToList();
+                    headerMapping = headerColumns
+                        .Select((col, index) => new { Name = col.Name.Trim().ToLowerInvariant(), Index = index })
+                        .ToDictionary(x => x.Name, x => x.Index);
+
+                    requestedMapping = new List<(string ColumnName, int Index, string? RequestedValue)>();
+
+                    if (request.ColumnsValue != null && request.ColumnsValue.Any() && request.Columns.Count() == request.ColumnsValue.Count())
                     {
-                        var normCol = pair.col.Trim().ToLowerInvariant();
-                        if (headerMapping.TryGetValue(normCol, out var idx))
+                        foreach (var pair in request.Columns.Zip(request.ColumnsValue, (col, val) => (col, val)))
                         {
-                            requestedMapping.Add((pair.col, idx, pair.val.Trim()));
+                            var normCol = pair.col.Trim().ToLowerInvariant();
+                            if (headerMapping.TryGetValue(normCol, out var idx))
+                            {
+                                requestedMapping.Add((pair.col, idx, pair.val.Trim()));
+                            }
+                        }
+                    }
+                    else
+                    {
+                        foreach (var col in request.Columns)
+                        {
+                            var normCol = col.Trim().ToLowerInvariant();
+                            if (headerMapping.TryGetValue(normCol, out var idx))
+                            {
+                                requestedMapping.Add((col, idx, null));
+                            }
                         }
                     }
                 }
-                else
-                {
-                    foreach (var col in request.Columns)
-                    {
-                        var normCol = col.Trim().ToLowerInvariant();
-                        if (headerMapping.TryGetValue(normCol, out var idx))
-                        {
-                            requestedMapping.Add((col, idx, null));
-                        }
-                    }
-                }
 
-                var filteredRows = new List<Row>();
-                foreach (var row in result.Rows.Values)
+                if (requestedMapping != null)
                 {
-                    bool allMatch = true;
-                    foreach (var mapping in requestedMapping)
+                    foreach (var row in result.Rows.Values)
                     {
-                        var value = row.Columns.ElementAt(mapping.Index).Trim();
-                        if (mapping.RequestedValue != null)
+                        bool allMatch = true;
+
+                        foreach (var mapping in requestedMapping)
                         {
-                            if (!string.Equals(value, mapping.RequestedValue, StringComparison.OrdinalIgnoreCase))
+                            if (mapping.Index >= row.Columns.Count())
+                            {
+                                allMatch = false;
+                                break;
+                            }
+
+                            var value = row.Columns.ElementAt(mapping.Index).Trim();
+                            if (mapping.RequestedValue != null &&
+                                !string.Equals(value, mapping.RequestedValue, StringComparison.OrdinalIgnoreCase))
                             {
                                 allMatch = false;
                                 break;
                             }
                         }
-                    }
-                    if (allMatch)
-                    {
-                        filteredRows.Add(row);
+
+                        if (allMatch)
+                        {
+                            return new GetViewValuesResponse
+                            {
+                                ViewId = request.ViewId,
+                                Row = row
+                            };
+                        }
                     }
                 }
 
-                result.Rows = filteredRows
-                    .Select((row, index) => new { row, index })
-                    .ToDictionary(x => x.index.ToString(), x => x.row);
+                var pagination = result.Header.Pagination;
+                if (pagination == null || currentPage >= pagination.PagesCount)
+                    break;
+
+                currentPage++;
             }
 
-            var response = new GetViewValuesResponse
+            return new GetViewValuesResponse
             {
                 ViewId = request.ViewId,
-                Row = result.Rows.Values.FirstOrDefault()
+                Row = null
             };
-
-            return response;
         }
     }
 }
