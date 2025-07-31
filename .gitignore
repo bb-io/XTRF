@@ -355,3 +355,4 @@ healthchecksdb
 *.dmg
 *.env
 /Tests.XTRF/appsettings.json
+/Tests.XTRF/appsettings.json
