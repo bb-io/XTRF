@@ -45,23 +45,28 @@ public class InvoicePollingList(InvocationContext invocationContext) : XtrfInvoc
             }
         };
     }
-    
+
     [PollingEvent("On client invoices status changed",
         "Triggered when status of any client invoice has changed.")]
     public async Task<PollingEventResponse<StatusMemory, CustomerInvoiceSearchResponse>> OnClientInvoicesStatusChanged(
         PollingEventRequest<StatusMemory> request, [PollingEventParameter] InvoiceStatusChangedInput input)
     {
-        var customerInvoices = await GetCustomerInvoicesAsync(new());
-        var statusMap = customerInvoices.Invoices.Where(x => x !=null).ToDictionary(x => x.Id, x => x.Status);
-        
+        var lastUpdatedTime = request.Memory?.LastUpdatedTime ?? DateTime.UtcNow;
+        var filterTime = lastUpdatedTime.AddDays(-1);
+        var customerInvoices = await GetCustomerInvoicesAsync(new CustomerInvoiceSearchRequest { UpdatedSince = filterTime });
+        var statusMap = customerInvoices.Invoices.Where(x => x != null).ToDictionary(x => x.Id, x => x.Status);
+
+        var currentUpdateTime = DateTime.UtcNow;
+
         if (request.Memory is null)
         {
-            return new()
+            return new PollingEventResponse<StatusMemory, CustomerInvoiceSearchResponse>
             {
                 FlyBird = false,
-                Memory = new()
+                Memory = new StatusMemory
                 {
-                    StatusMap = statusMap
+                    StatusMap = statusMap,
+                    LastUpdatedTime = currentUpdateTime
                 }
             };
         }
@@ -98,20 +103,21 @@ public class InvoicePollingList(InvocationContext invocationContext) : XtrfInvoc
             }
         }
 
-        return new()
+        return new PollingEventResponse<StatusMemory, CustomerInvoiceSearchResponse>
         {
             FlyBird = changedInvoices.Any(),
-            Result = new()
+            Result = new CustomerInvoiceSearchResponse
             {
                 Invoices = invoicesWithDetails.Any() ? invoicesWithDetails : changedInvoices
             },
-            Memory = new()
+            Memory = new StatusMemory
             {
-                StatusMap = statusMap
+                StatusMap = statusMap,
+                LastUpdatedTime = currentUpdateTime
             }
         };
     }
-    
+
     [PollingEvent("On vendor invoices created",
         "Triggered when new vendor invoices are created. Checks for new invoices based on specified interval.")]
     public async Task<PollingEventResponse<DateMemory, ProviderInvoiceSearchResponse>> OnVendorInvoicesCreated(
