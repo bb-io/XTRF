@@ -16,7 +16,7 @@ namespace Tests.XTRF
     public class PollingTests : TestBase
     {
         [TestMethod]
-        public async Task OnVendorInvoicesCreated_IsSuccess()
+        public async Task OnVendorInvoicesStatusChanged_IsSuccess()
         {
             var polling = new InvoicePollingList(InvocationContext);
             //BILL_CREATED

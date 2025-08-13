@@ -157,31 +157,35 @@ public class InvoicePollingList(InvocationContext invocationContext) : XtrfInvoc
     PollingEventRequest<StatusMemory> request, [PollingEventParameter] VendorInvoiceStatusChangedInput input)
     {
         var vendorInvoices = await GetVendorInvoicesAsync(new());
-        var invoicesList = vendorInvoices?.Invoices ?? new List<ProviderInvoiceResponse>();
-        var statusMap = invoicesList.ToDictionary(x => x.Id, x => x.Status);
+        var invoicesList = (vendorInvoices?.Invoices ?? new List<ProviderInvoiceResponse>())
+             .Where(i => i != null && !string.IsNullOrWhiteSpace(i.Id))
+             .ToList();
+
+        var statusMap = invoicesList
+           .GroupBy(x => x.Id!)
+           .ToDictionary(g => g.Key, g => g.First().Status ?? string.Empty);
 
         if (request.Memory is null)
         {
             return new PollingEventResponse<StatusMemory, ProviderInvoiceSearchResponse>
             {
                 FlyBird = false,
-                Memory = new StatusMemory
-                {
-                    StatusMap = statusMap
-                }
+                Memory = new StatusMemory { StatusMap = statusMap }
             };
         }
 
         var previousMap = request.Memory.StatusMap ?? new Dictionary<string, string>();
 
         var changedInvoices = invoicesList
-            .Where(x =>
-                previousMap.TryGetValue(x.Id, out var prev) ? prev != x.Status : true)
-            .Where(x => input?.Status == null || x.Status == input.Status)
-            .Where(x => input?.InvoiceId == null || x.Id == input.InvoiceId)
-            .ToList();
+           .Where(x =>
+               !previousMap.TryGetValue(x.Id!, out var prev) ||
+               !string.Equals(prev, x.Status, StringComparison.Ordinal))
+           .Where(x => string.IsNullOrEmpty(input?.Status) || x.Status == input!.Status)
+           .Where(x => string.IsNullOrEmpty(input?.InvoiceId) || x.Id == input!.InvoiceId)
+           .ToList();
 
         var invoicesWithDetails = new List<ProviderInvoiceResponse>();
+
         if (changedInvoices.Any())
         {
             foreach (var item in changedInvoices)
@@ -189,11 +193,17 @@ public class InvoicePollingList(InvocationContext invocationContext) : XtrfInvoc
                 var detailsRequest = new XtrfRequest($"/accounting/providers/invoices/{item.Id}", Method.Get, Creds);
                 var invoice = await Client.ExecuteWithErrorHandling<ProviderInvoiceResponse>(detailsRequest);
 
+                var safeInvoice = invoice ?? new ProviderInvoiceResponse
+                {
+                    Id = item.Id!,
+                    Status = item.Status ?? string.Empty
+                };
+
                 var paymentRequest = new XtrfRequest($"/accounting/providers/invoices/{item.Id}/payments", Method.Get, Creds);
                 var payments = await Client.ExecuteWithErrorHandling<List<PaymentResponse>>(paymentRequest);
-                invoice.Payments = payments ?? new List<PaymentResponse>();
 
-                invoicesWithDetails.Add(invoice);
+                safeInvoice.Payments = payments ?? new List<PaymentResponse>();
+                invoicesWithDetails.Add(safeInvoice);
             }
         }
 
@@ -204,10 +214,7 @@ public class InvoicePollingList(InvocationContext invocationContext) : XtrfInvoc
             {
                 Invoices = invoicesWithDetails.Any() ? invoicesWithDetails : changedInvoices
             },
-            Memory = new StatusMemory
-            {
-                StatusMap = statusMap
-            }
+            Memory = new StatusMemory { StatusMap = statusMap }
         };
     }
 
