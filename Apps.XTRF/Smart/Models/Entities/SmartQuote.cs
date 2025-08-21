@@ -30,8 +30,8 @@ public class SmartQuote
 
 public class SmartQuoteVolume
 {
-    public int Value { get; set; }
+    public double? Value { get; set; }
     
     [Display("Unit ID")]
-    public string UnitId { get; set; }
+    public string? UnitId { get; set; }
 } 
