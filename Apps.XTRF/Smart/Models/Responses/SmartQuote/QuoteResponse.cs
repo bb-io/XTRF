@@ -18,6 +18,8 @@ public class QuoteResponse
         ProjectManagerId = quote.People.ProjectManagerId;
         SpecializationId = quote.Languages.SpecializationId;
         Status = quote.Status;
+        Volume = quote.Volume.Value;
+        VolumeUnitID = quote.Volume.UnitId;
         BudgetCode = quote.BudgetCode;
         Origin = quote.Origin;
         ClientReferenceNumber = quote.ClientReferenceNumber;
@@ -43,6 +45,11 @@ public class QuoteResponse
     
     [Display("Quote ID number")] 
     public string QuoteIdNumber { get; set; }
+
+    public double? Volume { get; set; }
+
+    [Display("Volume unit ID")]
+    public string? VolumeUnitID { get; set; }
     
     public string Name { get; set; }
     
