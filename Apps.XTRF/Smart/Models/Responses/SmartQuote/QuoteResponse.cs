@@ -18,8 +18,8 @@ public class QuoteResponse
         ProjectManagerId = quote.People.ProjectManagerId;
         SpecializationId = quote.Languages.SpecializationId;
         Status = quote.Status;
-        Volume = quote.Volume.Value;
-        VolumeUnitID = quote.Volume.UnitId;
+        Volume = quote.Volume?.Value ?? 0;
+        VolumeUnitID = quote.Volume?.UnitId;
         BudgetCode = quote.BudgetCode;
         Origin = quote.Origin;
         ClientReferenceNumber = quote.ClientReferenceNumber;
