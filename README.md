@@ -186,6 +186,7 @@ XTRF is a comprehensive translation management system that streamlines and autom
 
 - **Add target languages to quote** Add more target languages to a smart quote
 - **Create new quote** Create a new smart quote
+- **Smart: Add receivable to quote** Add a receivable to a smart quote
 - **Delete payable for quote** Delete a payable for a smart quote
 - **Delete receivable for quote** Delete a receivable for a smart quote
 - **Get checkbox custom field for quote** Retrieve a checkbox (boolean) custom field for a smart quote
