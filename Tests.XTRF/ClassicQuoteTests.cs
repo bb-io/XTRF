@@ -4,8 +4,6 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Apps.XTRF.Classic.Actions;
-using Apps.XTRF.Classic.Models.Requests.ClassicQuote;
-using Apps.XTRF.Shared.Models.Identifiers;
 using XTRF.Base;
 
 namespace Tests.XTRF
@@ -21,18 +19,6 @@ namespace Tests.XTRF
             {
                 QuoteId = "fakeId"
             });
-
-            Assert.IsNotNull(response);
-        }
-
-        [TestMethod]
-        public async Task AddReceivableToQuote_ValidInput_ReturnsResult()
-        {
-            var action = new ClassicQuoteActions(InvocationContext, FileManager);
-            var response = await action.AddReceivableToQuote(new QuoteIdentifier()
-            {
-                QuoteId = "143"
-            }, new AddQuoteReceivableRequest { CalculationUnitId="1", Units=1 });
 
             Assert.IsNotNull(response);
         }

@@ -21,5 +21,16 @@ namespace Tests.XTRF
             },false);
             Assert.IsNotNull(response);
         }
+
+        [TestMethod]
+        public async Task AddReceivableToQuote_ValidInput_ReturnsResult()
+        {
+            var action = new SmartQuoteActions(InvocationContext, FileManager);
+            var response = await action.AddReceivableToQuote(new Apps.XTRF.Shared.Models.Identifiers.QuoteIdentifier()
+            {
+                QuoteId = "K7NPUOBE2VAA3A2SDFYBZ2BK3I"
+            }, new Apps.XTRF.Classic.Models.Requests.ClassicQuote.AddQuoteReceivableRequest { CalculationUnitId="1", Units=1 });
+            Assert.IsNotNull(response);
+        }
     }
 }
