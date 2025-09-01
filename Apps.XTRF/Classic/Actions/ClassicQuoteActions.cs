@@ -15,7 +15,6 @@ using Blackbird.Applications.SDK.Extensions.FileManagement.Interfaces;
 using Blackbird.Applications.Sdk.Utils.Extensions.Http;
 using Newtonsoft.Json;
 using RestSharp;
-using Blackbird.Applications.Sdk.Common.Exceptions;
 
 namespace Apps.XTRF.Classic.Actions;
 
@@ -99,49 +98,6 @@ public class ClassicQuoteActions(InvocationContext invocationContext, IFileManag
         
         var quoteDto = await customerPortalClient.ExecuteRequestAsync<Quote>("/v2/quotes", Method.Post, obj);
         return new(quoteDto);
-    }
-
-    [Action("Classic: Add receivable to quote",
-       Description = "Adds a receivable line")]
-    public async Task<QuoteIdentifier> AddReceivableToQuote(
-       [ActionParameter] QuoteIdentifier quoteIdentifier,
-       [ActionParameter] AddQuoteReceivableRequest input)
-    {
-        if (string.IsNullOrWhiteSpace(input.CalculationUnitId))
-            throw new PluginApplicationException("Calculation Unit ID is required.");
-        if (input.Units <= 0)
-            throw new PluginApplicationException("Units must be greater than zero.");
-
-        var payload = new
-        {
-            languageCombination = input.SourceLanguageId != null && input.TargetLanguageId != null
-                ? new
-                {
-                    sourceLanguageId = ConvertToInt64(input.SourceLanguageId, "Source language"),
-                    targetLanguageId = ConvertToInt64(input.TargetLanguageId, "Target language")
-                }
-                : null,
-            languageCombinationIdNumber = input.LanguageCombinationIdNumber,
-            jobTypeId = string.IsNullOrWhiteSpace(input.JobTypeId)
-                ? null
-                : ConvertToInt64(input.JobTypeId, "Job type"),
-
-            type = input.Type ?? "SIMPLE",
-            calculationUnitId = ConvertToInt64(input.CalculationUnitId, "Calculation unit"),
-            quantity = input.Units,
-            rate = input.Rate,
-            rateOrigin = input.Rate.HasValue ? "CUSTOM" : "PRICE_PROFILE",
-            currencyId = string.IsNullOrWhiteSpace(input.CurrencyId) ? null : ConvertToInt64(input.CurrencyId, "Currency"),
-            ignoreMinimumCharge = input.IgnoreMinimumCharge,
-            minimumCharge = input.MinimumCharge,
-            description = input.Description
-        };
-
-        var req = new XtrfRequest($"/v2/quotes/{quoteIdentifier.QuoteId}/finance/receivables",
-            Method.Post, Creds).WithJsonBody(payload, JsonConfig.Settings);
-
-        await Client.ExecuteWithErrorHandling(req);
-        return quoteIdentifier;
     }
 
     [Action("Classic: Start quote", Description = "Start a classic quote")]

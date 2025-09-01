@@ -20,6 +20,8 @@ using Blackbird.Applications.SDK.Extensions.FileManagement.Interfaces;
 using Blackbird.Applications.Sdk.Utils.Extensions.Http;
 using Blackbird.Applications.Sdk.Utils.Parsers;
 using RestSharp;
+using Apps.XTRF.Classic.Models.Requests.ClassicQuote;
+using Blackbird.Applications.Sdk.Common.Exceptions;
 
 namespace Apps.XTRF.Smart.Actions;
 
@@ -51,6 +53,49 @@ public class SmartQuoteActions : BaseFileActions
         }
 
         return quoteResponse;
+    }
+
+    [Action("Smart: Add receivable to quote",
+      Description = "Adds a receivable line")]
+    public async Task<QuoteIdentifier> AddReceivableToQuote(
+      [ActionParameter] QuoteIdentifier quoteIdentifier,
+      [ActionParameter] AddQuoteReceivableRequest input)
+    {
+        if (string.IsNullOrWhiteSpace(input.CalculationUnitId))
+            throw new PluginMisconfigurationException("Calculation Unit ID is required.");
+        if (input.Units <= 0)
+            throw new PluginMisconfigurationException("Units must be greater than zero.");
+
+        var payload = new
+        {
+            languageCombination = input.SourceLanguageId != null && input.TargetLanguageId != null
+                ? new
+                {
+                    sourceLanguageId = ConvertToInt64(input.SourceLanguageId, "Source language"),
+                    targetLanguageId = ConvertToInt64(input.TargetLanguageId, "Target language")
+                }
+                : null,
+            languageCombinationIdNumber = input.LanguageCombinationIdNumber,
+            jobTypeId = string.IsNullOrWhiteSpace(input.JobTypeId)
+                ? null
+                : ConvertToInt64(input.JobTypeId, "Job type"),
+
+            type = input.Type ?? "SIMPLE",
+            calculationUnitId = ConvertToInt64(input.CalculationUnitId, "Calculation unit"),
+            quantity = input.Units,
+            rate = input.Rate,
+            rateOrigin = input.Rate.HasValue ? "CUSTOM" : "PRICE_PROFILE",
+            currencyId = string.IsNullOrWhiteSpace(input.CurrencyId) ? null : ConvertToInt64(input.CurrencyId, "Currency"),
+            ignoreMinimumCharge = input.IgnoreMinimumCharge,
+            minimumCharge = input.MinimumCharge,
+            description = input.Description
+        };
+
+        var req = new XtrfRequest($"/v2/quotes/{quoteIdentifier.QuoteId}/finance/receivables",
+            Method.Post, Creds).WithJsonBody(payload, JsonConfig.Settings);
+
+        await Client.ExecuteWithErrorHandling(req);
+        return quoteIdentifier;
     }
 
     [Action("Smart: List jobs in quote", Description = "List all jobs in a smart quote")]

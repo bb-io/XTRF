@@ -1,4 +1,6 @@
-﻿using Blackbird.Applications.Sdk.Common;
+﻿using Apps.XTRF.Shared.DataSourceHandlers;
+using Blackbird.Applications.Sdk.Common;
+using Blackbird.Applications.Sdk.Common.Dynamic;
 
 namespace Apps.XTRF.Classic.Models.Requests.ClassicQuote
 {
@@ -34,9 +36,11 @@ namespace Apps.XTRF.Classic.Models.Requests.ClassicQuote
         public string? LanguageCombinationIdNumber { get; set; }
 
         [Display("Source language ID")]
+        [DataSource(typeof(LanguageDataHandler))]
         public string? SourceLanguageId { get; set; }
 
         [Display("Target language ID")]
+        [DataSource(typeof(LanguageDataHandler))]
         public string? TargetLanguageId { get; set; }
     }
 }
