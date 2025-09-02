@@ -51,14 +51,14 @@ public class InvoicePollingList(InvocationContext invocationContext) : XtrfInvoc
     public async Task<PollingEventResponse<StatusMemory, CustomerInvoiceSearchResponse>> OnClientInvoicesStatusChanged(
         PollingEventRequest<StatusMemory> request, [PollingEventParameter] InvoiceStatusChangedInput input)
     {
-        var lastUpdatedTime = request.Memory?.LastUpdatedTime ?? DateTime.UtcNow;
+        var lastUpdatedTime = request?.Memory?.LastUpdatedTime ?? DateTime.UtcNow;
         var filterTime = lastUpdatedTime.AddDays(-1);
         var customerInvoices = await GetCustomerInvoicesAsync(new CustomerInvoiceSearchRequest { UpdatedSince = filterTime });
         var statusMap = customerInvoices.Invoices.Where(x => x != null).ToDictionary(x => x.Id, x => x.Status);
 
         var currentUpdateTime = DateTime.UtcNow;
 
-        if (request.Memory is null)
+        if (request?.Memory is null)
         {
             return new PollingEventResponse<StatusMemory, CustomerInvoiceSearchResponse>
             {
@@ -71,7 +71,7 @@ public class InvoicePollingList(InvocationContext invocationContext) : XtrfInvoc
             };
         }
 
-        var changedInvoices = customerInvoices.Invoices
+        var changedInvoices = customerInvoices?.Invoices
             .Where(x =>
                 request.Memory.StatusMap.Where(y => y.Key == x.Id).Select(x => x.Value).FirstOrDefault() != x.Status)
             .Where(x => input.Status is null || x.Status == input.Status)
