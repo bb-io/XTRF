@@ -27,7 +27,7 @@ public class ProjectResponse
         Finance = project.Finance;
         Contacts = project.Contacts;
         CategoriesIds = project.CategoriesIds;
-        Tasks = project.Tasks?.Select(task => new TaskResponse(task, timeZoneInfo));
+        Tasks = project.Tasks?.Select(task => new TaskResponse(task, timeZoneInfo)) ?? new List<TaskResponse>();
     }
     
     [Display("Project ID")]
