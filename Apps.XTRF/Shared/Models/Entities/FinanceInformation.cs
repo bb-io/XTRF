@@ -17,9 +17,9 @@ public class FinanceInformation
     
     public double? Margin { get; set; }
     
-    public IEnumerable<Payable>? Payables { get; set; }
+    public IEnumerable<Payable>? Payables { get; set; } = Enumerable.Empty<Payable>();
     
-    public IEnumerable<Receivable>? Receivables { get; set; }
+    public IEnumerable<Receivable>? Receivables { get; set; } = Enumerable.Empty<Receivable>();
     
     public double? ROI { get; set; }
 }
