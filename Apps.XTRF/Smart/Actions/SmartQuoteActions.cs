@@ -222,6 +222,11 @@ public class SmartQuoteActions : BaseFileActions
     public async Task<QuoteIdentifier> UpdateQuote([ActionParameter] QuoteIdentifier quoteIdentifier, 
         [ActionParameter] UpdateQuoteRequest input)
     {
+        if (string.IsNullOrEmpty(quoteIdentifier.QuoteId))
+        {
+            throw new PluginMisconfigurationException("Quote ID is missing. Please check your input and try again");
+        }
+
         if (input.Status != null)
         {
             var updateStatusRequest = 
