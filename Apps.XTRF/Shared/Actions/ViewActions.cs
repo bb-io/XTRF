@@ -141,7 +141,7 @@ namespace Apps.XTRF.Shared.Actions
                     totalRows = result.Header.Pagination.UnfilteredRowsCount;
                     var headerColumns = result.Header.Columns.ToList();
                     headerMapping = headerColumns
-                        .Select((col, index) => new { Name = col.FullHeader.Trim().ToLowerInvariant(), Index = index })
+                        .Select((col, index) => new { Name = col.Name.Trim().ToLowerInvariant(), Index = index })
                         .ToDictionary(x => x.Name, x => x.Index);
 
                     if (request.ColumnsValue?.Any() == true)
@@ -155,9 +155,6 @@ namespace Apps.XTRF.Shared.Actions
                             }
                         }
                     }
-
-                    if (requestedMapping.Count == 0)
-                        throw new PluginMisconfigurationException("None of the provided column names were found in the view's columns. Copy column names from table and not from the filter.");
                 }
 
                 foreach (var row in result.Rows.Values)

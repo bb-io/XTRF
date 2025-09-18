@@ -1,5 +1,5 @@
-﻿using Apps.XTRF.Shared.Models.Requests.Browser;
-using Apps.XTRF.Shared.Actions;
+﻿using Apps.XTRF.Shared.Actions;
+using Apps.XTRF.Shared.Models.Requests.Browser;
 using XTRF.Base;
 
 namespace Tests.XTRF;
@@ -15,7 +15,7 @@ public class ViewActionsTests : TestBase
         var request = new GetViewValuesRequest
         {
             ViewId = "160",
-            Columns = ["Client > Legal Name"],
+            Columns = ["customer.fullname"],
             ColumnsValue = ["Vitalii"]
         };
 
