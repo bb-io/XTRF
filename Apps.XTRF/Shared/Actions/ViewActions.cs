@@ -4,6 +4,7 @@ using Apps.XTRF.Shared.Models.Requests.Browser;
 using Apps.XTRF.Shared.Models.Responses.Browser;
 using Blackbird.Applications.Sdk.Common;
 using Blackbird.Applications.Sdk.Common.Actions;
+using Blackbird.Applications.Sdk.Common.Exceptions;
 using Blackbird.Applications.Sdk.Common.Invocation;
 using RestSharp;
 
@@ -13,7 +14,7 @@ namespace Apps.XTRF.Shared.Actions
     public class ViewActions(InvocationContext invocationContext) : XtrfInvocable(invocationContext)
     {
 
-        [Action("Get view values", Description = "Retrieve values by the ID of your view with specified columns")]
+        [Action("Get view's first row (deprecated, use 'Get filtered view values')", Description = "Retrieve values by the ID of your view with specified columns")]
         public async Task<GetViewValuesResponse> GetViewValuesAsync([ActionParameter] GetViewValuesRequest request)
         {
             const int pageSize = 1000; // valid values are 10 to 1000
@@ -109,6 +110,96 @@ namespace Apps.XTRF.Shared.Actions
             {
                 ViewId = request.ViewId,
                 Row = null
+            };
+        }
+
+        [Action("Get filtered view values", Description = "Retrieve values by the ID of your view with specified filters")]
+        public async Task<GetFilteredViewValuesResponse> GetFilteredViewValuesAsync([ActionParameter] GetViewValuesRequest request)
+        {
+            if (request.ColumnsValue?.Count() != request.Columns?.Count())
+                throw new PluginMisconfigurationException("Number of column names must match number of column filter values and both inputs are rquired for filtering.");
+
+            const int pageSize = 1000; // valid values are 10 to 1000
+            int currentPage = 1;
+            var headerMapping = new Dictionary<string, int>();
+            var requestedMapping = new List<(string ColumnName, int Index, string? RequestedValue)>();
+            var totalRows = 0;
+            var allRows = new List<Row>();
+
+            while (true)
+            {
+                var xtrfRequest = new XtrfRequest(
+                    $"/browser?viewId={request.ViewId}&maxRows={pageSize}&page={currentPage}",
+                    Method.Get,
+                    Creds
+                );
+
+                var result = await Client.ExecuteWithErrorHandling<GetViewValuesDto>(xtrfRequest);
+
+                if (currentPage == 1 && request.Columns != null && request.Columns.Any())
+                {
+                    totalRows = result.Header.Pagination.UnfilteredRowsCount;
+                    var headerColumns = result.Header.Columns.ToList();
+                    headerMapping = headerColumns
+                        .Select((col, index) => new { Name = col.FullHeader.Trim().ToLowerInvariant(), Index = index })
+                        .ToDictionary(x => x.Name, x => x.Index);
+
+                    if (request.ColumnsValue?.Any() == true)
+                    {
+                        foreach (var pair in request.Columns.Zip(request.ColumnsValue, (col, val) => (col, val)))
+                        {
+                            var normCol = pair.col.Trim().ToLowerInvariant();
+                            if (headerMapping.TryGetValue(normCol, out var idx))
+                            {
+                                requestedMapping.Add((pair.col, idx, pair.val.Trim()));
+                            }
+                        }
+                    }
+
+                    if (requestedMapping.Count == 0)
+                        throw new PluginMisconfigurationException("None of the provided column names were found in the view's columns. Copy column names from table and not from the filter.");
+                }
+
+                foreach (var row in result.Rows.Values)
+                {
+                    bool allMatch = true;
+
+                    foreach (var mapping in requestedMapping)
+                    {
+                        if (mapping.Index >= row.Columns.Count())
+                        {
+                            allMatch = false;
+                            break;
+                        }
+
+                        var value = row.Columns.ElementAt(mapping.Index).Trim();
+                        if (mapping.RequestedValue != null &&
+                            !string.Equals(value, mapping.RequestedValue, StringComparison.OrdinalIgnoreCase))
+                        {
+                            allMatch = false;
+                            break;
+                        }
+                    }
+
+                    if (allMatch)
+                    {
+                        allRows.Add(row);
+                    }
+                }
+
+                var pagination = result.Header.Pagination;
+                if (pagination == null || currentPage >= pagination.PagesCount)
+                    break;
+
+                currentPage++;
+            }
+
+            return new GetFilteredViewValuesResponse
+            {
+                ViewId = request.ViewId,
+                Rows = allRows,
+                FilteredRows = allRows.Count,
+                TotalRows = totalRows
             };
         }
     }
