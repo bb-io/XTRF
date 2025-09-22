@@ -125,7 +125,7 @@ XTRF is a comprehensive translation management system that streamlines and autom
 
 ### View
 
-- **Get view's first row (deprecated)** Get information about a specific view.
+- **Get view first matching row** Get values of the first mataching row in the specified view.
 - **Get filtered view values** Get view rows one by one, filtered by the given criteria. Criteria is set by adding a column names and corresponding values to filter by.
 
 ### User
