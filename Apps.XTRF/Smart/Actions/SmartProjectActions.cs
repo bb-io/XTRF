@@ -201,7 +201,7 @@ public class SmartProjectActions : BaseFileActions
         var fileIdentifier = await Client.ExecuteWithErrorHandling<FileIdentifier>(uploadFileRequest);
 
         var addFileRequest = new XtrfRequest($"/v2/projects/{projectIdentifier.ProjectId}/finance/receivables",
-                Method.Put, Creds)
+                Method.Post, Creds)
             .WithJsonBody(new
             {
                 files = new[]
