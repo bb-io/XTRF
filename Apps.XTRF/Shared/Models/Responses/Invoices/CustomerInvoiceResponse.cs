@@ -61,6 +61,9 @@ public class CustomerInvoiceResponse
 
     [Display("Task names")]
     public List<string> TaskNames { get; set; } = new();
+
+    [Display("Task IDs")]
+    public List<string> TaskIds { get; set; } = new();
 }
 
 public class PaymentTermsResponse

@@ -14,10 +14,10 @@ namespace Apps.XTRF.Shared.Actions
     public class ViewActions(InvocationContext invocationContext) : XtrfInvocable(invocationContext)
     {
 
-        [Action("Get view's first row (deprecated, use 'Get filtered view values')", Description = "Retrieve values by the ID of your view with specified columns")]
+        [Action("Get view first matching row", Description = "Get values of the first mataching row in the specified view")]
         public async Task<GetViewValuesResponse> GetViewValuesAsync([ActionParameter] GetViewValuesRequest request)
         {
-            const int pageSize = 1000; // valid values are 10 to 1000
+            const int pageSize = 1000; 
             int currentPage = 1;
             Dictionary<string, int> headerMapping = new();
             List<(string ColumnName, int Index, string? RequestedValue)>? requestedMapping = null;
@@ -119,7 +119,7 @@ namespace Apps.XTRF.Shared.Actions
             if (request.ColumnsValue?.Count() != request.Columns?.Count())
                 throw new PluginMisconfigurationException("Number of column names must match number of column filter values and both inputs are rquired for filtering.");
 
-            const int pageSize = 1000; // valid values are 10 to 1000
+            const int pageSize = 1000;
             int currentPage = 1;
             var headerMapping = new Dictionary<string, int>();
             var requestedMapping = new List<(string ColumnName, int Index, string? RequestedValue)>();
