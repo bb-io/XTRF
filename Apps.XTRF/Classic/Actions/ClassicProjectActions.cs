@@ -18,6 +18,7 @@ using Blackbird.Applications.Sdk.Common.Invocation;
 using Blackbird.Applications.SDK.Extensions.FileManagement.Interfaces;
 using Blackbird.Applications.Sdk.Utils.Extensions.Http;
 using RestSharp;
+using Blackbird.Applications.Sdk.Common.Exceptions;
 
 namespace Apps.XTRF.Classic.Actions;
 
@@ -98,12 +99,19 @@ public class ClassicProjectActions : BaseFileActions
         return result;
     }
 
-    [Action("Classic: Create language combination for project", Description = "Create a new language combination for a " +
-                                                                              "classic project without creating a task")]
+    [Action("Classic: Create language combination for project", Description = "Create a new language combination for a " +                                                                              "classic project without creating a task")]
     public async Task<ProjectIdentifier> CreateLanguageCombinationForProject(
         [ActionParameter] ProjectIdentifier projectIdentifier, 
         [ActionParameter] LanguageCombinationIdentifier languageCombination)
     {
+        if (projectIdentifier is null)
+            throw new PluginMisconfigurationException("Project is required. Please check your input and try again");
+        if (string.IsNullOrWhiteSpace(projectIdentifier.ProjectId))
+            throw new PluginMisconfigurationException("Project ID is required. Please check your input and try again");
+
+        if (languageCombination is null)
+            throw new PluginMisconfigurationException("Language combination is required. Please check your input and try again");
+
         var request = new XtrfRequest($"/projects/{projectIdentifier.ProjectId}/languageCombinations", Method.Post, Creds)
             .WithJsonBody(new
             {
