@@ -16,6 +16,7 @@ using Blackbird.Applications.Sdk.Utils.Extensions.Http;
 using RestSharp;
 using Blackbird.Applications.Sdk.Common.Dictionaries;
 using Apps.XTRF.Shared.DataSourceHandlers.EnumHandlers;
+using Blackbird.Applications.Sdk.Common.Exceptions;
 
 namespace Apps.XTRF.Classic.Actions;
 
@@ -72,6 +73,9 @@ public class ClassicJobActions : BaseFileActions
     public async Task<JobResponse> UpdateJob([ActionParameter] JobIdentifier jobIdentifier, 
         [ActionParameter] UpdateJobRequest input)
     {
+        if (string.IsNullOrEmpty(jobIdentifier.JobId))
+            throw new PluginMisconfigurationException("Job ID property is required.");
+
         var getJobRequest = new XtrfRequest($"/jobs/{jobIdentifier.JobId}", Method.Get, Creds);
         var job = await Client.ExecuteWithErrorHandling<ClassicJob>(getJobRequest);
         var timeZoneInfo = await GetTimeZoneInfo();
