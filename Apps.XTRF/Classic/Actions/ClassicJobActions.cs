@@ -74,7 +74,7 @@ public class ClassicJobActions : BaseFileActions
         [ActionParameter] UpdateJobRequest input)
     {
         if (string.IsNullOrEmpty(jobIdentifier.JobId))
-            throw new PluginMisconfigurationException("Job ID property is required.");
+            throw new PluginMisconfigurationException("Provided Job ID is null or empty. Please provide a valid value.");
 
         var getJobRequest = new XtrfRequest($"/jobs/{jobIdentifier.JobId}", Method.Get, Creds);
         var job = await Client.ExecuteWithErrorHandling<ClassicJob>(getJobRequest);
