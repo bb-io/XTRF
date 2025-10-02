@@ -204,12 +204,12 @@ public class WebhookList(InvocationContext invocationContext) : XtrfInvocable(in
 
             var candidates = new[]
             {
-            "customer.id",
-            "client.id",
-            "customerId",
-            "clientId",
-            "customer.code",
-            "client.code"
+                "customer.id",
+                "client.id",
+                "customerId",
+                "clientId",
+                "customer.code",
+                "client.code"
             };
 
             foreach (var path in candidates)

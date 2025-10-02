@@ -19,6 +19,7 @@ using Blackbird.Applications.SDK.Extensions.FileManagement.Interfaces;
 using Blackbird.Applications.Sdk.Utils.Extensions.Http;
 using RestSharp;
 using Blackbird.Applications.Sdk.Common.Exceptions;
+using Apps.XTRF.Classic.Models.Responses;
 
 namespace Apps.XTRF.Classic.Actions;
 
@@ -45,18 +46,45 @@ public class ClassicProjectActions : BaseFileActions
     public async Task<FileWrapper> DownloadFile([ActionParameter] ClassicTaskIdentifier taskIdentifier, 
         [ActionParameter] ClassicFileIdentifier fileIdentifier)
     {
-        var request = new XtrfRequest($"/projects/files/{fileIdentifier.FileId}/download", Method.Get, Creds);
-        var response = await Client.ExecuteWithErrorHandling(request);
-        
-        var getFilesRequest = new XtrfRequest($"/tasks/{taskIdentifier.TaskId}/files", Method.Get, Creds);
-        var taskFiles = await Client.ExecuteWithErrorHandling<JobFilesResponse>(getFilesRequest);
-        var filesCombined = taskFiles.Jobs.SelectMany(job => job.Files.InputFiles.Concat(job.Files.OutputFiles));
-        var targetFile = filesCombined.First(file => file.Id == fileIdentifier.FileId);
-        
-        var fileReference = await UploadFile(response.RawBytes,
-            response.ContentType ?? MediaTypeNames.Application.Octet, targetFile.Name);
-    
-        return new() { File = fileReference };
+        var downloadReq = new XtrfRequest($"/projects/files/{fileIdentifier.FileId}/download", Method.Get, Creds);
+        var downloadResp = await Client.ExecuteWithErrorHandling(downloadReq);
+
+        var filesReq = new XtrfRequest($"/tasks/{taskIdentifier.TaskId}/files", Method.Get, Creds);
+        var filesResp = await Client.ExecuteWithErrorHandling<JobFilesResponse>(filesReq);
+
+        var jobFiles = (filesResp?.Jobs ?? Enumerable.Empty<ClassicShortJob>())
+            .SelectMany(j =>
+                (j.Files?.InputFiles ?? Enumerable.Empty<ClassicFileXTRF>())
+                .Concat(j.Files?.OutputFiles ?? Enumerable.Empty<ClassicFileXTRF>())
+            );
+
+        var taskLevelOutput = filesResp?.OutputFiles ?? Enumerable.Empty<ClassicFileXTRF>();
+
+        var allFiles = jobFiles.Concat(taskLevelOutput);
+
+        var targetFile = allFiles.FirstOrDefault(f => f.Id == fileIdentifier.FileId);
+
+        var contentType = downloadResp.ContentType ?? MediaTypeNames.Application.Octet;
+
+        var rawName = targetFile?.Name ?? $"xtrf-file-{fileIdentifier.FileId}";
+        var fileName = SafeFileName(rawName, $"xtrf-file-{fileIdentifier.FileId}");
+        var fileRef = await UploadFile(downloadResp.RawBytes, contentType, fileName);
+
+        return new FileWrapper { File = fileRef };
+    }
+
+    private static string SafeFileName(string? name, string fallback)
+    {
+        var n = string.IsNullOrWhiteSpace(name) ? fallback : name;
+
+        n = n.Replace("\r", "").Replace("\n", "").Trim();
+
+        foreach (var ch in Path.GetInvalidFileNameChars())
+            n = n.Replace(ch, '_');
+
+        if (n.EndsWith(".")) n = n.TrimEnd('.');
+
+        return string.IsNullOrWhiteSpace(n) ? fallback : n;
     }
 
     #endregion

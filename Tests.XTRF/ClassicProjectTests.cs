@@ -43,5 +43,16 @@ namespace Tests.XTRF
 
             Assert.IsNotNull(result);
         }
+
+        [TestMethod]
+        public async Task Downloadfile_ReturnsResponse()
+        {
+            var client = new ClassicProjectActions(InvocationContext, FileManager);
+
+            var result = await client.DownloadFile(new Apps.XTRF.Classic.Models.Identifiers.ClassicTaskIdentifier { TaskId= "312425" },
+                new Apps.XTRF.Classic.Models.Identifiers.ClassicFileIdentifier { FileId= "1808308" });
+
+            Assert.IsNotNull(result);
+        }
     }
 }
