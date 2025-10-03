@@ -1,4 +1,5 @@
-﻿using Apps.XTRF.Shared.Polling;
+﻿using Apps.XTRF.Classic.Models;
+using Apps.XTRF.Shared.Polling;
 using Apps.XTRF.Shared.Polling.Models;
 using Apps.XTRF.Shared.Webhooks;
 using Apps.XTRF.Shared.Webhooks.Models.Request;
@@ -28,8 +29,8 @@ namespace Tests.XTRF
                 null, 
                 new ProjectOptionalRequest { ProjectId = "DS4UTREPXJEVVOXOOU6JJAUPNA" }, 
                 new TaskOptionalRequest { }, 
-                new JobOptionalRequest { JobTypeName = "translation", JobId = "XYSVL2AIHJET7HYNLWINI3NW4A" }
-                );
+                new JobOptionalRequest { JobTypeName = "translation", JobId = "XYSVL2AIHJET7HYNLWINI3NW4A" },
+                new CustomerOptionalRequest { });
 
             Assert.IsNotNull(response.Result);
             Console.WriteLine(JsonConvert.SerializeObject(response.Result, Formatting.Indented));

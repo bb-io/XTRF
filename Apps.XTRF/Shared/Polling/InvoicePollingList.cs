@@ -99,7 +99,7 @@ public class InvoicePollingList(InvocationContext invocationContext) : XtrfInvoc
                 invoice.Payments = payments ?? new List<PaymentResponse>();
 
                 invoice.TaskNames = invoice.TasksDto?.Select(x => x.Name).ToList() ?? new List<string>();
-                invoice.TaskIds = invoice.TasksDto?.Select(x => x.Id).ToList() ?? new List<string>();
+                invoice.TaskIds = invoice.TasksDto?.Select(x => x.IdNumber).ToList() ?? new List<string>();
                 invoicesWithDetails.Add(invoice);
             }
         }

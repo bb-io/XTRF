@@ -2,4 +2,8 @@
 
 namespace Apps.XTRF.Classic.Models.Responses.ClassicTask;
 
-public record JobFilesResponse(IEnumerable<ClassicShortJob> Jobs);
+public class JobFilesResponse
+{
+    public IEnumerable<ClassicShortJob> Jobs { get; set; } = Enumerable.Empty<ClassicShortJob>();
+    public IEnumerable<ClassicFileXTRF>? OutputFiles { get; set; }
+}
