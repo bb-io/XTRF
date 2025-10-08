@@ -25,7 +25,7 @@ using Blackbird.Applications.Sdk.Common.Exceptions;
 
 namespace Apps.XTRF.Smart.Actions;
 
-[ActionList]
+[ActionList("Smart: quotes")]
 public class SmartQuoteActions : BaseFileActions
 {
     public SmartQuoteActions(InvocationContext invocationContext, IFileManagementClient fileManagementClient) 

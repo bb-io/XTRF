@@ -10,7 +10,7 @@ using Blackbird.Applications.Sdk.Common.Invocation;
 
 namespace Apps.XTRF.Smart.Actions;
 
-[ActionList]
+[ActionList("Smart: quote custom fields")]
 public class SmartQuoteCustomFieldActions : BaseSmartCustomFieldActions
 {
     public SmartQuoteCustomFieldActions(InvocationContext invocationContext) : base(invocationContext, EntityType.Quote)

@@ -18,7 +18,7 @@ using Newtonsoft.Json.Linq;
 
 namespace Apps.XTRF.Shared.Webhooks;
 
-[WebhookList]
+[WebhookList("Webhooks")]
 public class WebhookList(InvocationContext invocationContext) : XtrfInvocable(invocationContext)
 {
     #region Webhooks

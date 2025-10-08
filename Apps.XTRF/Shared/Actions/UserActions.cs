@@ -13,7 +13,7 @@ using RestSharp;
 
 namespace Apps.XTRF.Shared.Actions
 {
-    [ActionList]
+    [ActionList("Users")]
     public class UserActions(InvocationContext invocationContext) : XtrfInvocable(invocationContext)
     {
 

@@ -10,7 +10,7 @@ using RestSharp;
 
 namespace Apps.XTRF.Shared.Actions
 {
-    [ActionList]
+    [ActionList("Views")]
     public class ViewActions(InvocationContext invocationContext) : XtrfInvocable(invocationContext)
     {
 

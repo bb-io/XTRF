@@ -10,7 +10,7 @@ using Blackbird.Applications.Sdk.Common.Invocation;
 
 namespace Apps.XTRF.Classic.Actions;
 
-[ActionList]
+[ActionList("Classic: project custom fields")]
 public class ClassicProjectCustomFieldActions : BaseClassicCustomFieldActions
 {
     public ClassicProjectCustomFieldActions(InvocationContext invocationContext) 

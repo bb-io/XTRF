@@ -17,7 +17,7 @@ using Blackbird.Applications.Sdk.Common.Exceptions;
 
 namespace Apps.XTRF.Classic.Actions;
 
-[ActionList]
+[ActionList("Classic: tasks")]
 public class ClassicTaskActions : BaseFileActions
 {
     public ClassicTaskActions(InvocationContext invocationContext, IFileManagementClient fileManagementClient) 

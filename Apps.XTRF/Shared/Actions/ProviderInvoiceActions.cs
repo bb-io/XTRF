@@ -13,7 +13,7 @@ using RestSharp;
 
 namespace Apps.XTRF.Shared.Actions;
 
-[ActionList]
+[ActionList("Provider invoices")]
 public class ProviderInvoiceActions(InvocationContext invocationContext, IFileManagementClient fileManagementClient) : XtrfInvocable(invocationContext)
 {
     [Action("Search provider invoices", Description = "Search for provider invoices based on the given criteria")]

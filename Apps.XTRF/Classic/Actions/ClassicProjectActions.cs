@@ -23,7 +23,7 @@ using Apps.XTRF.Classic.Models.Responses;
 
 namespace Apps.XTRF.Classic.Actions;
 
-[ActionList]
+[ActionList("Classic: projects")]
 public class ClassicProjectActions : BaseFileActions
 {
     public ClassicProjectActions(InvocationContext invocationContext, IFileManagementClient fileManagementClient) 

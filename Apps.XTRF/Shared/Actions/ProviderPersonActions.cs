@@ -13,7 +13,7 @@ using RestSharp;
 
 namespace Apps.XTRF.Shared.Actions;
 
-[ActionList]
+[ActionList("Provider persons")]
 public class ProviderPersonActions(InvocationContext invocationContext) : XtrfInvocable(invocationContext)
 {
     [Action("Search provider persons", Description = "Search for provider persons based on the given criteria")]
