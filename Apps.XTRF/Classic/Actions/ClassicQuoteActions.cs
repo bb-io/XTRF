@@ -18,7 +18,7 @@ using RestSharp;
 
 namespace Apps.XTRF.Classic.Actions;
 
-[ActionList]
+[ActionList("Classic: quotes")]
 public class ClassicQuoteActions(InvocationContext invocationContext, IFileManagementClient fileManagementClient) : XtrfInvocable(invocationContext)
 {
     #region Get

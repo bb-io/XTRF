@@ -25,7 +25,7 @@ using RestSharp;
 
 namespace Apps.XTRF.Smart.Actions;
 
-[ActionList]
+[ActionList("Smart: projects")]
 public class SmartProjectActions : BaseFileActions
 {
     public SmartProjectActions(InvocationContext invocationContext, IFileManagementClient fileManagementClient)

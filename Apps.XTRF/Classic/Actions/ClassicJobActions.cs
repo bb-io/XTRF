@@ -20,7 +20,7 @@ using Blackbird.Applications.Sdk.Common.Exceptions;
 
 namespace Apps.XTRF.Classic.Actions;
 
-[ActionList]
+[ActionList("Classic: jobs")]
 public class ClassicJobActions : BaseFileActions
 {
     public ClassicJobActions(InvocationContext invocationContext, IFileManagementClient fileManagementClient) 

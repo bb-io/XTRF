@@ -11,7 +11,7 @@ using Blackbird.Applications.Sdk.Common.Invocation;
 
 namespace Apps.XTRF.Shared.Actions;
 
-[ActionList]
+[ActionList("Customer custom fields")]
 public class CustomerCustomFieldActions : BaseClassicCustomFieldActions
 {
     public CustomerCustomFieldActions(InvocationContext invocationContext) 

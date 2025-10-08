@@ -10,7 +10,7 @@ using Blackbird.Applications.Sdk.Common.Invocation;
 
 namespace Apps.XTRF.Classic.Actions;
 
-[ActionList]
+[ActionList("Classic: quote custom fields")]
 public class ClassicQuoteCustomFieldActions : BaseClassicCustomFieldActions
 {
     public ClassicQuoteCustomFieldActions(InvocationContext invocationContext) 

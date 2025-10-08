@@ -10,7 +10,7 @@ using Blackbird.Applications.Sdk.Common.Invocation;
 
 namespace Apps.XTRF.Smart.Actions;
 
-[ActionList]
+[ActionList("Smart: project custom fields")]
 public class SmartProjectCustomFieldActions : BaseSmartCustomFieldActions
 {
     public SmartProjectCustomFieldActions(InvocationContext invocationContext) 

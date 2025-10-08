@@ -13,7 +13,7 @@ using System.Text.Json;
 
 namespace Apps.XTRF.Shared.Actions;
 
-[ActionList]
+[ActionList("Providers")]
 public class ProviderActions(InvocationContext invocationContext) : XtrfInvocable(invocationContext)
 {
     [Action("Search providers", Description = "Search for providers based on the given criteria")]

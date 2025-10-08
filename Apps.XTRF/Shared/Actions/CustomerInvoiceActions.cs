@@ -17,7 +17,7 @@ using RestSharp;
 
 namespace Apps.XTRF.Shared.Actions;
 
-[ActionList]
+[ActionList("Customer invoices")]
 public class CustomerInvoiceActions(InvocationContext invocationContext, IFileManagementClient fileManagementClient)
     : XtrfInvocable(invocationContext)
 {

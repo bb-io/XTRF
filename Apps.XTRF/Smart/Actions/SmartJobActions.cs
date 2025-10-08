@@ -18,7 +18,7 @@ using RestSharp;
 
 namespace Apps.XTRF.Smart.Actions;
 
-[ActionList]
+[ActionList("Smart: jobs")]
 public class SmartJobActions : BaseFileActions
 {
     public SmartJobActions(InvocationContext invocationContext, IFileManagementClient fileManagementClient) 

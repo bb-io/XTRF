@@ -10,7 +10,7 @@ using RestSharp;
 
 namespace Apps.XTRF.Shared.Polling;
 
-[PollingEventList]
+[PollingEventList("Polling")]
 public class InvoicePollingList(InvocationContext invocationContext) : XtrfInvocable(invocationContext)
 {
     [PollingEvent("On client invoices created",

@@ -16,7 +16,7 @@ using RestSharp;
 
 namespace Apps.XTRF.Shared.Actions;
 
-[ActionList]
+[ActionList("Customers")]
 public class CustomerActions(InvocationContext invocationContext) : XtrfInvocable(invocationContext)
 {
     #region Get
