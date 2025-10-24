@@ -48,18 +48,24 @@ public abstract class BaseCustomFieldActions : XtrfInvocable
     protected async Task<CustomField<string>> GetTextCustomField(string entityId, string key)
     {
         var field = await GetCustomField(entityId, key);
+        CheckFieldType(field, "TEXT");
+
         return new(field.Type, field.Name, field.Key, field.Value?.ToString());
     }
     
     protected async Task<CustomDecimalField> GetNumberCustomField(string entityId, string key)
     {
         var field = await GetCustomField(entityId, key);
+        CheckFieldType(field, "NUMBER");
+
         return new(field.Type, field.Name, field.Key, Convert.ToDecimal(field.Value));
     }
     
     protected async Task<CustomDateTimeField> GetDateCustomField(string entityId, string key)
     {
         var field = await GetCustomField(entityId, key);
+        CheckFieldType(field, "DATE");
+
         var value = new LongDateTimeRepresentation(((JObject)field.Value)["time"]?.Value<long>());
         var timeZoneInfo = await GetTimeZoneInfo();
         return new(field.Type, field.Name, field.Key, value.Time?.ConvertFromUnixTime(timeZoneInfo) ?? default);
@@ -68,16 +74,20 @@ public abstract class BaseCustomFieldActions : XtrfInvocable
     protected async Task<CustomBooleanField> GetCheckboxCustomField(string entityId, string key)
     {
         var field = await GetCustomField(entityId, key);
+        CheckFieldType(field, "CHECKBOX");
+
         return new(field.Type, field.Name, field.Key, (bool)(field.Value ?? default(bool)));
     }
-    
+
     protected async Task<CustomField<IEnumerable<string>>> GetMultipleSelectionCustomField(string entityId, string key)
     {
         var field = await GetCustomField(entityId, key);
+        CheckFieldType(field, "MULTI_SELECTION");
+
         var value = ((JArray)field.Value).ToObject<IEnumerable<string>>();
         return new(field.Type, field.Name, field.Key, value);
     }
-    
+
     private async Task<CustomField<object>> GetCustomField(string entityId, string key)
     {
         var request = new XtrfRequest(string.Format(Endpoint, entityId), Method.Get, Creds);
@@ -90,6 +100,12 @@ public abstract class BaseCustomFieldActions : XtrfInvocable
         return customField;
     }
 
+    private static void CheckFieldType(CustomField<object> field, string expectedFieldType)
+    {
+        if (!field.Type.StartsWith(expectedFieldType))
+            throw new PluginMisconfigurationException($"This custom field is not a {expectedFieldType.ToLower()} custom field");
+    }
+    
     #endregion
 
     #region Put
