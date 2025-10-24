@@ -22,6 +22,7 @@ public class XtrfClient : BlackBirdRestClient
         })
     {
     }
+
     public override async Task<T> ExecuteWithErrorHandling<T>(RestRequest request)
     {
         var response = await ExecuteWithErrorHandling(request);
@@ -70,6 +71,15 @@ public class XtrfClient : BlackBirdRestClient
 
     protected override Exception ConfigureErrorException(RestResponse response)
     {
+        if (string.IsNullOrWhiteSpace(response.Content))
+        {
+            var message = !string.IsNullOrWhiteSpace(response.ErrorMessage)
+                ? response.ErrorMessage.Trim()
+                : $"Request failed with status code {response.StatusCode}";
+
+            return new PluginApplicationException(message);
+        }
+
         if (response.ContentType?.Contains("application/json") == true || (response.Content.TrimStart().StartsWith("{") || response.Content.TrimStart().StartsWith("[")))
         {
             var errorResponse = JsonConvert.DeserializeObject<ErrorResponse>(response.Content);
