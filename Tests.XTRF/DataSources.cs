@@ -1,7 +1,9 @@
 ﻿using Apps.XTRF.Shared.DataSourceHandlers;
 using Apps.XTRF.Shared.Models.Identifiers;
+using Apps.XTRF.Smart.Actions;
 using Apps.XTRF.Smart.DataSourceHandlers;
 using Apps.XTRF.Smart.Models.Requests.File;
+using Apps.XTRF.Smart.Models.Requests.SmartQuote;
 using Blackbird.Applications.Sdk.Common.Dynamic;
 using XTRF.Base;
 
@@ -79,6 +81,21 @@ namespace Tests.XTRF
                 Console.WriteLine($"{item.Key} - {item.Value}");
                 Assert.IsTrue(item.Key != null);
             }
+        }
+
+        [TestMethod]
+        public async Task SmartQuoteCustomFieldDataHandlerReturnsValues()
+        {
+            // Arrange
+            var quote = new SmartQuoteIdentifier { QuoteId = "AHMG2QPUCBE6XGTB7XLDZ7R4AI" };
+            var handler = new SmartQuoteCustomFieldDataHandler(quote, InvocationContext);
+
+            // Act
+            var result = await handler.GetDataAsync(new DataSourceContext(), CancellationToken.None);
+
+            // Assert
+            foreach (var item in result)
+                Console.WriteLine($"{item.DisplayName}");
         }
     }
 }

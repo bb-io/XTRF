@@ -20,7 +20,4 @@
     <ItemGroup>
         <EmbeddedResource CopyToOutputDirectory="Always" Include="image\icon.png"></EmbeddedResource>
     </ItemGroup>
-    <ItemGroup>
-        <Folder Include="Smart\Models" />
-    </ItemGroup>
 </Project>
