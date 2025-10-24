@@ -62,7 +62,7 @@ public class SmartQuoteCustomFieldActionTests : TestBase
         // Arrange
         var actions = new SmartQuoteCustomFieldActions(InvocationContext);
         var quote = new QuoteIdentifier { QuoteId = "AHMG2QPUCBE6XGTB7XLDZ7R4AI" };
-        var field = new CustomFieldIdentifier { Key = "Text custom field" };
+        var field = new CustomFieldIdentifier { Key = "Selection custom field" };
 
         // Act
         var response = await actions.GetTextCustomFieldForQuote(quote, field);

@@ -48,7 +48,7 @@ public abstract class BaseCustomFieldActions : XtrfInvocable
     protected async Task<CustomField<string>> GetTextCustomField(string entityId, string key)
     {
         var field = await GetCustomField(entityId, key);
-        CheckFieldType(field, "TEXT");
+        CheckFieldType(field, "TEXT", "SELECTION");
 
         return new(field.Type, field.Name, field.Key, field.Value?.ToString());
     }
@@ -100,12 +100,17 @@ public abstract class BaseCustomFieldActions : XtrfInvocable
         return customField;
     }
 
-    private static void CheckFieldType(CustomField<object> field, string expectedFieldType)
+    private static void CheckFieldType(CustomField<object> field, params string[] expectedFieldTypes)
     {
-        if (!field.Type.StartsWith(expectedFieldType))
-            throw new PluginMisconfigurationException($"This custom field is not a {expectedFieldType.ToLower()} custom field");
+        if (!expectedFieldTypes.Any(type => field.Type.StartsWith(type, StringComparison.OrdinalIgnoreCase)))
+        {
+            var expectedList = string.Join(" or ", expectedFieldTypes.Select(t => t.ToLower()));
+            throw new PluginMisconfigurationException(
+                $"This custom field is not a {expectedList} custom field."
+            );
+        }
     }
-    
+
     #endregion
 
     #region Put
