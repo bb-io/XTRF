@@ -1,5 +1,5 @@
 ﻿using Apps.XTRF.Classic.Actions.Base;
-using Apps.XTRF.Classic.Models.Requests.ClassicQuote;
+using Apps.XTRF.Classic.Models.Identifiers;
 using Apps.XTRF.Shared.Extensions;
 using Apps.XTRF.Shared.Models.Entities;
 using Apps.XTRF.Shared.Models.Entities.Enums;
@@ -34,35 +34,35 @@ public class ClassicQuoteCustomFieldActions : BaseClassicCustomFieldActions
         Description = "Retrieve a text or selection custom field for a classic quote")]
     public async Task<CustomField<string>> GetTextCustomFieldForQuote(
         [ActionParameter] QuoteIdentifier quoteIdentifier,
-        [ActionParameter] ClassicCustomFieldIdentifier customFieldIdentifier)
+        [ActionParameter] ClassicQuoteCustomFieldIdentifier customFieldIdentifier)
         => await GetTextCustomField(quoteIdentifier.QuoteId, customFieldIdentifier.Key);
 
     [Action("Classic: Get number custom field for quote", 
         Description = "Retrieve a number custom field for a classic quote")]
     public async Task<CustomDecimalField> GetNumberCustomFieldForQuote(
         [ActionParameter] QuoteIdentifier quoteIdentifier,
-        [ActionParameter] ClassicCustomFieldIdentifier customFieldIdentifier)
+        [ActionParameter] ClassicQuoteCustomFieldIdentifier customFieldIdentifier)
         => await GetNumberCustomField(quoteIdentifier.QuoteId, customFieldIdentifier.Key);
 
     [Action("Classic: Get date custom field for quote",
         Description = "Retrieve a date/date and time custom field for a classic quote")]
     public async Task<CustomDateTimeField> GetDateCustomFieldForQuote(
         [ActionParameter] QuoteIdentifier quoteIdentifier,
-        [ActionParameter] ClassicCustomFieldIdentifier customFieldIdentifier)
+        [ActionParameter] ClassicQuoteCustomFieldIdentifier customFieldIdentifier)
         => await GetDateCustomField(quoteIdentifier.QuoteId, customFieldIdentifier.Key);
 
     [Action("Classic: Get checkbox custom field for quote",
         Description = "Retrieve a checkbox (boolean) custom field for a classic quote")]
     public async Task<CustomBooleanField> GetCheckboxCustomFieldForQuote(
         [ActionParameter] QuoteIdentifier quoteIdentifier,
-        [ActionParameter] ClassicCustomFieldIdentifier customFieldIdentifier)
+        [ActionParameter] ClassicQuoteCustomFieldIdentifier customFieldIdentifier)
         => await GetCheckboxCustomField(quoteIdentifier.QuoteId, customFieldIdentifier.Key);
 
     [Action("Classic: Get multiple selection custom field for quote",
         Description = "Retrieve a multiple selection (list) custom field for a classic quote")]
     public async Task<CustomField<IEnumerable<string>>> GetMultipleSelectionCustomFieldForQuote(
         [ActionParameter] QuoteIdentifier quoteIdentifier,
-        [ActionParameter] ClassicCustomFieldIdentifier customFieldIdentifier)
+        [ActionParameter] ClassicQuoteCustomFieldIdentifier customFieldIdentifier)
         => await GetMultipleSelectionCustomField(quoteIdentifier.QuoteId, customFieldIdentifier.Key);
     
     #endregion
@@ -71,9 +71,9 @@ public class ClassicQuoteCustomFieldActions : BaseClassicCustomFieldActions
 
     [Action("Classic: Update text or selection custom field for quote",
         Description = "Update a text or selection custom field for a classic quote")]
-    public async Task<CustomFieldIdentifier> UpdateTextCustomFieldForQuote(
+    public async Task<ClassicQuoteCustomFieldIdentifier> UpdateTextCustomFieldForQuote(
         [ActionParameter] QuoteIdentifier quoteIdentifier,
-        [ActionParameter] CustomFieldIdentifier customFieldIdentifier,
+        [ActionParameter] ClassicQuoteCustomFieldIdentifier customFieldIdentifier,
         [ActionParameter] [Display("Value")] string value)
     {
         await UpdateCustomField(quoteIdentifier.QuoteId, customFieldIdentifier.Key, value);
@@ -82,9 +82,9 @@ public class ClassicQuoteCustomFieldActions : BaseClassicCustomFieldActions
 
     [Action("Classic: Update number custom field for quote", 
         Description = "Update a number custom field for a classic quote")]
-    public async Task<CustomFieldIdentifier> UpdateNumberCustomFieldForQuote(
+    public async Task<ClassicQuoteCustomFieldIdentifier> UpdateNumberCustomFieldForQuote(
         [ActionParameter] QuoteIdentifier quoteIdentifier,
-        [ActionParameter] CustomFieldIdentifier customFieldIdentifier,
+        [ActionParameter] ClassicQuoteCustomFieldIdentifier customFieldIdentifier,
         [ActionParameter] [Display("Value")] decimal value)
     {
         await UpdateCustomField(quoteIdentifier.QuoteId, customFieldIdentifier.Key, value);
@@ -93,9 +93,9 @@ public class ClassicQuoteCustomFieldActions : BaseClassicCustomFieldActions
 
     [Action("Classic: Update date custom field for quote",
         Description = "Update a date/date and time custom field for a classic quote")]
-    public async Task<CustomFieldIdentifier> UpdateDateCustomFieldForQuote(
+    public async Task<ClassicQuoteCustomFieldIdentifier> UpdateDateCustomFieldForQuote(
         [ActionParameter] QuoteIdentifier quoteIdentifier,
-        [ActionParameter] CustomFieldIdentifier customFieldIdentifier,
+        [ActionParameter] ClassicQuoteCustomFieldIdentifier customFieldIdentifier,
         [ActionParameter] [Display("Value")] DateTime value)
     {
         var timeZoneInfo = await GetTimeZoneInfo();
@@ -106,9 +106,9 @@ public class ClassicQuoteCustomFieldActions : BaseClassicCustomFieldActions
 
     [Action("Classic: Update checkbox custom field for quote",
         Description = "Update a checkbox (boolean) custom field for a classic quote")]
-    public async Task<CustomFieldIdentifier> UpdateCheckboxCustomFieldForQuote(
+    public async Task<ClassicQuoteCustomFieldIdentifier> UpdateCheckboxCustomFieldForQuote(
         [ActionParameter] QuoteIdentifier quoteIdentifier,
-        [ActionParameter] CustomFieldIdentifier customFieldIdentifier,
+        [ActionParameter] ClassicQuoteCustomFieldIdentifier customFieldIdentifier,
         [ActionParameter] [Display("Value")] bool value)
     {
         await UpdateCustomField(quoteIdentifier.QuoteId, customFieldIdentifier.Key, value);
@@ -117,9 +117,9 @@ public class ClassicQuoteCustomFieldActions : BaseClassicCustomFieldActions
 
     [Action("Classic: Update multiple selection custom field for quote",
         Description = "Update a multiple selection (list) custom field for a classic quote")]
-    public async Task<CustomFieldIdentifier> UpdateMultipleSelectionCustomFieldForQuote(
+    public async Task<ClassicQuoteCustomFieldIdentifier> UpdateMultipleSelectionCustomFieldForQuote(
         [ActionParameter] QuoteIdentifier quoteIdentifier,
-        [ActionParameter] CustomFieldIdentifier customFieldIdentifier,
+        [ActionParameter] ClassicQuoteCustomFieldIdentifier customFieldIdentifier,
         [ActionParameter] [Display("Value")] IEnumerable<string> value)
     {
         await UpdateCustomField(quoteIdentifier.QuoteId, customFieldIdentifier.Key, value);

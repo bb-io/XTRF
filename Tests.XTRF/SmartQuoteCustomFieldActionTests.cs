@@ -2,7 +2,7 @@
 using Apps.XTRF.Smart.Actions;
 using Apps.XTRF.Shared.Models.Identifiers;
 using Blackbird.Applications.Sdk.Common.Exceptions;
-using Apps.XTRF.Smart.Models.Requests.SmartQuote;
+using Apps.XTRF.Smart.Models.Identifiers;
 
 namespace Tests.XTRF;
 
@@ -14,7 +14,7 @@ public class SmartQuoteCustomFieldActionTests : TestBase
     {
         // Arrange
         var actions = new SmartQuoteCustomFieldActions(InvocationContext);
-        var quote = new SmartQuoteIdentifier { QuoteId = "AHMG2QPUCBE6XGTB7XLDZ7R4AI" };
+        var quote = new QuoteIdentifier { QuoteId = "AHMG2QPUCBE6XGTB7XLDZ7R4AI" };
 
         // Act
         var response = await actions.ListCustomFieldsForQuote(quote);
@@ -29,8 +29,8 @@ public class SmartQuoteCustomFieldActionTests : TestBase
     {
 		// Arrange
 		var actions = new SmartQuoteCustomFieldActions(InvocationContext);
-        var quote = new SmartQuoteIdentifier { QuoteId = "AHMG2QPUCBE6XGTB7XLDZ7R4AI" };
-        var field = new CustomFieldIdentifier { Key = "Multiple selection custom field" };
+        var quote = new QuoteIdentifier { QuoteId = "AHMG2QPUCBE6XGTB7XLDZ7R4AI" };
+        var field = new SmartQuoteCustomFieldIdentifier { Key = "Multiple selection custom field" };
 
         // Act
         var response = await actions.GetMultipleSelectionCustomFieldForQuote(quote, field);
@@ -45,8 +45,8 @@ public class SmartQuoteCustomFieldActionTests : TestBase
     {
         // Arrange
         var actions = new SmartQuoteCustomFieldActions(InvocationContext);
-        var quote = new SmartQuoteIdentifier { QuoteId = "AHMG2QPUCBE6XGTB7XLDZ7R4AI" };
-        var field = new CustomFieldIdentifier { Key = "Checkbox custom field" };
+        var quote = new QuoteIdentifier { QuoteId = "AHMG2QPUCBE6XGTB7XLDZ7R4AI" };
+        var field = new SmartQuoteCustomFieldIdentifier { Key = "Checkbox custom field" };
 
         // Act
         var ex = await Assert.ThrowsExceptionAsync<PluginMisconfigurationException>(
@@ -62,8 +62,8 @@ public class SmartQuoteCustomFieldActionTests : TestBase
     {
         // Arrange
         var actions = new SmartQuoteCustomFieldActions(InvocationContext);
-        var quote = new SmartQuoteIdentifier { QuoteId = "AHMG2QPUCBE6XGTB7XLDZ7R4AI" };
-        var field = new CustomFieldIdentifier { Key = "Selection custom field" };
+        var quote = new QuoteIdentifier { QuoteId = "AHMG2QPUCBE6XGTB7XLDZ7R4AI" };
+        var field = new SmartQuoteCustomFieldIdentifier { Key = "Selection custom field" };
 
         // Act
         var response = await actions.GetTextCustomFieldForQuote(quote, field);
@@ -78,8 +78,8 @@ public class SmartQuoteCustomFieldActionTests : TestBase
     {
         // Arrange
         var actions = new SmartQuoteCustomFieldActions(InvocationContext);
-        var quote = new SmartQuoteIdentifier { QuoteId = "AHMG2QPUCBE6XGTB7XLDZ7R4AI" };
-        var field = new CustomFieldIdentifier { Key = "Number custom field" };
+        var quote = new QuoteIdentifier { QuoteId = "AHMG2QPUCBE6XGTB7XLDZ7R4AI" };
+        var field = new SmartQuoteCustomFieldIdentifier { Key = "Number custom field" };
 
         // Act
         var response = await actions.GetNumberCustomFieldForQuote(quote, field);
@@ -94,8 +94,8 @@ public class SmartQuoteCustomFieldActionTests : TestBase
     {
         // Arrange
         var actions = new SmartQuoteCustomFieldActions(InvocationContext);
-        var quote = new SmartQuoteIdentifier { QuoteId = "AHMG2QPUCBE6XGTB7XLDZ7R4AI" };
-        var field = new CustomFieldIdentifier { Key = "DateTime custom field" };
+        var quote = new QuoteIdentifier { QuoteId = "AHMG2QPUCBE6XGTB7XLDZ7R4AI" };
+        var field = new SmartQuoteCustomFieldIdentifier { Key = "DateTime custom field" };
 
         // Act
         var response = await actions.GetDateCustomFieldForQuote(quote, field);
@@ -110,8 +110,8 @@ public class SmartQuoteCustomFieldActionTests : TestBase
     {
         // Arrange
         var actions = new SmartQuoteCustomFieldActions(InvocationContext);
-        var quote = new SmartQuoteIdentifier { QuoteId = "AHMG2QPUCBE6XGTB7XLDZ7R4AI" };
-        var field = new CustomFieldIdentifier { Key = "Checkbox custom field" };
+        var quote = new QuoteIdentifier { QuoteId = "AHMG2QPUCBE6XGTB7XLDZ7R4AI" };
+        var field = new SmartQuoteCustomFieldIdentifier { Key = "Checkbox custom field" };
 
         // Act
         var response = await actions.GetCheckboxCustomFieldForQuote(quote, field);

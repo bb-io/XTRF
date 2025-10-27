@@ -2,9 +2,9 @@
 using Blackbird.Applications.Sdk.Common;
 using Blackbird.Applications.Sdk.Common.Dynamic;
 
-namespace Apps.XTRF.Classic.Models.Requests.ClassicQuote;
+namespace Apps.XTRF.Classic.Models.Identifiers;
 
-public class ClassicCustomFieldIdentifier
+public class ClassicQuoteCustomFieldIdentifier
 {
     [DataSource(typeof(ClassicQuoteCustomFieldDataHandler))]
     [Display("Custom field key")]

@@ -1,9 +1,7 @@
-﻿using Apps.XTRF.Shared.DataSourceHandlers;
+﻿using Apps.XTRF.Classic.DataSourceHandlers;
+using Apps.XTRF.Shared.DataSourceHandlers;
 using Apps.XTRF.Shared.Models.Identifiers;
-using Apps.XTRF.Smart.Actions;
 using Apps.XTRF.Smart.DataSourceHandlers;
-using Apps.XTRF.Smart.Models.Requests.File;
-using Apps.XTRF.Smart.Models.Requests.SmartQuote;
 using Blackbird.Applications.Sdk.Common.Dynamic;
 using XTRF.Base;
 
@@ -87,8 +85,23 @@ public class DataSources : TestBase
     public async Task SmartQuoteCustomFieldDataHandlerReturnsValues()
     {
         // Arrange
-        var quote = new SmartQuoteIdentifier { QuoteId = "AHMG2QPUCBE6XGTB7XLDZ7R4AI" };
+        var quote = new QuoteIdentifier { QuoteId = "AHMG2QPUCBE6XGTB7XLDZ7R4AI" };
         var handler = new SmartQuoteCustomFieldDataHandler(quote, InvocationContext);
+
+        // Act
+        var result = await handler.GetDataAsync(new DataSourceContext(), CancellationToken.None);
+
+        // Assert
+        foreach (var item in result)
+            Console.WriteLine($"{item.DisplayName}");
+    }
+
+    [TestMethod]
+    public async Task ClassicQuoteCustomFieldDataHandlerReturnsValues()
+    {
+        // Arrange
+        var quote = new QuoteIdentifier { QuoteId = "19" };
+        var handler = new ClassicQuoteCustomFieldDataHandler(quote, InvocationContext);
 
         // Act
         var result = await handler.GetDataAsync(new DataSourceContext(), CancellationToken.None);

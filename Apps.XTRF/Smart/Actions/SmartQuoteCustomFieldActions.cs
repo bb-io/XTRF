@@ -4,7 +4,7 @@ using Apps.XTRF.Shared.Models.Entities.Enums;
 using Apps.XTRF.Shared.Models.Identifiers;
 using Apps.XTRF.Shared.Models.Responses.CustomField;
 using Apps.XTRF.Smart.Actions.Base;
-using Apps.XTRF.Smart.Models.Requests.SmartQuote;
+using Apps.XTRF.Smart.Models.Identifiers;
 using Blackbird.Applications.Sdk.Common;
 using Blackbird.Applications.Sdk.Common.Actions;
 using Blackbird.Applications.Sdk.Common.Invocation;
@@ -30,35 +30,35 @@ public class SmartQuoteCustomFieldActions(InvocationContext invocationContext)
         Description = "Retrieve a text or selection custom field for a smart quote")]
     public async Task<CustomField<string>> GetTextCustomFieldForQuote(
         [ActionParameter] QuoteIdentifier quoteIdentifier,
-        [ActionParameter] SmartCustomFieldIdentifier customFieldIdentifier)
+        [ActionParameter] SmartQuoteCustomFieldIdentifier customFieldIdentifier)
         => await GetTextCustomField(quoteIdentifier.QuoteId, customFieldIdentifier.Key);
 
     [Action("Smart: Get number custom field for quote", 
         Description = "Retrieve a number custom field for a smart quote")]
     public async Task<CustomDecimalField> GetNumberCustomFieldForQuote(
         [ActionParameter] QuoteIdentifier quoteIdentifier,
-        [ActionParameter] SmartCustomFieldIdentifier customFieldIdentifier)
+        [ActionParameter] SmartQuoteCustomFieldIdentifier customFieldIdentifier)
         => await GetNumberCustomField(quoteIdentifier.QuoteId, customFieldIdentifier.Key);
 
     [Action("Smart: Get date custom field for quote",
         Description = "Retrieve a date/date and time custom field for a smart quote")]
     public async Task<CustomDateTimeField> GetDateCustomFieldForQuote(
         [ActionParameter] QuoteIdentifier quoteIdentifier,
-        [ActionParameter] SmartCustomFieldIdentifier customFieldIdentifier)
+        [ActionParameter] SmartQuoteCustomFieldIdentifier customFieldIdentifier)
         => await GetDateCustomField(quoteIdentifier.QuoteId, customFieldIdentifier.Key);
 
     [Action("Smart: Get checkbox custom field for quote",
         Description = "Retrieve a checkbox (boolean) custom field for a smart quote")]
     public async Task<CustomBooleanField> GetCheckboxCustomFieldForQuote(
         [ActionParameter] QuoteIdentifier quoteIdentifier,
-        [ActionParameter] SmartCustomFieldIdentifier customFieldIdentifier)
+        [ActionParameter] SmartQuoteCustomFieldIdentifier customFieldIdentifier)
         => await GetCheckboxCustomField(quoteIdentifier.QuoteId, customFieldIdentifier.Key);
 
     [Action("Smart: Get multiple selection custom field for quote",
         Description = "Retrieve a multiple selection (list) custom field for a smart quote")]
     public async Task<CustomField<IEnumerable<string>>> GetMultipleSelectionCustomFieldForQuote(
         [ActionParameter] QuoteIdentifier quoteIdentifier,
-        [ActionParameter] SmartCustomFieldIdentifier customFieldIdentifier)
+        [ActionParameter] SmartQuoteCustomFieldIdentifier customFieldIdentifier)
         => await GetMultipleSelectionCustomField(quoteIdentifier.QuoteId, customFieldIdentifier.Key);
 
     #endregion
@@ -67,9 +67,9 @@ public class SmartQuoteCustomFieldActions(InvocationContext invocationContext)
 
     [Action("Smart: Update text or selection custom field for quote",
         Description = "Update a text or selection custom field for a smart quote")]
-    public async Task<CustomFieldIdentifier> UpdateTextCustomFieldForQuote(
+    public async Task<SmartQuoteCustomFieldIdentifier> UpdateTextCustomFieldForQuote(
         [ActionParameter] QuoteIdentifier quoteIdentifier,
-        [ActionParameter] CustomFieldIdentifier customFieldIdentifier,
+        [ActionParameter] SmartQuoteCustomFieldIdentifier customFieldIdentifier,
         [ActionParameter] [Display("Value")] string value)
     {
         await UpdateCustomField(quoteIdentifier.QuoteId, customFieldIdentifier.Key, value);
@@ -78,9 +78,9 @@ public class SmartQuoteCustomFieldActions(InvocationContext invocationContext)
 
     [Action("Smart: Update number custom field for quote", 
         Description = "Update a number custom field for a smart quote")]
-    public async Task<CustomFieldIdentifier> UpdateNumberCustomFieldForQuote(
+    public async Task<SmartQuoteCustomFieldIdentifier> UpdateNumberCustomFieldForQuote(
         [ActionParameter] QuoteIdentifier quoteIdentifier,
-        [ActionParameter] CustomFieldIdentifier customFieldIdentifier,
+        [ActionParameter] SmartQuoteCustomFieldIdentifier customFieldIdentifier,
         [ActionParameter] [Display("Value")] decimal value)
     {
         await UpdateCustomField(quoteIdentifier.QuoteId, customFieldIdentifier.Key, value);
@@ -89,9 +89,9 @@ public class SmartQuoteCustomFieldActions(InvocationContext invocationContext)
 
     [Action("Smart: Update date custom field for quote",
         Description = "Update a date/date and time custom field for a smart quote")]
-    public async Task<CustomFieldIdentifier> UpdateDateCustomFieldForQuote(
+    public async Task<SmartQuoteCustomFieldIdentifier> UpdateDateCustomFieldForQuote(
         [ActionParameter] QuoteIdentifier quoteIdentifier,
-        [ActionParameter] CustomFieldIdentifier customFieldIdentifier,
+        [ActionParameter] SmartQuoteCustomFieldIdentifier customFieldIdentifier,
         [ActionParameter] [Display("Value")] DateTime value)
     {
         var timeZoneInfo = await GetTimeZoneInfo();
@@ -102,9 +102,9 @@ public class SmartQuoteCustomFieldActions(InvocationContext invocationContext)
 
     [Action("Smart: Update checkbox custom field for quote",
         Description = "Update a checkbox (boolean) custom field for a smart quote")]
-    public async Task<CustomFieldIdentifier> UpdateCheckboxCustomFieldForQuote(
+    public async Task<SmartQuoteCustomFieldIdentifier> UpdateCheckboxCustomFieldForQuote(
         [ActionParameter] QuoteIdentifier quoteIdentifier,
-        [ActionParameter] CustomFieldIdentifier customFieldIdentifier,
+        [ActionParameter] SmartQuoteCustomFieldIdentifier customFieldIdentifier,
         [ActionParameter] [Display("Value")] bool value)
     {
         await UpdateCustomField(quoteIdentifier.QuoteId, customFieldIdentifier.Key, value);
@@ -113,9 +113,9 @@ public class SmartQuoteCustomFieldActions(InvocationContext invocationContext)
 
     [Action("Smart: Update multiple selection custom field for quote",
         Description = "Update a multiple selection (list) custom field for a smart quote")]
-    public async Task<CustomFieldIdentifier> UpdateMultipleSelectionCustomFieldForQuote(
+    public async Task<SmartQuoteCustomFieldIdentifier> UpdateMultipleSelectionCustomFieldForQuote(
         [ActionParameter] QuoteIdentifier quoteIdentifier,
-        [ActionParameter] CustomFieldIdentifier customFieldIdentifier,
+        [ActionParameter] SmartQuoteCustomFieldIdentifier customFieldIdentifier,
         [ActionParameter] [Display("Value")] IEnumerable<string> value)
     {
         await UpdateCustomField(quoteIdentifier.QuoteId, customFieldIdentifier.Key, value);
