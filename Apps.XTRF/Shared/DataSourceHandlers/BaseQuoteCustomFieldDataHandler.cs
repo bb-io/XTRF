@@ -19,6 +19,6 @@ public class BaseQuoteCustomFieldDataHandler(
         string endpoint = $"{(apiType == ApiType.Smart ? "/v2" : string.Empty)}/quotes/{quoteId}/customFields";
         var request = new XtrfRequest(string.Format(endpoint, quoteId), Method.Get, Creds);
         var result = await Client.ExecuteWithErrorHandling<IEnumerable<CustomField>>(request);
-        return result.Select(x => new DataSourceItem(x.Key, $"{x.Name} - {x.Type.ToLower()}"));
+        return result.Select(x => new DataSourceItem(x.Key, $"{x.Name} - {x.Type.Replace('_', ' ').ToLower()} type"));
     }
 }
