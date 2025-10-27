@@ -1,4 +1,5 @@
 ﻿using Apps.XTRF.Classic.Actions.Base;
+using Apps.XTRF.Classic.Models.Requests.ClassicQuote;
 using Apps.XTRF.Shared.Extensions;
 using Apps.XTRF.Shared.Models.Entities;
 using Apps.XTRF.Shared.Models.Entities.Enums;
@@ -33,35 +34,35 @@ public class ClassicQuoteCustomFieldActions : BaseClassicCustomFieldActions
         Description = "Retrieve a text or selection custom field for a classic quote")]
     public async Task<CustomField<string>> GetTextCustomFieldForQuote(
         [ActionParameter] QuoteIdentifier quoteIdentifier,
-        [ActionParameter] CustomFieldIdentifier customFieldIdentifier)
+        [ActionParameter] ClassicCustomFieldIdentifier customFieldIdentifier)
         => await GetTextCustomField(quoteIdentifier.QuoteId, customFieldIdentifier.Key);
 
     [Action("Classic: Get number custom field for quote", 
         Description = "Retrieve a number custom field for a classic quote")]
     public async Task<CustomDecimalField> GetNumberCustomFieldForQuote(
         [ActionParameter] QuoteIdentifier quoteIdentifier,
-        [ActionParameter] CustomFieldIdentifier customFieldIdentifier)
+        [ActionParameter] ClassicCustomFieldIdentifier customFieldIdentifier)
         => await GetNumberCustomField(quoteIdentifier.QuoteId, customFieldIdentifier.Key);
 
     [Action("Classic: Get date custom field for quote",
         Description = "Retrieve a date/date and time custom field for a classic quote")]
     public async Task<CustomDateTimeField> GetDateCustomFieldForQuote(
         [ActionParameter] QuoteIdentifier quoteIdentifier,
-        [ActionParameter] CustomFieldIdentifier customFieldIdentifier)
+        [ActionParameter] ClassicCustomFieldIdentifier customFieldIdentifier)
         => await GetDateCustomField(quoteIdentifier.QuoteId, customFieldIdentifier.Key);
 
     [Action("Classic: Get checkbox custom field for quote",
         Description = "Retrieve a checkbox (boolean) custom field for a classic quote")]
     public async Task<CustomBooleanField> GetCheckboxCustomFieldForQuote(
         [ActionParameter] QuoteIdentifier quoteIdentifier,
-        [ActionParameter] CustomFieldIdentifier customFieldIdentifier)
+        [ActionParameter] ClassicCustomFieldIdentifier customFieldIdentifier)
         => await GetCheckboxCustomField(quoteIdentifier.QuoteId, customFieldIdentifier.Key);
 
     [Action("Classic: Get multiple selection custom field for quote",
         Description = "Retrieve a multiple selection (list) custom field for a classic quote")]
     public async Task<CustomField<IEnumerable<string>>> GetMultipleSelectionCustomFieldForQuote(
         [ActionParameter] QuoteIdentifier quoteIdentifier,
-        [ActionParameter] CustomFieldIdentifier customFieldIdentifier)
+        [ActionParameter] ClassicCustomFieldIdentifier customFieldIdentifier)
         => await GetMultipleSelectionCustomField(quoteIdentifier.QuoteId, customFieldIdentifier.Key);
     
     #endregion
