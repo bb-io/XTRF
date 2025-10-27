@@ -4,7 +4,7 @@
         <ImplicitUsings>enable</ImplicitUsings>
         <Nullable>enable</Nullable>
         <Product>XTRF</Product>
-        <Version>2.1.45</Version>
+        <Version>2.1.46</Version>
         <Description>Translation project management made easy</Description>
         <AssemblyName>Apps.XTRF</AssemblyName>
     </PropertyGroup>
@@ -19,8 +19,5 @@
     </ItemGroup>
     <ItemGroup>
         <EmbeddedResource CopyToOutputDirectory="Always" Include="image\icon.png"></EmbeddedResource>
-    </ItemGroup>
-    <ItemGroup>
-        <Folder Include="Smart\Models" />
     </ItemGroup>
 </Project>
