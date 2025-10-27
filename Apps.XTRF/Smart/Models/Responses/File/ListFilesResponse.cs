@@ -6,5 +6,5 @@ namespace Apps.XTRF.Smart.Models.Responses.File;
 public record ListFilesResponse(IEnumerable<SmartFileXTRF> Files)
 {
     [Display("File names")]
-    IEnumerable<string> FileNames => Files.Select(f => f.Name);
+    public IEnumerable<string> FileNames => Files.Select(f => f.Name);
 };
