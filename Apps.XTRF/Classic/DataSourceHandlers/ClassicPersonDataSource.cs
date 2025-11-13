@@ -16,6 +16,8 @@ public class ClassicPersonDataSource(InvocationContext invocationContext)
     public async Task<Dictionary<string, string>> GetDataAsync(DataSourceContext context, CancellationToken cancellationToken)
     {
         var request = new XtrfRequest("/customers/persons/ids", Method.Get, Creds);
+        //var updatedSince = DateTimeOffset.UtcNow.AddDays(-15).ToUnixTimeMilliseconds();
+        //request.AddQueryParameter("updatedSince", updatedSince.ToString());
         var ids = await Client.ExecuteWithErrorHandling<List<long>>(request);
         
         var customerActions = new CustomerActions(invocationContext);
