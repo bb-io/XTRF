@@ -37,7 +37,7 @@ public class QuoteCreateRequest : PersonIdentifier
     [Display("Price profile ID"), DataSource(typeof(ClassicPriceProfileDataSource))]
     public string PriceProfileId { get; set; }
 
-    [Display("Send back to ID"), DataSource(typeof(ClassicPersonDataSource))]
+    [Display("Send back to ID")][DataSource(typeof(ClassicPersonDataSource))]
     public string? SendBackToId { get; set; }
 
     [Display("Additional person IDs"), DataSource(typeof(ClassicPersonDataSource))]
