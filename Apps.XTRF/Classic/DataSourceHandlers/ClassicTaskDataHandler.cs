@@ -1,8 +1,8 @@
-﻿using Apps.XTRF.Classic.Models.Entities;
-using RestSharp;
-using Apps.XTRF.Classic.Models.Requests.ClassicProject;
+﻿using RestSharp;
 using Apps.XTRF.Shared.Api;
 using Apps.XTRF.Shared.Invocables;
+using Apps.XTRF.Shared.Models.Identifiers;
+using Apps.XTRF.Classic.Models.Entities;
 using Blackbird.Applications.Sdk.Common;
 using Blackbird.Applications.Sdk.Common.Dynamic;
 using Blackbird.Applications.Sdk.Common.Invocation;
@@ -11,10 +11,10 @@ namespace Apps.XTRF.Classic.DataSourceHandlers;
 
 public class ClassicTaskDataHandler(
     InvocationContext invocationContext,
-    [ActionParameter] CreateReceivableClassicRequest request)
+    [ActionParameter] ProjectIdentifier project)
     : XtrfInvocable(invocationContext), IAsyncDataSourceHandler
 {
-    private readonly string? _projectId = request.ProjectId;
+    private readonly string? _projectId = project.ProjectId;
 
     public async Task<Dictionary<string, string>> GetDataAsync(DataSourceContext context,
         CancellationToken cancellationToken)

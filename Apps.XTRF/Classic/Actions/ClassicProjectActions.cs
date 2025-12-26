@@ -10,7 +10,6 @@ using Apps.XTRF.Shared.Constants;
 using Apps.XTRF.Shared.Extensions;
 using Apps.XTRF.Shared.Models;
 using Apps.XTRF.Shared.Models.Identifiers;
-using Apps.XTRF.Smart.Models.Requests.File;
 using Apps.XTRF.Smart.Models.Responses.File;
 using Blackbird.Applications.Sdk.Common;
 using Blackbird.Applications.Sdk.Common.Actions;
@@ -193,44 +192,50 @@ public class ClassicProjectActions : BaseFileActions
     }
     
     [Action("Classic: Create receivable for project", Description = "Create a receivable for a classic project")]
-    public async Task<UploadedFinanceFileResponse> CreateReceivableForProject([ActionParameter] ProjectIdentifier projectIdentifier,
+    public async Task<UploadedFinanceFileResponse> CreateReceivableForProject(
+        [ActionParameter] ProjectIdentifier projectIdentifier,
         [ActionParameter] CreateReceivableClassicRequest input)
     {
-        string fileName = input.FileName ?? input.File.Name!;
-        var fileBytes = await DownloadFile(input.File);
-        var fileUploadedResponse = await UploadFile(fileBytes, fileName);
-        
-        var createPayableRequest =
-            new XtrfRequest($"/projects/{projectIdentifier.ProjectId}/finance/receivables", Method.Post, Creds)
-                .WithJsonBody(new
-                {
-                    id = input.Id == null ? null : ConvertToInt64(input.Id, "Payable ID"),
-                    jobTypeId = ConvertToInt64(input.JobType, "Job type"),
-                    languageCombination = new
-                    {
-                        sourceLanguageId = ConvertToInt64(input.SourceLanguageId, "Source language"),
-                        targetLanguageId = ConvertToInt64(input.TargetLanguageId, "Target language")
-                    },
-                    rateOrigin = input.RateOrigin ?? "PRICE_PROFILE",
-                    currencyId = ConvertToInt64(input.CurrencyId, "Currency"),
-                    total = ConvertToInt64(input.Total, "Total"),
-                    invoiceId = input.InvoiceId,
-                    type = input.Type ?? "CAT",
-                    calculationUnitId = ConvertToInt64(input.CalculationUnitId, "Calculation unit"),
-                    ignoreMinimumCharge = input.IgnoreMinimumChange ?? true,
-                    minimumCharge = input.MinimumCharge ?? 0,
-                    description = input.Description,
-                    rate = input.Rate,
-                    quantity = input.Quantity ?? 0,
-                    taskId = ConvertToInt64(input.TaskId, "Task ID"),
-                    catLogFile = new
-                    {
-                        name = fileName,
-                        token = fileUploadedResponse.Token
-                    }
-                });
+        var body = new Dictionary<string, object?>
+        {
+            ["id"] = input.Id == null ? null : ConvertToInt64(input.Id, "Payable ID"),
+            ["jobTypeId"] = ConvertToInt64(input.JobType, "Job type"),
+            ["languageCombination"] = new
+            {
+                sourceLanguageId = ConvertToInt64(input.SourceLanguageId, "Source language"),
+                targetLanguageId = ConvertToInt64(input.TargetLanguageId, "Target language")
+            },
+            ["rateOrigin"] = input.RateOrigin ?? "PRICE_PROFILE",
+            ["currencyId"] = ConvertToInt64(input.CurrencyId, "Currency"),
+            ["total"] = ConvertToInt64(input.Total, "Total"),
+            ["invoiceId"] = input.InvoiceId,
+            ["type"] = input.Type ?? "CAT",
+            ["calculationUnitId"] = ConvertToInt64(input.CalculationUnitId, "Calculation unit"),
+            ["ignoreMinimumCharge"] = input.IgnoreMinimumChange ?? true,
+            ["minimumCharge"] = input.MinimumCharge ?? 0,
+            ["description"] = input.Description,
+            ["rate"] = input.Rate,
+            ["quantity"] = input.Quantity ?? 0,
+            ["taskId"] = ConvertToInt64(input.TaskId, "Task ID"),
+        };
 
-        var dto = await Client.ExecuteWithErrorHandling<UploadedFinanceFileDto>(createPayableRequest);
+        if (input.File != null)
+        {
+            string fileName = input.FileName ?? input.File.Name;
+            var fileBytes = await DownloadFile(input.File);
+            var upload = await UploadFile(fileBytes, fileName); 
+            
+            body["catLogFile"] = new
+            {
+                name = fileName,
+                token = upload.Token
+            };
+        }
+
+        var request = new XtrfRequest($"/projects/{projectIdentifier.ProjectId}/finance/receivables", Method.Post, Creds)
+            .WithJsonBody(body);
+
+        var dto = await Client.ExecuteWithErrorHandling<UploadedFinanceFileDto>(request);
         return new(dto);
     }
 
