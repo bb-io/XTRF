@@ -1,7 +1,10 @@
 ﻿using Apps.XTRF.Shared.Api;
 using Apps.XTRF.Shared.Invocables;
 using Apps.XTRF.Shared.Models.Requests.Browser;
+using Apps.XTRF.Shared.Models.Requests.Project;
 using Apps.XTRF.Shared.Models.Responses.Browser;
+using Apps.XTRF.Shared.Models.Responses.Project;
+using Apps.XTRF.Utils;
 using Blackbird.Applications.Sdk.Common;
 using Blackbird.Applications.Sdk.Common.Actions;
 using Blackbird.Applications.Sdk.Common.Exceptions;
@@ -196,6 +199,70 @@ namespace Apps.XTRF.Shared.Actions
                 ViewId = request.ViewId,
                 Rows = allRows,
                 FilteredRows = allRows.Count,
+                TotalRows = totalRows
+            };
+        }
+
+        [Action("Find project", Description = "Find first project matching filters in the specified project view")]
+        public async Task<FindProjectResponse> FindProject([ActionParameter] ProjectSearchRequest input)
+        {
+            var request = new XtrfRequest("/browser", Method.Get, Creds);
+
+            request.AddQueryParameter("viewId", input.ViewId.Trim());
+            request.AddQueryParameter("page", "1");
+            request.AddQueryParameter("maxRows", "1");
+
+            var filters = BrowserQueryBuilder.BuildProjectFilters(input);
+            foreach (var kv in filters)
+                request.AddQueryParameter(kv.Key, kv.Value);
+
+            var result = await Client.ExecuteWithErrorHandling<GetViewValuesDto>(request);
+            var first = result.Rows?.Values?.FirstOrDefault();
+
+            return new FindProjectResponse { Project = first };
+        }
+
+        [Action("Search projects", Description = "Search projects matching filters in the specified project view")]
+        public async Task<SearchProjectsResponse> SearchProjects([ActionParameter] ProjectSearchRequest input)
+        {
+            const int pageSize = 1000;
+            var page = 1;
+
+            var all = new List<Row>();
+            var totalRows = 0;
+
+            var filters = BrowserQueryBuilder.BuildProjectFilters(input);
+
+            while (true)
+            {
+                var request = new XtrfRequest("/browser", Method.Get, Creds);
+
+                request.AddQueryParameter("viewId", input.ViewId.Trim());
+                request.AddQueryParameter("page", page.ToString());
+                request.AddQueryParameter("maxRows", pageSize.ToString());
+
+                foreach (var kv in filters)
+                    request.AddQueryParameter(kv.Key, kv.Value);
+
+                var result = await Client.ExecuteWithErrorHandling<GetViewValuesDto>(request);
+
+                if (page == 1)
+                    totalRows = result.Header?.Pagination?.UnfilteredRowsCount ?? 0;
+
+                if (result.Rows?.Values?.Any() == true)
+                    all.AddRange(result.Rows.Values);
+
+                var pagination = result.Header?.Pagination;
+                if (pagination == null || page >= pagination.PagesCount)
+                    break;
+
+                page++;
+            }
+
+            return new SearchProjectsResponse
+            {
+                Projects = all,
+                FilteredRows = all.Count,
                 TotalRows = totalRows
             };
         }

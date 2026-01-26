@@ -95,6 +95,22 @@ public class DataSources : TestBase
         }
     }
 
+    //LanguageDataHandler
+
+    [TestMethod]
+    public async Task LanguageDataHandlerReturnsValues()
+    {
+        var dataHandler = new LanguageDataHandler(InvocationContext );
+
+        var result = await dataHandler.GetDataAsync(new DataSourceContext(), CancellationToken.None);
+
+        foreach (var item in result)
+        {
+            Console.WriteLine($"{item.Key} - {item.Value}");
+            Assert.IsTrue(item.Key != null);
+        }
+    }
+
     [TestMethod]
     public async Task SmartQuoteCustomFieldDataHandlerReturnsValues()
     {
