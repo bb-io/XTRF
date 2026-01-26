@@ -127,6 +127,8 @@ XTRF is a comprehensive translation management system that streamlines and autom
 
 - **Get view first matching row** Get values of the first mataching row in the specified view.
 - **Get filtered view values** Get view rows one by one, filtered by the given criteria. Criteria is set by adding a column names and corresponding values to filter by.
+- **Find project** Find a project by specified criteria using views.
+- **Search projects** Search for projects based on the given criteria using views.
 
 ### User
 
