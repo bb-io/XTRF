@@ -32,9 +32,9 @@ public class ViewActionsTests : TestBase
         {
             ViewId = "62",
             Text = "prj",
-            //DeadlineFrom = new DateTime(2024, 7, 5),
-            //SourceLanguageIsNot = ["193"],
-            //TargetLanguageIsNot = ["193"]
+            DeadlineFrom = new DateTime(2024, 7, 5),
+            SourceLanguageIsNot = ["193"],
+            TargetLanguageIsNot = ["193"]
         };
 
         var result = await _actions.FindProject(request);
