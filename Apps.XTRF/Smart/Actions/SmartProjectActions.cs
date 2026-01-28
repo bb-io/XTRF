@@ -174,6 +174,43 @@ public class SmartProjectActions : BaseFileActions
 
     #region Post
 
+    [Action("Smart: Add receivable to project", Description = "Add a simple receivable to a smart project")]
+    public async Task<SmartReceivableIdentifier> AddReceivableToProject(
+         [ActionParameter] ProjectIdentifier projectIdentifier,
+         [ActionParameter] AddReceivableRequest input)
+    {
+        var request =
+            new XtrfRequest($"/v2/projects/{projectIdentifier.ProjectId}/finance/receivables", Method.Post, Creds)
+                .WithJsonBody(new
+                {
+                    id = string.IsNullOrWhiteSpace(input.Id) ? null : ConvertToInt64(input.Id, "Receivable ID"),
+                    jobTypeId = ConvertToInt64(input.JobTypeId, "Job type"),
+                    languageCombination = new
+                    {
+                        sourceLanguageId = ConvertToInt64(input.SourceLanguageId, "Source language"),
+                        targetLanguageId = ConvertToInt64(input.TargetLanguageId, "Target language")
+                    },
+                    rateOrigin = input.RateOrigin ?? "PRICE_PROFILE",
+                    currencyId = ConvertToInt64(input.CurrencyId, "Currency"),
+                    total = ConvertToInt64(input.Total, "Total"),
+                    invoiceId = input.InvoiceId,
+                    type = input.Type ?? "SIMPLE",
+                    calculationUnitId = ConvertToInt64(input.CalculationUnitId, "Calculation unit"),
+                    ignoreMinimumCharge = input.IgnoreMinimumCharge ?? true,
+                    minimumCharge = input.MinimumCharge ?? 0,
+                    description = input.Description,
+                    rate = input.Rate,
+                    quantity = input.Quantity ?? 0
+                }, JsonConfig.Settings);
+
+        var dto = await Client.ExecuteWithErrorHandling<ReceivableIdDto>(request);
+
+        return new SmartReceivableIdentifier
+        {
+            ReceivableId = dto.Id
+        };
+    }
+
     [Action("Smart: Create new project", Description = "Create a new smart project")]
     public async Task<ProjectResponse> CreateProject([ActionParameter] CreateProjectRequest input)
     {
