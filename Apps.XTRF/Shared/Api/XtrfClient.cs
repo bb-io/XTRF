@@ -18,7 +18,8 @@ public class XtrfClient : BlackBirdRestClient
 
         new()
         {
-            BaseUrl = (creds.Get(CredsNames.Url).Value + "/home-api").ToUri()
+            BaseUrl = (creds.Get(CredsNames.Url).Value + "/home-api").ToUri(),
+            MaxTimeout = (int)TimeSpan.FromMinutes(10).TotalMilliseconds
         })
     {
     }
