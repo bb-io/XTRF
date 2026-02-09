@@ -9,6 +9,7 @@ using Blackbird.Applications.Sdk.Common.Actions;
 using Blackbird.Applications.Sdk.Common.Exceptions;
 using Blackbird.Applications.Sdk.Common.Invocation;
 using RestSharp;
+using System.Globalization;
 using System.Text.Json;
 
 namespace Apps.XTRF.Shared.Actions;
@@ -21,7 +22,7 @@ public class ProviderActions(InvocationContext invocationContext) : XtrfInvocabl
     {
         var xtrfRequest = new XtrfRequest("/providers/ids", Method.Get, Creds);
         var ids = await Client.ExecuteWithErrorHandling<List<int>>(xtrfRequest);
-        
+
         var response = new ProviderSearchResponse();
         foreach (var id in ids)
         {
@@ -29,32 +30,32 @@ public class ProviderActions(InvocationContext invocationContext) : XtrfInvocabl
             {
                 ProviderId = id.ToString()
             });
-            
-            if(request.IdNumber != null && !provider.IdNumber.Equals(request.IdNumber))
+
+            if (request.IdNumber != null && !provider.IdNumber.Equals(request.IdNumber))
             {
                 continue;
             }
-            
+
             response.Providers.Add(provider);
         }
-        
+
         return response;
     }
-    
+
     [Action("Get provider", Description = "Get information about specific provider")]
     public async Task<ProviderResponse> GetProviderAsync([ActionParameter] ProviderIdentifier identifier)
     {
         var request = new XtrfRequest($"/providers/{identifier.ProviderId}?embed=persons", Method.Get, Creds);
         return await Client.ExecuteWithErrorHandling<ProviderResponse>(request);
     }
-    
+
     [Action("Delete provider", Description = "Delete provider with the given ID")]
     public async Task DeleteProviderAsync([ActionParameter] ProviderIdentifier identifier)
     {
         var request = new XtrfRequest($"/providers/{identifier.ProviderId}", Method.Delete, Creds);
         await Client.ExecuteWithErrorHandling(request);
     }
-    
+
     [Action("Send invitation to provider", Description = "Send invitation to provider with the given ID")]
     public async Task<SendInvitationResponse> SendInvitationToProviderAsync([ActionParameter] ProviderIdentifier identifier)
     {
@@ -67,34 +68,58 @@ public class ProviderActions(InvocationContext invocationContext) : XtrfInvocabl
     [Action("Run macros", Description = "Run a macro by ID, optionally passing a list of item IDs")]
     public async Task<RunMacroResponse> RunMacroAsync([ActionParameter] RunMacroRequest request)
     {
-        var items = (request.Items ?? Enumerable.Empty<string>())
-       .Select(int.Parse)
-       .ToList();
-        var body = new Dictionary<string, object>
-        {
-            { "ids", items },
-            { "async", request.Async ?? true }
-        };
+        if (string.IsNullOrWhiteSpace(request.MacroId))
+            throw new PluginMisconfigurationException("Macro ID is required.");
 
-        object parsedParams = null;
+        if (!long.TryParse(request.MacroId, NumberStyles.Integer, CultureInfo.InvariantCulture, out var macroId) || macroId <= 0)
+            throw new PluginMisconfigurationException(
+                $"Macro ID '{request.MacroId}' is not a valid number. XTRF expects a numeric macro id");
+
+        var ids = new List<long>();
+        if (request.Items != null)
+        {
+            foreach (var raw in request.Items.Where(x => !string.IsNullOrWhiteSpace(x)))
+            {
+                if (!long.TryParse(raw, NumberStyles.Integer, CultureInfo.InvariantCulture, out var parsed) || parsed <= 0)
+                {
+                    throw new PluginMisconfigurationException(
+                        $"Item ID '{raw}' is not a valid number. XTRF macro endpoint expects numeric IDs");
+                }
+
+                ids.Add(parsed);
+            }
+        }
+
+        object? parsedParams = null;
         if (!string.IsNullOrWhiteSpace(request.Parameters))
         {
             try
             {
-                parsedParams = JsonSerializer.Deserialize<JsonElement>(request.Parameters);
+                var elem = JsonSerializer.Deserialize<JsonElement>(request.Parameters);
+
+                if (elem.ValueKind != JsonValueKind.Object)
+                    throw new PluginMisconfigurationException("Parameters must be a JSON object, e.g. {\"key\":\"value\"}.");
+
+                parsedParams = elem;
             }
             catch (JsonException ex)
             {
-                throw new PluginMisconfigurationException("Invalid JSON in Parameters field", ex);
+                throw new PluginMisconfigurationException("Invalid JSON in Parameters field. Expected a JSON object.", ex);
             }
         }
 
-        if (parsedParams != null)
+        var body = new Dictionary<string, object?>
         {
-            body["params"] = parsedParams;
-        }
+            ["async"] = request.Async ?? false
+        };
 
-        var xtrfRequest = new XtrfRequest($"/macros/{request.MacroId}/run", Method.Post, Creds);
+        if (ids.Count > 0)
+            body["ids"] = ids;
+
+        if (parsedParams != null)
+            body["params"] = parsedParams;
+
+        var xtrfRequest = new XtrfRequest($"/macros/{macroId}/run", Method.Post, Creds);
         xtrfRequest.AddJsonBody(body);
 
         return await Client.ExecuteWithErrorHandling<RunMacroResponse>(xtrfRequest);
