@@ -1,5 +1,4 @@
-﻿using System.Net.Mime;
-using Apps.XTRF.Shared.Actions.Base;
+﻿using Apps.XTRF.Shared.Actions.Base;
 using Apps.XTRF.Shared.Api;
 using Apps.XTRF.Shared.Constants;
 using Apps.XTRF.Shared.DataSourceHandlers;
@@ -17,11 +16,14 @@ using Apps.XTRF.Smart.Models.Responses.SmartProject;
 using Blackbird.Applications.Sdk.Common;
 using Blackbird.Applications.Sdk.Common.Actions;
 using Blackbird.Applications.Sdk.Common.Dynamic;
+using Blackbird.Applications.Sdk.Common.Exceptions;
 using Blackbird.Applications.Sdk.Common.Invocation;
-using Blackbird.Applications.SDK.Extensions.FileManagement.Interfaces;
 using Blackbird.Applications.Sdk.Utils.Extensions.Http;
 using Blackbird.Applications.Sdk.Utils.Parsers;
+using Blackbird.Applications.SDK.Extensions.FileManagement.Interfaces;
 using RestSharp;
+using System.Globalization;
+using System.Net.Mime;
 
 namespace Apps.XTRF.Smart.Actions;
 
@@ -279,38 +281,65 @@ public class SmartProjectActions : BaseFileActions
         var fileBytes = await DownloadFile(input.File);
         var fileUploadedResponse = await UploadFile(fileBytes, fileName);
 
-        var createReceivableRequest =
-            new XtrfRequest($"/v2/projects/{input.ProjectId}/finance/receivables", Method.Post, Creds)
-                .WithJsonBody(new
-                {
-                    id = input.Id == null ? null : ConvertToInt64(input.Id, "Receivable ID"),
-                    jobTypeId = ConvertToInt64(input.JobType, "Job type"),
-                    languageCombination = new
-                    {
-                        sourceLanguageId = ConvertToInt64(input.SourceLanguageId, "Source language"),
-                        targetLanguageId = ConvertToInt64(input.TargetLanguageId, "Target language")
-                    },
-                    rateOrigin = input.RateOrigin ?? "PRICE_PROFILE",
-                    currencyId = ConvertToInt64(input.CurrencyId, "Currency"),
-                    total = ConvertToInt64(input.Total, "Total"),
-                    invoiceId = input.InvoiceId,
-                    type = input.Type ?? "CAT",
-                    calculationUnitId = ConvertToInt64(input.CalculationUnitId, "Calculation unit"),
-                    ignoreMinimumCharge = input.IgnoreMinimumChange ?? true,
-                    minimumCharge = input.MinimumCharge ?? 0,
-                    description = input.Description,
-                    rate = input.Rate,
-                    quantity = input.Quantity ?? 0,
-                    taskId = ConvertToInt64(input.TaskId, "Task ID"),
-                    catLogFile = new
-                    {
-                        name = fileName,
-                        token = fileUploadedResponse.Token
-                    }
-                });
+        var body = new Dictionary<string, object?>
+        {
+            ["id"] = input.Id == null ? null : ConvertToInt64(input.Id, "Receivable ID"),
+            ["jobTypeId"] = ConvertToInt64(input.JobType, "Job type"),
+            ["languageCombination"] = new
+            {
+                sourceLanguageId = ConvertToInt64(input.SourceLanguageId, "Source language"),
+                targetLanguageId = ConvertToInt64(input.TargetLanguageId, "Target language")
+            },
+            ["rateOrigin"] = input.RateOrigin ?? "PRICE_PROFILE",
+            ["currencyId"] = ConvertToInt64(input.CurrencyId, "Currency"),
+            ["invoiceId"] = input.InvoiceId,
+            ["type"] = input.Type ?? "CAT",
+            ["calculationUnitId"] = ConvertToInt64(input.CalculationUnitId, "Calculation unit"),
+            ["description"] = input.Description,
 
-        var dto = await Client.ExecuteWithErrorHandling<UploadedFinanceFileDto>(createReceivableRequest);
-        return new(dto);
+            ["catLogFile"] = new
+            {
+                name = fileName,
+                token = fileUploadedResponse.Token
+            }
+        };
+
+        if (input.IgnoreMinimumChange is not null)
+            body["ignoreMinimumCharge"] = input.IgnoreMinimumChange.Value;
+
+        if (input.MinimumCharge is not null)
+            body["minimumCharge"] = input.MinimumCharge.Value;
+
+        if (!string.IsNullOrWhiteSpace(input.Total))
+            body["total"] = ConvertToDecimal(input.Total, "Total");
+
+        if (!string.IsNullOrWhiteSpace(input.Rate))
+            body["rate"] = ConvertToDecimal(input.Rate, "Rate");
+
+        if (input.Quantity is not null)
+            body["quantity"] = input.Quantity.Value;
+        if (!string.IsNullOrWhiteSpace(input.TaskId))
+            body["taskId"] = ConvertToInt64(input.TaskId, "Task ID");
+
+        var request = new XtrfRequest($"/v2/projects/{input.ProjectId}/finance/receivables", Method.Post, Creds)
+            .WithJsonBody(body);
+
+        var dto = await Client.ExecuteWithErrorHandling<UploadedFinanceFileDto>(request);
+        return new UploadedFinanceFileResponse(dto);
+    }
+
+
+    private static decimal ConvertToDecimal(string? value, string fieldName)
+    {
+        if (string.IsNullOrWhiteSpace(value))
+            throw new PluginMisconfigurationException($"{fieldName} is required.");
+
+        var normalized = value.Trim().Replace(',', '.');
+
+        if (!decimal.TryParse(normalized, NumberStyles.Number, CultureInfo.InvariantCulture, out var result))
+            throw new PluginMisconfigurationException($"Invalid {fieldName}: '{value}'");
+
+        return result;
     }
 
     [Action("Smart: Create payable for project", Description = "Create a payable for a smart project")]

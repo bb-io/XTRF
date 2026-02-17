@@ -3,6 +3,7 @@ using Apps.XTRF.Smart.Actions;
 using Apps.XTRF.Shared.Models.Identifiers;
 using Blackbird.Applications.Sdk.Common.Exceptions;
 using Apps.XTRF.Smart.Models.Identifiers;
+using Apps.XTRF.Smart.Models.Requests.File;
 
 namespace Tests.XTRF;
 
@@ -115,6 +116,30 @@ public class SmartQuoteCustomFieldActionTests : TestBase
 
         // Act
         var response = await actions.GetCheckboxCustomFieldForQuote(quote, field);
+
+        // Assert
+        PrintJsonResult(response);
+        Assert.IsNotNull(response);
+    }
+
+    //CreateReceivableForProject
+
+
+    [TestMethod]
+    public async Task CreateReceivableForProject_ValidInput_ReturnsResult()
+    {
+        // Arrange
+        var actions = new SmartProjectActions(InvocationContext, FileManager);
+        var create = new CreateReceivableRequest { File= new Blackbird.Applications.Sdk.Common.Files.FileReference { Name= "test.txt" },
+        JobType= "839",
+        ProjectId= "HLMS43Q3DVERJLGE7FK66QYHWM",
+            SourceLanguageId = "74",
+            TargetLanguageId = "215",
+            CalculationUnitId = "1",
+        };
+
+        // Act
+        var response = await actions.CreateReceivableForProject(create);
 
         // Assert
         PrintJsonResult(response);
