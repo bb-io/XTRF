@@ -5,6 +5,6 @@ namespace Apps.XTRF.Shared.Models.Requests.Project
     public class ViewSearchRequest
     {
         [Display("View URL")]
-        public string? QueryUrl { get; set; }
+        public string QueryUrl { get; set; }
     }
 }
