@@ -95,7 +95,6 @@ public class DataSources : TestBase
         }
     }
 
-    //LanguageDataHandler
 
     [TestMethod]
     public async Task LanguageDataHandlerReturnsValues()

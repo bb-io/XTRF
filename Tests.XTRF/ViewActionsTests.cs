@@ -61,4 +61,17 @@ public class ViewActionsTests : TestBase
         }
         Assert.IsTrue(result.TotalRows > 0);
     }
+
+    [TestMethod]
+    public async Task SearchRowsInView_Works()
+    {
+        var request = new ViewSearchRequest
+        {
+            QueryUrl= "https://blackbird-test.s.xtrf.eu/xtrf/faces/opportunity/browse.seam?viewId=38&page=1&filters=salesPerson:anyOf(signedInUser);name:ilike();customerName:ilike(Oleksandra);status:anyOf(2)&gantt=false"
+        };
+
+        var result = await _actions.SearchRowsInView(request);
+        Console.WriteLine(Newtonsoft.Json.JsonConvert.SerializeObject(result));
+        Assert.IsNotNull(result);
+    }
 }

@@ -266,5 +266,51 @@ namespace Apps.XTRF.Shared.Actions
                 TotalRows = totalRows
             };
         }
+
+        [Action("Search rows in view", Description = "Search rows matching a dynamic filter in the specified view")]
+        public async Task<SearchRowsInViewResponse> SearchRowsInView([ActionParameter] ViewSearchRequest input)
+        {
+            const int pageSize = 1000;
+            var page = 1;
+
+            var all = new List<Row>();
+            var totalRows = 0;
+
+            var (viewId, uiFilters) = XtrfViewUrlParser.Parse(input.QueryUrl);
+            var apiFilters = XtrfUiFiltersConverter.ToApiQueryParams(uiFilters);
+
+            while (true)
+            {
+                var request = new XtrfRequest("/browser", Method.Get, Creds);
+
+                request.AddQueryParameter("viewId", viewId);
+                request.AddQueryParameter("page", page.ToString());
+                request.AddQueryParameter("maxRows", pageSize.ToString());
+
+                foreach (var kv in apiFilters)
+                    request.AddQueryParameter(kv.Key, kv.Value);
+
+                var result = await Client.ExecuteWithErrorHandling<GetViewValuesDto>(request);
+
+                if (page == 1)
+                    totalRows = result.Header?.Pagination?.UnfilteredRowsCount ?? 0;
+
+                if (result.Rows?.Values?.Any() == true)
+                    all.AddRange(result.Rows.Values);
+
+                var pagination = result.Header?.Pagination;
+                if (pagination == null || page >= pagination.PagesCount)
+                    break;
+
+                page++;
+            }
+
+            return new SearchRowsInViewResponse
+            {
+                Rows = all,
+                FilteredRows = all.Count,
+                TotalRows = totalRows
+            };
+        }
     }
 }
