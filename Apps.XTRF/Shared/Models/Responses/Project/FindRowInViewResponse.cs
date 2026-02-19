@@ -1,4 +1,5 @@
 ﻿using Apps.XTRF.Shared.Models.Responses.Browser;
+using Blackbird.Applications.Sdk.Common;
 
 namespace Apps.XTRF.Shared.Models.Responses.Project
 {
@@ -9,7 +10,13 @@ namespace Apps.XTRF.Shared.Models.Responses.Project
 
     public class SearchRowsInViewResponse
     {
-        public List<Row> Rows { get; set; } = new();
+
+        [Display("Column names")]
+        public List<string> ColumnNames { get; set; } = new();
+
+        [Display("Rows")]
+        public List<ViewRowValues> Rows { get; set; } = new();
+
         public int FilteredRows { get; set; }
         public int TotalRows { get; set; }
     }

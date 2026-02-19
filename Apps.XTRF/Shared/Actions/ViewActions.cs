@@ -279,6 +279,8 @@ namespace Apps.XTRF.Shared.Actions
             var (viewId, uiFilters) = XtrfViewUrlParser.Parse(input.QueryUrl);
             var apiFilters = XtrfUiFiltersConverter.ToApiQueryParams(uiFilters);
 
+            List<string> columnNames = new();
+
             while (true)
             {
                 var request = new XtrfRequest("/browser", Method.Get, Creds);
@@ -293,7 +295,20 @@ namespace Apps.XTRF.Shared.Actions
                 var result = await Client.ExecuteWithErrorHandling<GetViewValuesDto>(request);
 
                 if (page == 1)
+                {
                     totalRows = result.Header?.Pagination?.UnfilteredRowsCount ?? 0;
+
+                    columnNames = (result.Header?.Columns ?? Enumerable.Empty<Column>())
+                        .Select(c =>
+                        {
+                            var label = !string.IsNullOrWhiteSpace(c.FullHeader) ? c.FullHeader
+                                      : !string.IsNullOrWhiteSpace(c.Header) ? c.Header
+                                      : c.Name;
+
+                            return string.IsNullOrWhiteSpace(c.Name) ? label : $"{label} ({c.Name})";
+                        })
+                        .ToList();
+                }
 
                 if (result.Rows?.Values?.Any() == true)
                     all.AddRange(result.Rows.Values);
@@ -307,7 +322,11 @@ namespace Apps.XTRF.Shared.Actions
 
             return new SearchRowsInViewResponse
             {
-                Rows = all,
+                ColumnNames = columnNames,
+                Rows = all.Select(r => new ViewRowValues
+                {
+                    Values = r.Columns?.ToList() ?? new List<string>()
+                }).ToList(),
                 FilteredRows = all.Count,
                 TotalRows = totalRows
             };
