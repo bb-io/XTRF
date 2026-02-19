@@ -323,10 +323,7 @@ namespace Apps.XTRF.Shared.Actions
             return new SearchRowsInViewResponse
             {
                 ColumnNames = columnNames,
-                Rows = all.Select(r => new ViewRowValues
-                {
-                    Values = r.Columns?.ToList() ?? new List<string>()
-                }).ToList(),
+                Rows = all.Select(r => r.Columns?.ToList() ?? new List<string>()).ToList(),
                 FilteredRows = all.Count,
                 TotalRows = totalRows
             };
