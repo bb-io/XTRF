@@ -69,4 +69,10 @@ namespace Apps.XTRF.Shared.Models.Responses.Browser
         public string Display { get; set; }
         public string GenerateDocument { get; set; }
     }
+
+    public class ViewRowValues
+    {
+        [Display("Values")]
+        public List<string> Values { get; set; } = new();
+    }
 }
