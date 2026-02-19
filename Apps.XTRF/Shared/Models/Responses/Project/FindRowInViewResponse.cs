@@ -15,7 +15,7 @@ namespace Apps.XTRF.Shared.Models.Responses.Project
         public List<string> ColumnNames { get; set; } = new();
 
         [Display("Rows")]
-        public List<ViewRowValues> Rows { get; set; } = new();
+        public List<List<string>> Rows { get; set; } = new();
 
         public int FilteredRows { get; set; }
         public int TotalRows { get; set; }
