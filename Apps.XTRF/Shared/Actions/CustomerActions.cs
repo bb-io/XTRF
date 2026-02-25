@@ -131,13 +131,22 @@ public class CustomerActions(InvocationContext invocationContext) : XtrfInvocabl
         
         if (input.Name != null || input.FullName != null || input.Notes != null)
         {
+            var body = new Dictionary<string, object>
+            {
+                { "id", customerIdentifier.CustomerId }
+            };
+
+            if (input.Name != null)
+                body["name"] = input.Name;
+
+            if (input.FullName != null)
+                body["fullName"] = input.FullName;
+
+            if (input.Notes != null)
+                body["notes"] = input.Notes;
+
             var updateCustomerRequest = new XtrfRequest($"/customers/{customerIdentifier.CustomerId}", Method.Put, Creds)
-                .WithJsonBody(new
-                {
-                    name = input.Name,
-                    fullName = input.FullName,
-                    notes = input.Notes
-                }, JsonConfig.Settings);
+                .WithJsonBody(body, JsonConfig.Settings);
 
             await Client.ExecuteWithErrorHandling(updateCustomerRequest);
 
@@ -148,24 +157,33 @@ public class CustomerActions(InvocationContext invocationContext) : XtrfInvocabl
 
         if (input.Email != null || input.AdditionalEmails != null || input.Phones != null)
         {
-            var jsonBody = new
+            var body = new Dictionary<string, object>();
+
+            if (input.Phones != null)
+                body["phones"] = input.Phones;
+
+            if (input.Email != null || input.AdditionalEmails != null)
             {
-                phones = input.Phones ?? customer.Contact.Phones,
-                emails = new
-                {
-                    primary = input.Email ?? customer.Contact.Emails.Primary,
-                    additional = input.AdditionalEmails ?? customer.Contact.Emails.Additional
-                }
-            };
+                var emails = new Dictionary<string, object>();
+
+                if (input.Email != null)
+                    emails["primary"] = input.Email;
+
+                if (input.AdditionalEmails != null)
+                    emails["additional"] = input.AdditionalEmails;
+
+                body["emails"] = emails;
+            }
 
             var updateContactRequest =
                 new XtrfRequest($"/customers/{customerIdentifier.CustomerId}/contact", Method.Put, Creds)
-                    .WithJsonBody(jsonBody);
+                    .WithJsonBody(body, JsonConfig.Settings);
+
             await Client.ExecuteWithErrorHandling(updateContactRequest);
 
-            customer.Contact.Phones = jsonBody.phones;
-            customer.Contact.Emails.Primary = jsonBody.emails.primary;
-            customer.Contact.Emails.Additional = jsonBody.emails.additional;
+            if (input.Phones != null) customer.Contact.Phones = input.Phones;
+            if (input.Email != null) customer.Contact.Emails.Primary = input.Email;
+            if (input.AdditionalEmails != null) customer.Contact.Emails.Additional = input.AdditionalEmails;
         }
 
         return customer;
