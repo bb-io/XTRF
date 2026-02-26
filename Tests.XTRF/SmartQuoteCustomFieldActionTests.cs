@@ -122,9 +122,6 @@ public class SmartQuoteCustomFieldActionTests : TestBase
         Assert.IsNotNull(response);
     }
 
-    //CreateReceivableForProject
-
-
     [TestMethod]
     public async Task CreateReceivableForProject_ValidInput_ReturnsResult()
     {
