@@ -13,6 +13,7 @@ using Apps.XTRF.Smart.Models.Requests.SmartProject;
 using Apps.XTRF.Smart.Models.Responses.File;
 using Apps.XTRF.Smart.Models.Responses.SmartJob;
 using Apps.XTRF.Smart.Models.Responses.SmartProject;
+using Apps.XTRF.Utils;
 using Blackbird.Applications.Sdk.Common;
 using Blackbird.Applications.Sdk.Common.Actions;
 using Blackbird.Applications.Sdk.Common.Dynamic;
@@ -23,6 +24,7 @@ using Blackbird.Applications.Sdk.Utils.Parsers;
 using Blackbird.Applications.SDK.Extensions.FileManagement.Interfaces;
 using RestSharp;
 using System.Globalization;
+using System.Net;
 using System.Net.Mime;
 
 namespace Apps.XTRF.Smart.Actions;
@@ -158,8 +160,9 @@ public class SmartProjectActions : BaseFileActions
             Creds);
         var response = await Client.ExecuteWithErrorHandling(request);
 
-        var fileReference = await UploadFile(response.RawBytes,
-            response.ContentType ?? MediaTypeNames.Application.Octet, filename);
+        var contentType = DownloadContentTypeHelper.Resolve(response.ContentType, filename);
+
+        var fileReference = await UploadFile(response.RawBytes, contentType, filename);
 
         return new() { File = fileReference };
     }
