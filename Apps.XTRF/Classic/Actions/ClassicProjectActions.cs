@@ -151,7 +151,7 @@ public class ClassicProjectActions : BaseFileActions
     }
 
     [Action("Link project group to projects", Description = "Add projects to a project group")]
-    public async Task<ProjectGroupIdentifier> LinkProjects(
+    public async Task<ProjectGroupDto> LinkProjects(
         [ActionParameter] ProjectGroupIdentifier projectGroupIdentifier,
         [ActionParameter] LinkProjectsRequest input)
     {
@@ -168,12 +168,12 @@ public class ClassicProjectActions : BaseFileActions
                 smartProjectIds = input.SmartProjectIds
             });
 
-        await Client.ExecuteWithErrorHandling(request);
-        return projectGroupIdentifier;
+        var response = await Client.ExecuteWithErrorHandling<ProjectGroupDto>(request);
+        return response;
     }
 
     [Action("Unlink project group from projects", Description = "Remove projects from a project group")]
-    public async Task<ProjectGroupIdentifier> UnlinkProjects(
+    public async Task<ProjectGroupDto> UnlinkProjects(
         [ActionParameter] ProjectGroupIdentifier projectGroupIdentifier,
         [ActionParameter] LinkProjectsRequest input)
     {
@@ -190,12 +190,12 @@ public class ClassicProjectActions : BaseFileActions
                 smartProjectIds = input.SmartProjectIds
             });
 
-        await Client.ExecuteWithErrorHandling(request);
-        return projectGroupIdentifier;
+        var response = await Client.ExecuteWithErrorHandling<ProjectGroupDto>(request);
+        return response;
     }
 
     [Action("Link project group to quotes", Description = "Add quotes to a project group")]
-    public async Task<ProjectGroupIdentifier> LinkQuotes(
+    public async Task<ProjectGroupDto> LinkQuotes(
         [ActionParameter] ProjectGroupIdentifier projectGroupIdentifier,
         [ActionParameter] LinkQuotesRequest input)
     {
@@ -212,12 +212,12 @@ public class ClassicProjectActions : BaseFileActions
                 smartQuoteIds = input.SmartQuoteIds
             });
 
-        await Client.ExecuteWithErrorHandling(request);
-        return projectGroupIdentifier;
+        var response = await Client.ExecuteWithErrorHandling<ProjectGroupDto>(request);
+        return response;
     }
 
     [Action("Unlink project group from quotes", Description = "Remove quotes from a project group")]
-    public async Task<ProjectGroupIdentifier> UnlinkQuotes(
+    public async Task<ProjectGroupDto> UnlinkQuotes(
         [ActionParameter] ProjectGroupIdentifier projectGroupIdentifier,
         [ActionParameter] LinkQuotesRequest input)
     {
@@ -234,8 +234,8 @@ public class ClassicProjectActions : BaseFileActions
                 smartQuoteIds = input.SmartQuoteIds
             });
 
-        await Client.ExecuteWithErrorHandling(request);
-        return projectGroupIdentifier;
+        var response = await Client.ExecuteWithErrorHandling<ProjectGroupDto>(request);
+        return response;
     }
 
     [Action("Classic: Create payable for project", Description = "Create a payable for a classic project")]
