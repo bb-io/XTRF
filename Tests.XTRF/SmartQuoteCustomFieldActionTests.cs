@@ -142,4 +142,19 @@ public class SmartQuoteCustomFieldActionTests : TestBase
         PrintJsonResult(response);
         Assert.IsNotNull(response);
     }
+
+    [TestMethod]
+    public async Task DownloadFile_ValidInput_ReturnsResult()
+    {
+        // Arrange
+        var actions = new SmartProjectActions(InvocationContext, FileManager);
+        var quote = new FileIdentifier { FileId = "LR7PFQXMPJBJNCADWWJDNWN4GY" };
+
+        // Act
+        var response = await actions.DownloadFile(quote, "ML_LB_NOEXP_7131 (2).tif");
+
+        // Assert
+        PrintJsonResult(response);
+        Assert.IsNotNull(response);
+    }
 }
