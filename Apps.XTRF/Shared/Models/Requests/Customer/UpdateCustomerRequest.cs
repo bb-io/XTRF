@@ -33,7 +33,8 @@ public class UpdateCustomerRequest
     [Display("Address line 2")]
     public string? AddressLine2 { get; set; }
 
-    [Display("Country ID")][DataSource(typeof(CountryDataHandler))]
+    [Display("Country ID")]
+    //[DataSource(typeof(CountryDataHandler))]
     public int? CountryId { get; set; }
 
     [Display("Region/Province ID")]

@@ -171,7 +171,7 @@ public class SmartQuoteActions : BaseFileActions
                     targetLanguageId = ConvertToInt64(input.TargetLanguageId, "Target language")
                 }
                 : null,
-            languageCombinationIdNumber = input.LanguageCombinationIdNumber,
+            languageCombinationIdNumber = !String.IsNullOrEmpty(input.LanguageCombinationIdNumber)? input.LanguageCombinationIdNumber :null,
             jobTypeId = string.IsNullOrWhiteSpace(input.JobTypeId)
                 ? null
                 : ConvertToInt64(input.JobTypeId, "Job type"),
