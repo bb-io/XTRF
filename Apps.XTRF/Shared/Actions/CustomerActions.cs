@@ -146,11 +146,9 @@ public class CustomerActions(InvocationContext invocationContext) : XtrfInvocabl
                 input.City != null ||
                 input.PostalCode != null ||
                 input.CountryId != null ||
-                input.ProvinceId != null ||
-                input.UseBillingAddress != null
+                input.ProvinceId != null
                     ? new
                     {
-                        sameAsBillingAddress = input.UseBillingAddress,
                         addressLine1 = input.AddressLine1,
                         addressLine2 = input.AddressLine2,
                         city = input.City,
@@ -159,7 +157,9 @@ public class CustomerActions(InvocationContext invocationContext) : XtrfInvocabl
                         countryId = input.CountryId
                     }
                     : null,
-
+            correspondenceAddress = input.UseBillingAddress.HasValue?
+            new { sameAsBillingAddress = input.UseBillingAddress.Value }
+             : null,
             responsiblePersons =
                 input.SalesPersonId != null
                     ? new

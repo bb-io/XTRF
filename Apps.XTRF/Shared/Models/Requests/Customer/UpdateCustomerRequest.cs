@@ -48,10 +48,8 @@ public class UpdateCustomerRequest
 
     [Display("Time zone")]
     public string? TimeZone { get; set; }
-
     [Display("Use billing address for correspondence")]
     public bool? UseBillingAddress { get; set; }
-
     [Display("Tax rate")]
     public string? TaxRate { get; set; }
 
