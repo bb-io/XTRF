@@ -176,8 +176,7 @@ public class CustomerActions(InvocationContext invocationContext) : XtrfInvocabl
                         {
                         new
                         {
-                            number = input.TaxRate.ToString(),
-                            type = "VAT"
+                            number = input.TaxRate
                         }
                         }
                     }
