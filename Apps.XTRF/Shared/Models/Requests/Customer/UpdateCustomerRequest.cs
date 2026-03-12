@@ -35,10 +35,10 @@ public class UpdateCustomerRequest
 
     [Display("Country ID")]
     //[DataSource(typeof(CountryDataHandler))]
-    public int? CountryId { get; set; }
+    public string? CountryId { get; set; }
 
     [Display("Region/Province ID")]
-    public int? ProvinceId { get; set; }
+    public string? ProvinceId { get; set; }
 
     [Display("City")]
     public string? City { get; set; }
@@ -53,12 +53,12 @@ public class UpdateCustomerRequest
     public bool? UseBillingAddress { get; set; }
 
     [Display("Tax rate")]
-    public decimal? TaxRate { get; set; }
+    public string? TaxRate { get; set; }
 
     [Display("Preferred email language ID")]
     [DataSource(typeof(LanguageDataHandler))]
-    public int? PreferredEmailLanguageId { get; set; }
+    public string? PreferredEmailLanguageId { get; set; }
 
-    [Display("Salesperson responsible")]
-    public int? SalesPersonId { get; set; }
+    [Display("Salesperson responsible ID")]
+    public string? SalesPersonId { get; set; }
 }
