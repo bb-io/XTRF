@@ -21,6 +21,10 @@ public class UpdateQuoteRequest
     [Display("Specialization")]
     [DataSource(typeof(SpecializationDataHandler))]
     public string? SpecializationId { get; set; }
+
+    [Display("Category IDs")]
+    [DataSource(typeof(CategoryDataHandler))]
+    public IEnumerable<string>? CategoryIds { get; set; }
     
     [Display("Primary contact person")]
     [DataSource(typeof(SmartQuoteContactDataHandler))]

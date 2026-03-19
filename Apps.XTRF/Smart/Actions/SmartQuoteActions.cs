@@ -266,6 +266,18 @@ public class SmartQuoteActions : BaseFileActions
             await Client.ExecuteWithErrorHandling(updateSpecializationRequest);
         }
 
+        if (input.CategoryIds != null)
+        {
+            var updateCategoriesRequest =
+                new XtrfRequest($"/v2/quotes/{quoteIdentifier.QuoteId}/categories", Method.Put, Creds)
+                    .WithJsonBody(new
+                    {
+                        categoryIds = ConvertToInt64Enumerable(input.CategoryIds, "Categories")
+                    });
+
+            await Client.ExecuteWithErrorHandling(updateCategoriesRequest);
+        }
+
         if (input.PrimaryId != null || input.AdditionalIds != null)
         {
             object requestBody;
