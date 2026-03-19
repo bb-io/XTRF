@@ -46,7 +46,7 @@ public class SmartQuoteActionTests : TestBase
         // Arrange
         var action = new SmartQuoteActions(InvocationContext, FileManager);
         var id = new QuoteIdentifier { QuoteId = "AHMG2QPUCBE6XGTB7XLDZ7R4AI" };
-        var input = new UpdateQuoteRequest { Volume = 0 };
+        var input = new UpdateQuoteRequest { CategoryIds = ["72"] };
 
         // Act
         var response = await action.UpdateQuote(id, input);
