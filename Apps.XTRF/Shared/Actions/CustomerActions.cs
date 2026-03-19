@@ -139,6 +139,7 @@ public class CustomerActions(InvocationContext invocationContext) : XtrfInvocabl
             fullName = input.FullName,
             notes = input.Notes,
             status = input.Status,
+            leadSourceId = input.LeadSourceId,
 
             billingAddress =
                 input.AddressLine1 != null ||

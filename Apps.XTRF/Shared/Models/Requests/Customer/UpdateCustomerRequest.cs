@@ -59,4 +59,7 @@ public class UpdateCustomerRequest
 
     [Display("Salesperson responsible ID")]
     public string? SalesPersonId { get; set; }
+
+    [Display("Lead source ID")]
+    public string? LeadSourceId { get; set; }
 }
