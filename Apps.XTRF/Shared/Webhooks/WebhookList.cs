@@ -8,7 +8,6 @@ using Apps.XTRF.Shared.Webhooks.Models.Payloads;
 using Apps.XTRF.Shared.Webhooks.Models.Request;
 using Blackbird.Applications.Sdk.Common;
 using Blackbird.Applications.Sdk.Common.Dictionaries;
-using Blackbird.Applications.Sdk.Common.Dynamic;
 using Blackbird.Applications.Sdk.Common.Invocation;
 using Apps.XTRF.Classic.Models;
 using Apps.XTRF.Shared.Api;
@@ -30,13 +29,27 @@ public class WebhookList(InvocationContext invocationContext) : XtrfInvocable(in
 
     [Webhook("On project status changed", typeof(ProjectStatusChangedHandler),
         Description = "Triggered when the status of an XTRF project is changed")]
-    public async Task<WebhookResponse<ProjectStatusChangedPayload>> ProjectStatusChangedHandler(WebhookRequest webhookRequest,
-        [WebhookParameter] [Display("Project status")] [StaticDataSource(typeof(ProjectStatusDataHandler))]
-        string? status,
+    public async Task<WebhookResponse<ProjectStatusChangedPayload>> ProjectStatusChangedHandler(
+        WebhookRequest webhookRequest,
+        [WebhookParameter] [Display("Project status")] [StaticDataSource(typeof(ProjectStatusDataHandler))] string? status,
         [WebhookParameter] ProjectOptionalRequest projectOptionalRequest)
     {
-        var result = await HandleWebhook<ProjectStatusChangedPayload>(webhookRequest, 
-            status != null ? payload => payload.Status.Equals(status, StringComparison.OrdinalIgnoreCase) : null);
+        var result = await HandleWebhook<ProjectStatusChangedPayload>(webhookRequest,
+            status != null ? payload =>
+            {
+                if (string.IsNullOrEmpty(payload.Status))
+                    return false;
+
+                // API requests use 'CanceLLed', but the webhook payload uses 'CanceLed' :-/
+                if (status.Equals("CANCELLED", StringComparison.OrdinalIgnoreCase))
+                {
+                    return payload.Status.Equals("CANCELLED", StringComparison.OrdinalIgnoreCase) ||
+                           payload.Status.Equals("CANCELED", StringComparison.OrdinalIgnoreCase);
+                }
+
+                return payload.Status.Equals(status, StringComparison.OrdinalIgnoreCase);
+            }
+        : null);
         
         if (result.Result != null && projectOptionalRequest.ProjectId != null && !result.Result.InternalId.Equals(projectOptionalRequest.ProjectId))
         {
