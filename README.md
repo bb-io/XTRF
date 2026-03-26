@@ -94,6 +94,12 @@ XTRF is a comprehensive translation management system that streamlines and autom
 - **Update number custom field for customer** Update a number custom field for a customer
 - **Update text or selection custom field for customer** Update a text or selection custom field for a customer
 
+### Contact person
+
+- **List custom fields for a contact person** List the custom fields for a contact person
+- **Get text or selection custom field for a contact person** Retrieve a text or selection custom field for a contact person
+- **Update text or selection custom field for a contact person** Update a text or selection custom field for a contact person
+
 ### Provider
 
 - **Search providers** Search for providers based on the given criteria.

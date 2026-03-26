@@ -4,5 +4,6 @@ public enum EntityType
 {
     Project,
     Quote,
-    Customer
+    Customer,
+    Person
 }

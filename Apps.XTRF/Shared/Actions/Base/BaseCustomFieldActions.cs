@@ -30,6 +30,9 @@ public abstract class BaseCustomFieldActions : XtrfInvocable
             case EntityType.Customer:
                 entityTypeEndpointPart = "customers";
                 break;
+            case EntityType.Person:
+                entityTypeEndpointPart = "customers/persons";
+                break;
             default:
                 throw new Exception("Entity provided does not support custom fields.");
         }
