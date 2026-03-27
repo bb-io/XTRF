@@ -30,7 +30,12 @@ public class SmartQuoteActionTests : TestBase
         // Arrange
         var action = new SmartQuoteActions(InvocationContext, FileManager);
         var quote = new QuoteIdentifier { QuoteId = "K7NPUOBE2VAA3A2SDFYBZ2BK3I" };
-        var input = new AddQuoteReceivableRequest { CalculationUnitId = "1", Units = 1 };
+        var input = new AddQuoteReceivableRequest
+        {
+            CalculationUnitId = "1",
+            Units = 1,
+            IsLanguageIndependent = true
+        };
 
         // Act
         var response = await action.AddReceivableToQuote(quote, input);
@@ -50,6 +55,25 @@ public class SmartQuoteActionTests : TestBase
 
         // Act
         var response = await action.UpdateQuote(id, input);
+
+        // Assert
+        PrintJsonResult(response);
+        Assert.IsNotNull(response);
+    }
+
+    //GetFilesByProject
+
+
+    [TestMethod]
+    public async Task GetFilesByProject_ValidInput_ReturnsResult()
+    {
+        // Arrange
+        var action = new SmartProjectActions(InvocationContext, FileManager);
+        var id = new ProjectIdentifier { ProjectId = "SRNSNDLZWFBSVGUNRYXI2IYD4U" };
+        var input = new Apps.XTRF.Smart.Models.Identifiers.FilterLanguageOptionalIdentifier { };
+        var categoryInput = new Apps.XTRF.Smart.Models.Identifiers.SmartFileCategoryOptionalIdentifier { Category = "SOURCE_DOCUMENT" };
+        // Act
+        var response = await action.GetFilesByProject(id, input, categoryInput);
 
         // Assert
         PrintJsonResult(response);

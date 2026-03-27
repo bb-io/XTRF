@@ -162,16 +162,30 @@ public class SmartQuoteActions : BaseFileActions
         if (input.Units <= 0)
             throw new PluginMisconfigurationException("Units must be greater than zero.");
 
+        var isLanguageIndependent = input.IsLanguageIndependent == true;
+        var hasLanguageCombination = input.SourceLanguageId != null && input.TargetLanguageId != null;
+        var hasLanguageCombinationNumber = !string.IsNullOrWhiteSpace(input.LanguageCombinationIdNumber);
+
+        if (!isLanguageIndependent && !hasLanguageCombination && !hasLanguageCombinationNumber)
+            throw new PluginMisconfigurationException(
+                "Provide Source and Target language, Language combination number, or enable Language-independent.");
+
+        if (isLanguageIndependent && (hasLanguageCombination || hasLanguageCombinationNumber))
+            throw new PluginMisconfigurationException(
+                "Language-independent receivables cannot include Source/Target language or Language combination number.");
+
         var payload = new
         {
-            languageCombination = input.SourceLanguageId != null && input.TargetLanguageId != null
+            languageCombination = !isLanguageIndependent && hasLanguageCombination
                 ? new
                 {
                     sourceLanguageId = ConvertToInt64(input.SourceLanguageId, "Source language"),
                     targetLanguageId = ConvertToInt64(input.TargetLanguageId, "Target language")
                 }
                 : null,
-            languageCombinationIdNumber = !String.IsNullOrEmpty(input.LanguageCombinationIdNumber)? input.LanguageCombinationIdNumber :null,
+            languageCombinationIdNumber = !isLanguageIndependent && hasLanguageCombinationNumber
+                ? input.LanguageCombinationIdNumber
+                : null,
             jobTypeId = string.IsNullOrWhiteSpace(input.JobTypeId)
                 ? null
                 : ConvertToInt64(input.JobTypeId, "Job type"),
