@@ -35,6 +35,9 @@ namespace Apps.XTRF.Classic.Models.Requests.ClassicQuote
         [Display("Language combination number")]
         public string? LanguageCombinationIdNumber { get; set; }
 
+        [Display("Language-independent")]
+        public bool? IsLanguageIndependent { get; set; }
+
         [Display("Source language ID")]
         [DataSource(typeof(LanguageDataHandler))]
         public string? SourceLanguageId { get; set; }
