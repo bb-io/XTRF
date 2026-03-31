@@ -32,7 +32,8 @@ public class WebhookList(InvocationContext invocationContext) : XtrfInvocable(in
     public async Task<WebhookResponse<ProjectStatusChangedPayload>> ProjectStatusChangedHandler(
         WebhookRequest webhookRequest,
         [WebhookParameter] [Display("Project status")] [StaticDataSource(typeof(ProjectStatusDataHandler))] string? status,
-        [WebhookParameter] ProjectOptionalRequest projectOptionalRequest)
+        [WebhookParameter] ProjectOptionalRequest projectOptionalRequest,
+        [WebhookParameter] CustomerOptionalRequest customerOptionalRequest)
     {
         var result = await HandleWebhook<ProjectStatusChangedPayload>(webhookRequest,
             status != null ? payload =>
@@ -50,10 +51,23 @@ public class WebhookList(InvocationContext invocationContext) : XtrfInvocable(in
                 return payload.Status.Equals(status, StringComparison.OrdinalIgnoreCase);
             }
         : null);
-        
-        if (result.Result != null && projectOptionalRequest.ProjectId != null && !result.Result.InternalId.Equals(projectOptionalRequest.ProjectId))
-        {
+
+        if (result.Result is null)
             return GetPreflightResponse<ProjectStatusChangedPayload>();
+
+        if (projectOptionalRequest.ProjectId != null && !result.Result.InternalId.Equals(projectOptionalRequest.ProjectId))
+            return GetPreflightResponse<ProjectStatusChangedPayload>();
+
+        if (!string.IsNullOrWhiteSpace(customerOptionalRequest.CustomerId))
+        {
+            var projectId = result.Result.InternalId;
+            var customerId = await GetCustomerIdFromProjectAsync(projectId);
+
+            if (string.IsNullOrWhiteSpace(customerId))
+                return GetPreflightResponse<ProjectStatusChangedPayload>();
+
+            if (!string.Equals(customerId, customerOptionalRequest.CustomerId, StringComparison.OrdinalIgnoreCase))
+                return GetPreflightResponse<ProjectStatusChangedPayload>();
         }
 
         return result;
