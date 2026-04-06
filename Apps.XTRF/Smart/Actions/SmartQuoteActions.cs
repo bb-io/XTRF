@@ -26,13 +26,9 @@ using Blackbird.Applications.Sdk.Common.Exceptions;
 namespace Apps.XTRF.Smart.Actions;
 
 [ActionList("Smart: quotes")]
-public class SmartQuoteActions : BaseFileActions
+public class SmartQuoteActions(InvocationContext invocationContext, IFileManagementClient fileManagementClient) 
+    : BaseFileActions(invocationContext, fileManagementClient)
 {
-    public SmartQuoteActions(InvocationContext invocationContext, IFileManagementClient fileManagementClient) 
-        : base(invocationContext, fileManagementClient)
-    {
-    }
-
     #region Get
 
     [Action("Smart: Get quote details", Description = "Get information about a smart quote.  If you need to retrieve " +
@@ -233,7 +229,8 @@ public class SmartQuoteActions : BaseFileActions
     }
 
     [Action("Smart: Update quote", Description = "Update a smart quote, specifying only the fields that require updating")]
-    public async Task<QuoteIdentifier> UpdateQuote([ActionParameter] QuoteIdentifier quoteIdentifier, 
+    public async Task<QuoteIdentifier> UpdateQuote(
+        [ActionParameter] QuoteIdentifier quoteIdentifier, 
         [ActionParameter] UpdateQuoteRequest input)
     {
         if (string.IsNullOrEmpty(quoteIdentifier.QuoteId))
@@ -278,18 +275,6 @@ public class SmartQuoteActions : BaseFileActions
                     .WithJsonBody(new { specializationId = ConvertToInt64(input.SpecializationId, "Specialization") });
             
             await Client.ExecuteWithErrorHandling(updateSpecializationRequest);
-        }
-
-        if (input.CategoryIds != null)
-        {
-            var updateCategoriesRequest =
-                new XtrfRequest($"/v2/quotes/{quoteIdentifier.QuoteId}/categories", Method.Put, Creds)
-                    .WithJsonBody(new
-                    {
-                        categoryIds = ConvertToInt64Enumerable(input.CategoryIds, "Categories")
-                    });
-
-            await Client.ExecuteWithErrorHandling(updateCategoriesRequest);
         }
 
         if (input.PrimaryId != null || input.AdditionalIds != null)

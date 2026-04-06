@@ -24,19 +24,13 @@ using Blackbird.Applications.Sdk.Utils.Parsers;
 using Blackbird.Applications.SDK.Extensions.FileManagement.Interfaces;
 using RestSharp;
 using System.Globalization;
-using System.Net;
-using System.Net.Mime;
 
 namespace Apps.XTRF.Smart.Actions;
 
 [ActionList("Smart: projects")]
-public class SmartProjectActions : BaseFileActions
+public class SmartProjectActions(InvocationContext invocationContext, IFileManagementClient fileManagementClient) 
+    : BaseFileActions(invocationContext, fileManagementClient)
 {
-    public SmartProjectActions(InvocationContext invocationContext, IFileManagementClient fileManagementClient)
-        : base(invocationContext, fileManagementClient)
-    {
-    }
-
     #region Get
 
     [Action("Smart: Get project details", Description =
@@ -415,7 +409,8 @@ public class SmartProjectActions : BaseFileActions
 
     [Action("Smart: Update project",
         Description = "Update a smart project, specifying only the fields that require updating")]
-    public async Task<ProjectIdentifier> UpdateProject([ActionParameter] ProjectIdentifier projectIdentifier,
+    public async Task<ProjectIdentifier> UpdateProject(
+        [ActionParameter] ProjectIdentifier projectIdentifier,
         [ActionParameter] UpdateProjectRequest input)
     {
         if (input.Status != null)
@@ -455,18 +450,6 @@ public class SmartProjectActions : BaseFileActions
                     .WithJsonBody(new { specializationId = ConvertToInt64(input.SpecializationId, "Specialization") });
 
             await Client.ExecuteWithErrorHandling(updateSpecializationRequest);
-        }
-
-        if (input.CategoryIds != null)
-        {
-            var updateCategoriesRequest =
-                new XtrfRequest($"/v2/projects/{projectIdentifier.ProjectId}/categories", Method.Put, Creds)
-                    .WithJsonBody(new
-                    {
-                        categoryIds = ConvertToInt64Enumerable(input.CategoryIds, "Categories")
-                    });
-
-            await Client.ExecuteWithErrorHandling(updateCategoriesRequest);
         }
 
         if (input.PrimaryId != null || input.AdditionalIds != null)
