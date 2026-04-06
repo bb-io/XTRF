@@ -72,5 +72,4 @@ public class ContactQuote
     public string Fax { get; set; } = string.Empty;
     public string Email { get; set; } = string.Empty;
     public string Www { get; set; } = string.Empty;
-    public List<string> SocialMediaContacts { get; set; } = new();
 }
