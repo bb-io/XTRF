@@ -50,8 +50,8 @@ public class SmartQuoteActionTests : TestBase
     {
         // Arrange
         var action = new SmartQuoteActions(InvocationContext, FileManager);
-        var id = new QuoteIdentifier { QuoteId = "AHMG2QPUCBE6XGTB7XLDZ7R4AI" };
-        var input = new UpdateQuoteRequest { CategoryIds = ["72"] };
+        var id = new QuoteIdentifier { QuoteId = "B2L3KJDBQZDRHBIDHF6J65XJ2I" };
+        var input = new UpdateQuoteRequest { };
 
         // Act
         var response = await action.UpdateQuote(id, input);
@@ -60,9 +60,6 @@ public class SmartQuoteActionTests : TestBase
         PrintJsonResult(response);
         Assert.IsNotNull(response);
     }
-
-    //GetFilesByProject
-
 
     [TestMethod]
     public async Task GetFilesByProject_ValidInput_ReturnsResult()
