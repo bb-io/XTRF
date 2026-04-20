@@ -13,7 +13,7 @@ public class Instructions
 
     [JsonPropertyName("internal")]
     [Display("Internal instruction")]
-    public string? Internal { get; set; }
+    public string? @internal { get; set; }
     
     [Display("Payment note for customer")]
     public string? PaymentNoteForCustomer { get; set; }
