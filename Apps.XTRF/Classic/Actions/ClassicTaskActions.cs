@@ -306,7 +306,7 @@ public class ClassicTaskActions : BaseFileActions
             {
                 fromCustomer = input.InstructionFromCustomer ?? task.Instructions.FromCustomer,
                 forProvider = input.InstructionForProvider ?? task.Instructions.ForProvider,
-                @internal = input.InternalInstruction ?? task.Instructions.@internal,
+                @internal = input.InternalInstruction ?? task.Instructions.Internal,
                 paymentNoteForCustomer = input.PaymentNoteForCustomer ?? task.Instructions.PaymentNoteForCustomer,
                 paymentNoteForVendor = input.PaymentNoteForVendor ?? task.Instructions.PaymentNoteForVendor,
                 notes = input.Notes ?? task.Instructions.Notes
@@ -318,7 +318,7 @@ public class ClassicTaskActions : BaseFileActions
 
             task.Instructions.FromCustomer = jsonBody.fromCustomer;
             task.Instructions.ForProvider = jsonBody.forProvider;
-            task.Instructions.@internal = jsonBody.@internal;
+            task.Instructions.Internal = jsonBody.@internal;
             task.Instructions.PaymentNoteForCustomer = jsonBody.paymentNoteForCustomer;
             task.Instructions.PaymentNoteForVendor = jsonBody.paymentNoteForVendor;
             task.Instructions.Notes = jsonBody.notes;

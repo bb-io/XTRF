@@ -324,7 +324,7 @@ public class ClassicProjectActions : BaseFileActions
             {
                 fromCustomer = input.InstructionFromCustomer ?? project.Instructions.FromCustomer,
                 forProvider = input.InstructionForProvider ?? project.Instructions.ForProvider,
-                Internal = input.InternalInstruction ?? project.Instructions.@internal,
+                @internal = input.InternalInstruction ?? project.Instructions.Internal,
                 paymentNoteForCustomer = input.PaymentNoteForCustomer ?? project.Instructions.PaymentNoteForCustomer,
                 paymentNoteForVendor = input.PaymentNoteForVendor ?? project.Instructions.PaymentNoteForVendor,
                 notes = input.Notes ?? project.Instructions.Notes
@@ -337,7 +337,7 @@ public class ClassicProjectActions : BaseFileActions
             
             project.Instructions.FromCustomer = jsonBody.fromCustomer;
             project.Instructions.ForProvider = jsonBody.forProvider;
-            project.Instructions.@internal = jsonBody.Internal;
+            project.Instructions.Internal = jsonBody.@internal;
             project.Instructions.PaymentNoteForCustomer = jsonBody.paymentNoteForCustomer;
             project.Instructions.PaymentNoteForVendor = jsonBody.paymentNoteForVendor;
             project.Instructions.Notes = jsonBody.notes;

@@ -121,7 +121,7 @@ public class ClassicJobActions : BaseFileActions
             {
                 fromClient = input.InstructionFromClient ?? job.Instructions.FromClient,
                 forVendor = input.InstructionForVendor ?? job.Instructions.ForVendor,
-                Internal = input.InternalInstruction ?? job.Instructions.Internal,
+                @internal = input.InternalInstruction ?? job.Instructions.Internal,
                 paymentNoteForVendor = input.PaymentNoteForVendor ?? job.Instructions.PaymentNoteForVendor
             };
 
@@ -131,7 +131,7 @@ public class ClassicJobActions : BaseFileActions
 
             job.Instructions.FromClient = jsonBody.fromClient;
             job.Instructions.ForVendor = jsonBody.forVendor;
-            job.Instructions.Internal = jsonBody.Internal;
+            job.Instructions.Internal = jsonBody.@internal;
             job.Instructions.PaymentNoteForVendor = jsonBody.paymentNoteForVendor;
         }
 
