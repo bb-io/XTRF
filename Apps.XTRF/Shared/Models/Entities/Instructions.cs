@@ -1,4 +1,5 @@
 ﻿using Blackbird.Applications.Sdk.Common;
+using System.Text.Json.Serialization;
 
 namespace Apps.XTRF.Shared.Models.Entities;
 
@@ -9,7 +10,8 @@ public class Instructions
     
     [Display("Instruction for provider")]
     public string? ForProvider { get; set; }
-    
+
+    [JsonPropertyName("internal")]
     [Display("Internal instruction")]
     public string? Internal { get; set; }
     
