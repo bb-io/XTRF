@@ -14,7 +14,7 @@ public class SmartQuoteActionTests : TestBase
     {
         // Arrange
         var action = new SmartQuoteActions(InvocationContext, FileManager);
-        var quote = new QuoteIdentifier() { QuoteId = "AHMG2QPUCBE6XGTB7XLDZ7R4AI" };
+        var quote = new QuoteIdentifier() { QuoteId = "IEW66UVN25BRDGJQTN2VK7KXZY" };
         
         // Act
         var response = await action.GetQuote(quote, false);
@@ -29,11 +29,12 @@ public class SmartQuoteActionTests : TestBase
     {
         // Arrange
         var action = new SmartQuoteActions(InvocationContext, FileManager);
-        var quote = new QuoteIdentifier { QuoteId = "K7NPUOBE2VAA3A2SDFYBZ2BK3I" };
+        var quote = new QuoteIdentifier { QuoteId = "IEW66UVN25BRDGJQTN2VK7KXZY" };
         var input = new AddQuoteReceivableRequest
         {
-            CalculationUnitId = "1",
-            Units = 1,
+            CalculationUnitId = "15",
+            //JobTypeId= "18",
+            Units = 725,
             IsLanguageIndependent = true
         };
 

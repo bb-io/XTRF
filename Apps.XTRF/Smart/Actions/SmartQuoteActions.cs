@@ -22,6 +22,7 @@ using Blackbird.Applications.Sdk.Utils.Parsers;
 using RestSharp;
 using Apps.XTRF.Classic.Models.Requests.ClassicQuote;
 using Blackbird.Applications.Sdk.Common.Exceptions;
+using Newtonsoft.Json;
 
 namespace Apps.XTRF.Smart.Actions;
 
@@ -158,45 +159,51 @@ public class SmartQuoteActions(InvocationContext invocationContext, IFileManagem
         if (input.Units <= 0)
             throw new PluginMisconfigurationException("Units must be greater than zero.");
 
-        var isLanguageIndependent = input.IsLanguageIndependent == true;
         var hasLanguageCombination = input.SourceLanguageId != null && input.TargetLanguageId != null;
         var hasLanguageCombinationNumber = !string.IsNullOrWhiteSpace(input.LanguageCombinationIdNumber);
+        var isLanguageIndependent = input.IsLanguageIndependent == true;
 
         if (!isLanguageIndependent && !hasLanguageCombination && !hasLanguageCombinationNumber)
             throw new PluginMisconfigurationException(
                 "Provide Source and Target language, Language combination number, or enable Language-independent.");
 
-        if (isLanguageIndependent && (hasLanguageCombination || hasLanguageCombinationNumber))
-            throw new PluginMisconfigurationException(
-                "Language-independent receivables cannot include Source/Target language or Language combination number.");
 
-        var payload = new
-        {
-            languageCombination = !isLanguageIndependent && hasLanguageCombination
-                ? new
-                {
-                    sourceLanguageId = ConvertToInt64(input.SourceLanguageId, "Source language"),
-                    targetLanguageId = ConvertToInt64(input.TargetLanguageId, "Target language")
-                }
-                : null,
-            languageCombinationIdNumber = !isLanguageIndependent && hasLanguageCombinationNumber
-                ? input.LanguageCombinationIdNumber
-                : null,
-            jobTypeId = string.IsNullOrWhiteSpace(input.JobTypeId)
-                ? null
-                : ConvertToInt64(input.JobTypeId, "Job type"),
+        var payload = new Dictionary<string, object?>();
 
-            type = input.Type ?? "SIMPLE",
-            calculationUnitId = ConvertToInt64(input.CalculationUnitId, "Calculation unit"),
-            quantity = input.Units,
-            rate = input.Rate,
-            rateOrigin = input.Rate.HasValue ? "CUSTOM" : "PRICE_PROFILE",
-            currencyId = string.IsNullOrWhiteSpace(input.CurrencyId) ? null : ConvertToInt64(input.CurrencyId, "Currency"),
-            ignoreMinimumCharge = input.IgnoreMinimumCharge,
-            minimumCharge = input.MinimumCharge,
-            description = input.Description
-        };
+        if (!isLanguageIndependent && hasLanguageCombination)
+            payload["languageCombination"] = new
+            {
+                sourceLanguageId = ConvertToInt64(input.SourceLanguageId, "Source language"),
+                targetLanguageId = ConvertToInt64(input.TargetLanguageId, "Target language")
+            };
 
+        if (!isLanguageIndependent && hasLanguageCombinationNumber)
+            payload["languageCombinationIdNumber"] = input.LanguageCombinationIdNumber;
+
+        if (!string.IsNullOrWhiteSpace(input.JobTypeId))
+            payload["jobTypeId"] = ConvertToInt64(input.JobTypeId, "Job type");
+
+        payload["type"] = input.Type ?? "SIMPLE";
+        payload["calculationUnitId"] = ConvertToInt64(input.CalculationUnitId, "Calculation unit");
+        payload["quantity"] = input.Units;
+        payload["rateOrigin"] = input.Rate.HasValue ? "CUSTOM" : "PRICE_PROFILE";
+
+        if (input.Rate.HasValue)
+            payload["rate"] = input.Rate.Value;
+
+        if (!string.IsNullOrWhiteSpace(input.CurrencyId))
+            payload["currencyId"] = ConvertToInt64(input.CurrencyId, "Currency");
+
+        if (input.IgnoreMinimumCharge.HasValue)
+            payload["ignoreMinimumCharge"] = input.IgnoreMinimumCharge.Value;
+
+        if (input.MinimumCharge.HasValue)
+            payload["minimumCharge"] = input.MinimumCharge.Value;
+
+        if (!string.IsNullOrWhiteSpace(input.Description))
+            payload["description"] = input.Description;
+        var jsonPayload = System.Text.Json.JsonSerializer.Serialize(payload);
+        Console.WriteLine("Payload: " + jsonPayload);
         var req = new XtrfRequest($"/v2/quotes/{quoteIdentifier.QuoteId}/finance/receivables",
             Method.Post, Creds).WithJsonBody(payload, JsonConfig.Settings);
 
