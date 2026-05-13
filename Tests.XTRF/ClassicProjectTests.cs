@@ -51,10 +51,11 @@ public class ClassicProjectTests : TestBase
     {
         var client = new ClassicProjectActions(InvocationContext, FileManager);
 
-        var result = await client.DownloadFile(new Apps.XTRF.Classic.Models.Identifiers.ClassicTaskIdentifier { TaskId= "312425" },
-            new Apps.XTRF.Classic.Models.Identifiers.ClassicFileIdentifier { FileId= "1808308" });
+        var result = await client.DownloadFile(new Apps.XTRF.Classic.Models.Identifiers.ClassicTaskIdentifier { TaskId= "87" },
+            new Apps.XTRF.Classic.Models.Identifiers.ClassicFileIdentifier { FileId= "7" });
 
         Assert.IsNotNull(result);
+        Console.WriteLine(JsonConvert.SerializeObject(result, Formatting.Indented));
     }
 
     [TestMethod]

@@ -102,7 +102,7 @@ public class CustomerInvoiceActions(InvocationContext invocationContext, IFileMa
         };
 
         var jsonString = JsonConvert.SerializeObject(json);
-        var stream = new MemoryStream(Encoding.UTF8.GetBytes(jsonString));
+        using var stream = new MemoryStream(Encoding.UTF8.GetBytes(jsonString));
         stream.Position = 0;
 
         return await fileManagementClient.UploadAsync(stream, "application/json", $"{request.CustomerInvoiceId}.json");
@@ -142,7 +142,7 @@ public class CustomerInvoiceActions(InvocationContext invocationContext, IFileMa
         var downloadResponse = await restClient.ExecuteAsync(new RestRequest(string.Empty));
         var rawBytes = downloadResponse.RawBytes!;
 
-        var stream = new MemoryStream(rawBytes);
+        using var stream = new MemoryStream(rawBytes);
         stream.Position = 0;
 
         return await fileManagementClient.UploadAsync(stream, "application/pdf", $"{request.CustomerInvoiceId}.pdf");

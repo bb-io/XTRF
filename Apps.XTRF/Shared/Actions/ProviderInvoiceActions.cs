@@ -93,7 +93,7 @@ public class ProviderInvoiceActions(InvocationContext invocationContext, IFileMa
         var downloadResponse = await restClient.ExecuteAsync(new RestRequest(string.Empty));
         var rawBytes = downloadResponse.RawBytes!;
         
-        var stream = new MemoryStream(rawBytes);
+        using var stream = new MemoryStream(rawBytes);
         stream.Position = 0;
         
         var fileReference = await fileManagementClient.UploadAsync(stream, "application/pdf", $"{request.ProviderInvoiceId}.pdf");
