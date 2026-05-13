@@ -1,5 +1,4 @@
-﻿using System.Net.Mime;
-using Apps.XTRF.Classic.Models.Entities;
+﻿using Apps.XTRF.Classic.Models.Entities;
 using Apps.XTRF.Classic.Models.Identifiers;
 using Apps.XTRF.Classic.Models.Requests.ClassicProject;
 using Apps.XTRF.Classic.Models.Responses.ClassicProject;
@@ -13,9 +12,11 @@ using Apps.XTRF.Shared.Models.Identifiers;
 using Apps.XTRF.Smart.Models.Responses.File;
 using Blackbird.Applications.Sdk.Common;
 using Blackbird.Applications.Sdk.Common.Actions;
+using Blackbird.Applications.Sdk.Common.Files;
 using Blackbird.Applications.Sdk.Common.Invocation;
 using Blackbird.Applications.SDK.Extensions.FileManagement.Interfaces;
 using Blackbird.Applications.Sdk.Utils.Extensions.Http;
+using Blackbird.Applications.Sdk.Utils.Extensions.Sdk;
 using RestSharp;
 using Blackbird.Applications.Sdk.Common.Exceptions;
 using Apps.XTRF.Classic.Models.Responses;
@@ -43,12 +44,9 @@ public class ClassicProjectActions : BaseFileActions
     }
     
     [Action("Classic: Download file", Description = "Download the content of a specific file in a classic project")]
-    public async Task<FileWrapper> DownloadFile([ActionParameter] ClassicTaskIdentifier taskIdentifier, 
+    public async Task<FileWrapper> DownloadFile([ActionParameter] ClassicTaskIdentifier taskIdentifier,
         [ActionParameter] ClassicFileIdentifier fileIdentifier)
     {
-        var downloadReq = new XtrfRequest($"/projects/files/{fileIdentifier.FileId}/download", Method.Get, Creds);
-        var downloadResp = await Client.ExecuteWithErrorHandling(downloadReq);
-
         var filesReq = new XtrfRequest($"/tasks/{taskIdentifier.TaskId}/files", Method.Get, Creds);
         var filesResp = await Client.ExecuteWithErrorHandling<JobFilesResponse>(filesReq);
 
@@ -59,16 +57,21 @@ public class ClassicProjectActions : BaseFileActions
             );
 
         var taskLevelOutput = filesResp?.OutputFiles ?? Enumerable.Empty<ClassicFileXTRF>();
-
         var allFiles = jobFiles.Concat(taskLevelOutput);
-
         var targetFile = allFiles.FirstOrDefault(f => f.Id == fileIdentifier.FileId);
-
-        var contentType = downloadResp.ContentType ?? MediaTypeNames.Application.Octet;
 
         var rawName = targetFile?.Name ?? $"xtrf-file-{fileIdentifier.FileId}";
         var fileName = SafeFileName(rawName, $"xtrf-file-{fileIdentifier.FileId}");
-        var fileRef = await UploadFile(downloadResp.RawBytes, contentType, fileName);
+
+        var baseUrl = Creds.Get(CredsNames.Url).Value;
+        var token = Creds.Get(CredsNames.ApiToken).Value;
+
+        var url = $"{baseUrl}/home-api/projects/files/{fileIdentifier.FileId}/download";
+        var httpRequest = new HttpRequestMessage(HttpMethod.Get, url);
+        httpRequest.Headers.Add("X-AUTH-ACCESS-TOKEN", token);
+
+        var contentType = MimeTypes.GetMimeType(fileName);
+        var fileRef = new FileReference(httpRequest, fileName, contentType);
 
         return new FileWrapper { File = fileRef };
     }

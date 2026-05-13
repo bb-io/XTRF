@@ -18,8 +18,10 @@ using Blackbird.Applications.Sdk.Common;
 using Blackbird.Applications.Sdk.Common.Actions;
 using Blackbird.Applications.Sdk.Common.Dynamic;
 using Blackbird.Applications.Sdk.Common.Exceptions;
+using Blackbird.Applications.Sdk.Common.Files;
 using Blackbird.Applications.Sdk.Common.Invocation;
 using Blackbird.Applications.Sdk.Utils.Extensions.Http;
+using Blackbird.Applications.Sdk.Utils.Extensions.Sdk;
 using Blackbird.Applications.Sdk.Utils.Parsers;
 using Blackbird.Applications.SDK.Extensions.FileManagement.Interfaces;
 using RestSharp;
@@ -145,20 +147,23 @@ public class SmartProjectActions(InvocationContext invocationContext, IFileManag
     }
 
     [Action("Smart: Download file", Description = "Download the content of a specific file")]
-    public async Task<FileWrapper> DownloadFile([ActionParameter] FileIdentifier fileIdentifier,
+    public Task<FileWrapper> DownloadFile([ActionParameter] FileIdentifier fileIdentifier,
         [ActionParameter] [Display("Filename")]
         string filename)
     {
         filename = filename.Trim();
-        var request = new XtrfRequest($"/v2/projects/files/{fileIdentifier.FileId}/download/{filename}", Method.Get,
-            Creds);
-        var response = await Client.ExecuteWithErrorHandling(request);
 
-        var contentType = DownloadContentTypeHelper.Resolve(response.ContentType, filename);
+        var baseUrl = Creds.Get(CredsNames.Url).Value;
+        var token = Creds.Get(CredsNames.ApiToken).Value;
 
-        var fileReference = await UploadFile(response.RawBytes, contentType, filename);
+        var url = $"{baseUrl}/home-api/v2/projects/files/{fileIdentifier.FileId}/download/{Uri.EscapeDataString(filename)}";
+        var httpRequest = new HttpRequestMessage(HttpMethod.Get, url);
+        httpRequest.Headers.Add("X-AUTH-ACCESS-TOKEN", token);
 
-        return new() { File = fileReference };
+        var contentType = MimeTypes.GetMimeType(filename);
+        var fileReference = new FileReference(httpRequest, filename, contentType);
+
+        return Task.FromResult(new FileWrapper { File = fileReference });
     }
 
     [Action("Smart: Get project file details", Description = "Get information about specific file in a smart project")]
