@@ -1,4 +1,3 @@
-﻿using Apps.XTRF.Classic.Models.Entities;
 using Apps.XTRF.Shared.Actions;
 using Apps.XTRF.Shared.Api;
 using Apps.XTRF.Shared.Invocables;
@@ -19,9 +18,9 @@ public class ClassicPersonDataSource(InvocationContext invocationContext)
         //var updatedSince = DateTimeOffset.UtcNow.AddDays(-15).ToUnixTimeMilliseconds();
         //request.AddQueryParameter("updatedSince", updatedSince.ToString());
         var ids = await Client.ExecuteWithErrorHandling<List<long>>(request);
-        
+
         var customerActions = new CustomerActions(invocationContext);
-        var people = new List<Person>();
+        var people = new List<ContactPerson>();
         foreach (var id in ids)
         {
             var person = await customerActions.GetContactPerson(new PersonIdentifier { PersonId = id.ToString() });
@@ -35,7 +34,7 @@ public class ClassicPersonDataSource(InvocationContext invocationContext)
             .ToDictionary(x => x.Id.ToString(), BuildReadableName);
     }
 
-    private string BuildReadableName(Person person)
+    private string BuildReadableName(ContactPerson person)
     {
         return $"{person.Name} ({person.Contact?.Emails?.Primary ?? "No email"})";
     }

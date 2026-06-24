@@ -8,6 +8,6 @@ namespace Apps.XTRF.Shared.Models.Identifiers;
 public class PersonIdentifier
 {
     [Display("Person ID")]
-    //[DataSource(typeof(ClassicPersonDataSource))]
+    [DataSource(typeof(ClassicPersonDataSource))]
     public string PersonId { get; set; }
 }
