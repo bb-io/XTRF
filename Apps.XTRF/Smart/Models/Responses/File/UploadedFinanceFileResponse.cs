@@ -44,7 +44,7 @@ public class UploadedFinanceFileResponse
     public int Rate { get; set; }
 
     [Display("Quantity")]
-    public int Quantity { get; set; }
+    public double Quantity { get; set; }
 
     [Display("Source language ID")]
     public string? SourceLanguageId { get; set; }
@@ -67,7 +67,7 @@ public class UploadedFinanceFileResponse
         MinimumCharge = dto.MinimumCharge ?? 0;
         Description = dto.Description;
         Rate = (int)dto.Rate;
-        Quantity = (int)dto.Quantity;
+        Quantity = dto.Quantity;
         SourceLanguageId = dto.LanguageCombination?.SourceLanguageId.ToString();
         TargetLanguageId = dto.LanguageCombination?.TargetLanguageId.ToString();
     }
