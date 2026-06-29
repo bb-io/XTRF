@@ -154,39 +154,45 @@ public class ClassicProjectActions : BaseFileActions
     public async Task<UploadedFinanceFileResponse> CreatePayableForProject([ActionParameter] ProjectIdentifier projectIdentifier,
         [ActionParameter] CreateClassicPayableRequest input)
     {
-        string fileName = input.FileName ?? input.File.Name!;
-        var fileBytes = await DownloadFile(input.File);
-        var fileUploadedResponse = await UploadFile(fileBytes, fileName);
+        var body = new Dictionary<string, object?>
+        {
+            ["id"] = input.Id == null ? null : ConvertToInt64(input.Id, "Payable ID"),
+            ["jobTypeId"] = ConvertToInt64(input.JobType, "Job type"),
+            ["languageCombination"] = new
+            {
+                sourceLanguageId = ConvertToInt64(input.SourceLanguageId, "Source language"),
+                targetLanguageId = ConvertToInt64(input.TargetLanguageId, "Target language")
+            },
+            ["rateOrigin"] = input.RateOrigin ?? "PRICE_PROFILE",
+            ["currencyId"] = ConvertToInt64(input.CurrencyId, "Currency"),
+            ["total"] = ConvertToInt64(input.Total, "Total"),
+            ["invoiceId"] = input.InvoiceId,
+            ["type"] = input.Type ?? "CAT",
+            ["calculationUnitId"] = ConvertToInt64(input.CalculationUnitId, "Calculation unit"),
+            ["ignoreMinimumCharge"] = input.IgnoreMinimumChange ?? true,
+            ["minimumCharge"] = input.MinimumCharge ?? 0,
+            ["description"] = input.Description,
+            ["rate"] = input.Rate,
+            ["quantity"] = ConvertOptionalToDecimal(input.Quantity, "Quantity") ?? 0,
+            ["jobId"] = input.JobId
+        };
+
+        if (input.File != null)
+        {
+            string fileName = input.FileName ?? input.File.Name;
+            var fileBytes = await DownloadFile(input.File);
+            var fileUploadedResponse = await UploadFile(fileBytes, fileName);
+
+            body["catLogFile"] = new
+            {
+                name = fileName,
+                token = fileUploadedResponse.Token
+            };
+        }
 
         var createPayableRequest =
             new XtrfRequest($"/projects/{projectIdentifier.ProjectId}/finance/payables", Method.Post, Creds)
-                .WithJsonBody(new
-                {
-                    id = input.Id == null ? null : ConvertToInt64(input.Id, "Payable ID"),
-                    jobTypeId = ConvertToInt64(input.JobType, "Job type"),
-                    languageCombination = new
-                    {
-                        sourceLanguageId = ConvertToInt64(input.SourceLanguageId, "Source language"),
-                        targetLanguageId = ConvertToInt64(input.TargetLanguageId, "Target language")
-                    },
-                    rateOrigin = input.RateOrigin ?? "PRICE_PROFILE",
-                    currencyId = ConvertToInt64(input.CurrencyId, "Currency"),
-                    total = ConvertToInt64(input.Total, "Total"),
-                    invoiceId = input.InvoiceId,
-                    type = input.Type ?? "CAT",
-                    calculationUnitId = ConvertToInt64(input.CalculationUnitId, "Calculation unit"),
-                    ignoreMinimumCharge = input.IgnoreMinimumChange ?? true,
-                    minimumCharge = input.MinimumCharge ?? 0,
-                    description = input.Description,
-                    rate = input.Rate,
-                    quantity = input.Quantity ?? 0,
-                    jobId = input.JobId,
-                    catLogFile = new
-                    {
-                        name = fileName,
-                        token = fileUploadedResponse.Token
-                    }
-                });
+                .WithJsonBody(body);
 
         var dto = await Client.ExecuteWithErrorHandling<UploadedFinanceFileDto>(createPayableRequest);
         return new(dto);
@@ -216,7 +222,7 @@ public class ClassicProjectActions : BaseFileActions
             ["minimumCharge"] = input.MinimumCharge ?? 0,
             ["description"] = input.Description,
             ["rate"] = input.Rate,
-            ["quantity"] = input.Quantity ?? 0,
+            ["quantity"] = ConvertOptionalToDecimal(input.Quantity, "Quantity") ?? 0,
             ["taskId"] = ConvertToInt64(input.TaskId, "Task ID"),
         };
 
@@ -238,6 +244,20 @@ public class ClassicProjectActions : BaseFileActions
 
         var dto = await Client.ExecuteWithErrorHandling<UploadedFinanceFileDto>(request);
         return new(dto);
+    }
+
+    private static decimal? ConvertOptionalToDecimal(string? value, string fieldName)
+    {
+        if (string.IsNullOrWhiteSpace(value))
+            return null;
+
+        var normalized = value.Trim().Replace(',', '.');
+
+        if (!decimal.TryParse(normalized, System.Globalization.NumberStyles.Number,
+                System.Globalization.CultureInfo.InvariantCulture, out var result))
+            throw new PluginMisconfigurationException($"Invalid {fieldName}: '{value}'");
+
+        return result;
     }
 
     #endregion

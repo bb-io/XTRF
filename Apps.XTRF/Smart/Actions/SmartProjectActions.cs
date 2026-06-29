@@ -313,8 +313,8 @@ public class SmartProjectActions(InvocationContext invocationContext, IFileManag
         if (!string.IsNullOrWhiteSpace(input.Rate))
             body["rate"] = ConvertToDecimal(input.Rate, "Rate");
 
-        if (input.Quantity is not null)
-            body["quantity"] = input.Quantity.Value;
+        if (!string.IsNullOrWhiteSpace(input.Quantity))
+            body["quantity"] = ConvertToDecimal(input.Quantity, "Quantity");
         if (!string.IsNullOrWhiteSpace(input.TaskId))
             body["taskId"] = ConvertToInt64(input.TaskId, "Task ID");
 
@@ -369,7 +369,7 @@ public class SmartProjectActions(InvocationContext invocationContext, IFileManag
                     minimumCharge = input.MinimumCharge ?? 0,
                     description = input.Description,
                     rate = input.Rate,
-                    quantity = input.Quantity ?? 0,
+                    quantity = string.IsNullOrWhiteSpace(input.Quantity) ? 0 : ConvertToDecimal(input.Quantity, "Quantity"),
                     jobId = input.JobId,
                     catLogFile = new
                     {
