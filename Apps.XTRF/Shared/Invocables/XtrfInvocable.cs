@@ -1,12 +1,14 @@
 ﻿using Apps.XTRF.Classic.Models.Entities;
 using Apps.XTRF.Classic.Models.Responses.File;
 using Apps.XTRF.Shared.Api;
+using Apps.XTRF.Shared.Constants;
 using Apps.XTRF.Shared.Models.Entities;
 using Blackbird.Applications.Sdk.Common;
 using Blackbird.Applications.Sdk.Common.Authentication;
 using Blackbird.Applications.Sdk.Common.Exceptions;
 using Blackbird.Applications.Sdk.Common.Invocation;
 using Blackbird.Applications.Sdk.Utils.Extensions.Http;
+using Blackbird.Applications.Sdk.Utils.Extensions.Sdk;
 using Newtonsoft.Json;
 using RestSharp;
 
@@ -16,6 +18,8 @@ public class XtrfInvocable : BaseInvocable
 {
     protected AuthenticationCredentialsProvider[] Creds =>
         InvocationContext.AuthenticationCredentialsProviders.ToArray();
+
+    protected string BaseUrl => Creds.Get(CredsNames.Url).Value.TrimEnd('/');
 
     protected XtrfClient Client { get; }
 

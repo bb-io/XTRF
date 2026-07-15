@@ -153,10 +153,9 @@ public class SmartProjectActions(InvocationContext invocationContext, IFileManag
     {
         filename = filename.Trim();
 
-        var baseUrl = Creds.Get(CredsNames.Url).Value;
         var token = Creds.Get(CredsNames.ApiToken).Value;
 
-        var url = $"{baseUrl}/home-api/v2/projects/files/{fileIdentifier.FileId}/download/{Uri.EscapeDataString(filename)}";
+        var url = $"{BaseUrl}/home-api/v2/projects/files/{fileIdentifier.FileId}/download/{Uri.EscapeDataString(filename)}";
         var httpRequest = new HttpRequestMessage(HttpMethod.Get, url);
         httpRequest.Headers.Add("X-AUTH-ACCESS-TOKEN", token);
 

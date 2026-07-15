@@ -63,10 +63,9 @@ public class ClassicProjectActions : BaseFileActions
         var rawName = targetFile?.Name ?? $"xtrf-file-{fileIdentifier.FileId}";
         var fileName = SafeFileName(rawName, $"xtrf-file-{fileIdentifier.FileId}");
 
-        var baseUrl = Creds.Get(CredsNames.Url).Value;
         var token = Creds.Get(CredsNames.ApiToken).Value;
 
-        var url = $"{baseUrl}/home-api/projects/files/{fileIdentifier.FileId}/download";
+        var url = $"{BaseUrl}/home-api/projects/files/{fileIdentifier.FileId}/download";
         var httpRequest = new HttpRequestMessage(HttpMethod.Get, url);
         httpRequest.Headers.Add("X-AUTH-ACCESS-TOKEN", token);
 
