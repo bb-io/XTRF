@@ -71,12 +71,40 @@ public class ClassicProjectTests : TestBase
             CalculationUnitId = "1",
             Type = "SIMPLE",
             Rate = "1",
-            Quantity = 1,
+            Quantity = "1",
             File = new Blackbird.Applications.Sdk.Common.Files.FileReference { Name = "test.html" }
         };
 
         // Act
         var result = await actions.CreateReceivableForProject(project, request);
+
+        // Assert
+        Console.WriteLine(JsonConvert.SerializeObject(result, Formatting.Indented));
+        Assert.IsNotNull(result);
+    }
+
+    //CreatePayableForProject
+
+    [TestMethod]
+    public async Task CreatePayableForProject_ReturnsResponse()
+    {
+        // Arrange
+        var actions = new ClassicProjectActions(InvocationContext, FileManager);
+        var project = new ProjectIdentifier { ProjectId = "165" };
+        var request = new CreateClassicPayableRequest
+        {
+            //TaskId = "139",
+            JobId = "937",
+            JobType = "1",
+            CalculationUnitId = "1",
+            Type = "SIMPLE",
+            Rate = "1",
+            Quantity = "1",
+            //File = new Blackbird.Applications.Sdk.Common.Files.FileReference { Name = "test.html" }
+        };
+
+        // Act
+        var result = await actions.CreatePayableForProject(project, request);
 
         // Assert
         Console.WriteLine(JsonConvert.SerializeObject(result, Formatting.Indented));

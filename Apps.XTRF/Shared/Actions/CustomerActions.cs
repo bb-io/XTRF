@@ -51,6 +51,12 @@ public class CustomerActions(InvocationContext invocationContext) : XtrfInvocabl
         return customer;
     }
 
+    [Action("Get customer person", Description = "Get information about specific customer person")]
+    public async Task<ContactPerson> GetCustomerPerson([ActionParameter] PersonIdentifier personIdentifier)
+    {
+        return await GetContactPerson(personIdentifier);
+    }
+
     #endregion
 
     #region Post
@@ -233,13 +239,18 @@ public class CustomerActions(InvocationContext invocationContext) : XtrfInvocabl
     public async Task<ContactPerson> UpdateCustomerContact([ActionParameter] PersonIdentifier personIdentifier, 
         [ActionParameter] UpdateContactRequest input)
     {
+        if (!HasCustomerContactUpdateInput(input))
+        {
+            throw new PluginMisconfigurationException("At least one input field must be provided to update the customer person.");
+        }
+
         var getPersonRequest = 
-            new XtrfRequest($"/customers/persons/{personIdentifier.PersonId}", Method.Get, Creds);
+            new XtrfRequest($"/customers/persons/{GetValidatedPersonId(personIdentifier)}", Method.Get, Creds);
         var person = await Client.ExecuteWithErrorHandling<ContactPerson>(getPersonRequest);
         
         if (input.Name != null || input.LastName != null || input.MotherTonguesIds != null)
         {
-            var updatePersonRequest = new XtrfRequest($"/customers/persons/{personIdentifier.PersonId}", Method.Put, Creds)
+            var updatePersonRequest = new XtrfRequest($"/customers/persons/{GetValidatedPersonId(personIdentifier)}", Method.Put, Creds)
                 .WithJsonBody(new
                 {
                     name = input.Name,
@@ -267,7 +278,7 @@ public class CustomerActions(InvocationContext invocationContext) : XtrfInvocabl
             };
 
             var updateContactRequest =
-                new XtrfRequest($"/customers/persons/{personIdentifier.PersonId}/contact", Method.Put, Creds)
+                new XtrfRequest($"/customers/persons/{GetValidatedPersonId(personIdentifier)}/contact", Method.Put, Creds)
                     .WithJsonBody(jsonBody);
             await Client.ExecuteWithErrorHandling(updateContactRequest);
 
@@ -298,9 +309,30 @@ public class CustomerActions(InvocationContext invocationContext) : XtrfInvocabl
 
     #endregion
     
-    public async Task<Person> GetContactPerson(PersonIdentifier personIdentifier)
+    public async Task<ContactPerson> GetContactPerson(PersonIdentifier personIdentifier)
     {
-        var request = new XtrfRequest($"/customers/persons/{personIdentifier.PersonId}", Method.Get, Creds);
-        return await Client.ExecuteWithErrorHandling<Person>(request);
+        var request = new XtrfRequest($"/customers/persons/{GetValidatedPersonId(personIdentifier)}", Method.Get, Creds);
+        return await Client.ExecuteWithErrorHandling<ContactPerson>(request);
+    }
+
+    private static string GetValidatedPersonId(PersonIdentifier personIdentifier)
+    {
+        personIdentifier.PersonId = personIdentifier.PersonId?.Trim();
+        if (string.IsNullOrEmpty(personIdentifier.PersonId))
+        {
+            throw new PluginMisconfigurationException("Person ID cannot be empty, please provide a person ID.");
+        }
+
+        return personIdentifier.PersonId;
+    }
+
+    private static bool HasCustomerContactUpdateInput(UpdateContactRequest input)
+    {
+        return input.Name != null ||
+               input.LastName != null ||
+               input.MotherTonguesIds != null ||
+               input.Email != null ||
+               input.AdditionalEmails != null ||
+               input.Phones != null;
     }
 }

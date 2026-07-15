@@ -53,5 +53,5 @@ public class ClassicFinanceRequestBase
     public string? Rate { get; set; }
 
     [Display("Quantity")]
-    public int? Quantity { get; set; }
+    public string? Quantity { get; set; }
 }

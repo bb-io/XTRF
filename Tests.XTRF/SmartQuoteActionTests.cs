@@ -29,13 +29,14 @@ public class SmartQuoteActionTests : TestBase
     {
         // Arrange
         var action = new SmartQuoteActions(InvocationContext, FileManager);
-        var quote = new QuoteIdentifier { QuoteId = "IEW66UVN25BRDGJQTN2VK7KXZY" };
+        var quote = new QuoteIdentifier { QuoteId = "Z7N3D45P7JCCHE3Z26H2RE7YZ4" };
         var input = new AddQuoteReceivableRequest
         {
-            CalculationUnitId = "15",
-            //JobTypeId= "18",
-            Units = 725,
-            IsLanguageIndependent = true
+            CalculationUnitId = "9",
+            JobTypeId = "1",
+            Units = 2,
+            SourceLanguageId = "74",
+            TargetLanguageId = "98"
         };
 
         // Act

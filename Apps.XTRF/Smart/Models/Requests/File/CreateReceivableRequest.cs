@@ -57,7 +57,8 @@ public class CreateFinanceRequest : FileWrapper
     [Display("Rate")]
     public string? Rate { get; set; }
 
-    public int? Quantity { get; set; }
+    [Display("Quantity")]
+    public string? Quantity { get; set; }
 }
 
 public class CreateReceivableRequest : CreateFinanceRequest

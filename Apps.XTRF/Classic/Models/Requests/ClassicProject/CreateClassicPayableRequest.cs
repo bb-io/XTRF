@@ -12,5 +12,5 @@ public class CreateClassicPayableRequest : ClassicFinanceRequestBase
     public string JobId { get; set; }
 
     [Display("File")]
-    public FileReference File { get; set; }
+    public FileReference? File { get; set; }
 }
