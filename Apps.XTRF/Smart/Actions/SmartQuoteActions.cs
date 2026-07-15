@@ -202,8 +202,7 @@ public class SmartQuoteActions(InvocationContext invocationContext, IFileManagem
 
         if (!string.IsNullOrWhiteSpace(input.Description))
             payload["description"] = input.Description;
-        var jsonPayload = System.Text.Json.JsonSerializer.Serialize(payload);
-        Console.WriteLine("Payload: " + jsonPayload);
+        
         var req = new XtrfRequest($"/v2/quotes/{quoteIdentifier.QuoteId}/finance/receivables",
             Method.Post, Creds).WithJsonBody(payload, JsonConfig.Settings);
 
