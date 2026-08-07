@@ -21,6 +21,8 @@ public class SmartProject
     public SmartProjectLanguages Languages { get; set; }
     public SmartProjectDocuments Documents { get; set; }
     public SmartProjectPeople People { get; set; }
+
+    public catToolDetails CatToolDetails { get; set; }
 }
 
 public class SmartProjectLanguages
@@ -39,4 +41,12 @@ public class SmartProjectDocuments
 public class SmartProjectPeople
 {
     public string ProjectManagerId { get; set; }
+}
+
+public class catToolDetails
+{
+    public string? catToolProjectId { get; set; }
+    public string? catToolInternalId { get; set; }
+    public string? catToolProjectTemplateName { get; set; }
+    public string? catToolProjectTemplateId { get; set; }
 }
