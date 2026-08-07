@@ -31,6 +31,10 @@ public class ProjectResponse
         TargetLanguageIds = project.Languages.TargetLanguageIds;
         LanguageCombinations = project.Languages.LanguageCombinations;
         ProjectConfirmationStatus = project.Documents.ProjectConfirmationStatus;
+        catToolProjectId = project.CatToolDetails.catToolProjectId;
+        catToolInternalId = project.CatToolDetails.catToolInternalId;
+        catToolProjectTemplateId = project.CatToolDetails.catToolProjectTemplateId;
+        catToolProjectTemplateName = project.CatToolDetails.catToolProjectTemplateName;
     }
 
     [Display("Project ID")]
@@ -107,4 +111,16 @@ public class ProjectResponse
     
     [Display("Is project created in CAT tool or creation is queued")]
     public bool ProjectCreatedInCatToolOrCreationIsQueued { get; set; }
+
+    [Display("CAT tool project ID")]
+    public string? catToolProjectId { get; set; }
+
+    [Display("CAT tool internal ID")]
+    public string? catToolInternalId { get; set; }
+
+    [Display("CAT tool project template name")]
+    public string? catToolProjectTemplateName { get; set; }
+
+    [Display("CAT tool project template ID")]
+    public string? catToolProjectTemplateId { get; set; }
 }
