@@ -35,7 +35,7 @@ public class UploadedFinanceFileResponse
     public bool IgnoreMinimumCharge { get; set; }
 
     [Display("Minimum charge")]
-    public int MinimumCharge { get; set; }
+    public decimal MinimumCharge { get; set; }
 
     [Display("Description")]
     public string Description { get; set; }
@@ -64,7 +64,7 @@ public class UploadedFinanceFileResponse
         Type = dto.Type;
         CalculationUnitId = dto.CalculationUnitId.ToString();
         IgnoreMinimumCharge = dto.IgnoreMinimumCharge;
-        MinimumCharge = dto.MinimumCharge ?? 0;
+        MinimumCharge = dto.MinimumCharge ?? 0m;
         Description = dto.Description;
         Rate = (int)dto.Rate;
         Quantity = dto.Quantity;
@@ -85,7 +85,7 @@ public class UploadedFinanceFileDto
     public string Type { get; set; }
     public int CalculationUnitId { get; set; }
     public bool IgnoreMinimumCharge { get; set; }
-    public int? MinimumCharge { get; set; }
+    public decimal? MinimumCharge { get; set; }
     public string Description { get; set; }
     public double Rate { get; set; }
     public double Quantity { get; set; }
