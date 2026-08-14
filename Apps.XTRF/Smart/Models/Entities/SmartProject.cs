@@ -22,7 +22,7 @@ public class SmartProject
     public SmartProjectDocuments Documents { get; set; }
     public SmartProjectPeople People { get; set; }
 
-    public catToolDetails CatToolDetails { get; set; }
+    public catToolDetails? CatToolDetails { get; set; }
 }
 
 public class SmartProjectLanguages
