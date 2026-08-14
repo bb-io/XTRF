@@ -31,10 +31,10 @@ public class ProjectResponse
         TargetLanguageIds = project.Languages.TargetLanguageIds;
         LanguageCombinations = project.Languages.LanguageCombinations;
         ProjectConfirmationStatus = project.Documents.ProjectConfirmationStatus;
-        catToolProjectId = project.CatToolDetails.catToolProjectId;
-        catToolInternalId = project.CatToolDetails.catToolInternalId;
-        catToolProjectTemplateId = project.CatToolDetails.catToolProjectTemplateId;
-        catToolProjectTemplateName = project.CatToolDetails.catToolProjectTemplateName;
+        catToolProjectId = project.CatToolDetails?.catToolProjectId;
+        catToolInternalId = project.CatToolDetails?.catToolInternalId;
+        catToolProjectTemplateId = project.CatToolDetails?.catToolProjectTemplateId;
+        catToolProjectTemplateName = project.CatToolDetails?.catToolProjectTemplateName;
     }
 
     [Display("Project ID")]
