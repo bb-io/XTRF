@@ -11,6 +11,7 @@ using Blackbird.Applications.Sdk.Common.Dictionaries;
 using Blackbird.Applications.Sdk.Common.Invocation;
 using Apps.XTRF.Classic.Models;
 using Apps.XTRF.Shared.Api;
+using Apps.XTRF.Shared.Extensions;
 using Blackbird.Applications.Sdk.Common.Exceptions;
 using Newtonsoft.Json.Linq;
 using RestSharp;
@@ -222,7 +223,7 @@ public class WebhookList(InvocationContext invocationContext) : XtrfInvocable(in
         {
             response = await Client.ExecuteWithErrorHandling(request);
         }
-        catch (PluginApplicationException ex) when (ex.Message.Contains("no entity Project with id", StringComparison.OrdinalIgnoreCase))
+        catch (PluginApplicationException ex) when (ex.IsProjectNotFound() || ex.IsIncorrectProjectType())
         {
             return null;
         }
