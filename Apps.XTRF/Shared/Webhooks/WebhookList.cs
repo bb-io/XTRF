@@ -11,9 +11,10 @@ using Blackbird.Applications.Sdk.Common.Dictionaries;
 using Blackbird.Applications.Sdk.Common.Invocation;
 using Apps.XTRF.Classic.Models;
 using Apps.XTRF.Shared.Api;
-using RestSharp;
+using Apps.XTRF.Shared.Extensions;
 using Blackbird.Applications.Sdk.Common.Exceptions;
 using Newtonsoft.Json.Linq;
+using RestSharp;
 
 namespace Apps.XTRF.Shared.Webhooks;
 
@@ -198,21 +199,17 @@ public class WebhookList(InvocationContext invocationContext) : XtrfInvocable(in
 
     private async Task<string?> GetCustomerIdFromProjectAsync(string projectInternalId)
     {
-        var classicReq = new XtrfRequest($"/projects/{projectInternalId}", Method.Get, Creds);
-        var customerId = await TryExtractCustomerIdAsync(classicReq);
-        if (!string.IsNullOrEmpty(customerId))
-            return customerId;
-
-        var smartCandidates = new[]
+        var endpoints = new[]
         {
-            $"/v2/projects/{projectInternalId}",
-            $"/smart/projects/{projectInternalId}"
+            $"/v2/projects/{projectInternalId}",    // Smart project
+            $"/projects/{projectInternalId}"        // Classic project
         };
 
-        foreach (var path in smartCandidates)
+        foreach (var path in endpoints)
         {
-            var smartReq = new XtrfRequest(path, Method.Get, Creds);
-            customerId = await TryExtractCustomerIdAsync(smartReq);
+            var request = new XtrfRequest(path, Method.Get, Creds);
+            
+            string? customerId = await TryExtractCustomerIdAsync(request);
             if (!string.IsNullOrEmpty(customerId))
                 return customerId;
         }
@@ -221,37 +218,39 @@ public class WebhookList(InvocationContext invocationContext) : XtrfInvocable(in
 
     private async Task<string?> TryExtractCustomerIdAsync(RestRequest request)
     {
+        RestResponse response;
         try
         {
-            var response = await Client.ExecuteWithErrorHandling(request);
-            if (string.IsNullOrWhiteSpace(response.Content))
-                return null;
-
-            var jo = JObject.Parse(response.Content);
-
-            var candidates = new[]
-            {
-                "customer.id",
-                "client.id",
-                "customerId",
-                "clientId",
-                "customer.code",
-                "client.code"
-            };
-
-            foreach (var path in candidates)
-            {
-                var token = jo.SelectToken(path);
-                if (token != null && !string.IsNullOrWhiteSpace(token.ToString()))
-                    return token.ToString();
-            }
-
-            return null;
+            response = await Client.ExecuteWithErrorHandling(request);
         }
-        catch (PluginApplicationException ex) when (ex.Message.Contains("404") || ex.Message.Contains("Not Found"))
+        catch (PluginApplicationException ex) when (ex.IsProjectNotFound() || ex.IsIncorrectProjectType())
         {
             return null;
         }
+        
+        if (string.IsNullOrWhiteSpace(response.Content))
+            return null;
+
+        var parsedResponse = JObject.Parse(response.Content);
+
+        var candidates = new[]
+        {
+            "customer.id",
+            "client.id",
+            "customerId",
+            "clientId",
+            "customer.code",
+            "client.code"
+        };
+
+        foreach (var path in candidates)
+        {
+            var token = parsedResponse.SelectToken(path);
+            if (token != null && !string.IsNullOrWhiteSpace(token.ToString()))
+                return token.ToString();
+        }
+
+        return null;
     }
 
     #endregion
