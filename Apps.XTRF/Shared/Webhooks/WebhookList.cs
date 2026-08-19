@@ -11,6 +11,8 @@ using Blackbird.Applications.Sdk.Common.Dictionaries;
 using Blackbird.Applications.Sdk.Common.Invocation;
 using Apps.XTRF.Classic.Models;
 using Apps.XTRF.Shared.Api;
+using Blackbird.Applications.Sdk.Common.Exceptions;
+using Newtonsoft.Json.Linq;
 using RestSharp;
 
 namespace Apps.XTRF.Shared.Webhooks;
@@ -58,7 +60,8 @@ public class WebhookList(InvocationContext invocationContext) : XtrfInvocable(in
 
         if (!string.IsNullOrWhiteSpace(customerOptionalRequest.CustomerId))
         {
-            string? customerId = await ResolveCustomerId(result.Result.Client);
+            var projectId = result.Result.InternalId;
+            var customerId = await GetCustomerIdFromProjectAsync(projectId);
 
             if (string.IsNullOrWhiteSpace(customerId))
                 return GetPreflightResponse<ProjectStatusChangedPayload>();
@@ -103,8 +106,6 @@ public class WebhookList(InvocationContext invocationContext) : XtrfInvocable(in
         [WebhookParameter] JobOptionalRequest jobOptionalRequest,
         [WebhookParameter] CustomerOptionalRequest customerOptionalRequest)
     {
-        var rawBody = System.Text.Json.JsonSerializer.Serialize(webhookRequest.Body);
-        InvocationContext.Logger?.LogInformation(rawBody, []);
         var result = await HandleWebhook<JobStatusChangedPayload>(webhookRequest,
             status != null ? payload => payload.Status.Equals(status, StringComparison.OrdinalIgnoreCase) : null);
 
@@ -134,7 +135,8 @@ public class WebhookList(InvocationContext invocationContext) : XtrfInvocable(in
 
             if (!string.IsNullOrWhiteSpace(customerOptionalRequest.CustomerId))
             {
-                string? customerId = await ResolveCustomerId(string.Empty);
+                var projectId = result.Result.ProjectInternalId;
+                var customerId = await GetCustomerIdFromProjectAsync(projectId);
 
                 if (string.IsNullOrWhiteSpace(customerId))
                     return GetPreflightResponse<JobStatusChangedPayload>();
@@ -194,11 +196,57 @@ public class WebhookList(InvocationContext invocationContext) : XtrfInvocable(in
             ReceivedWebhookRequestType = WebhookRequestType.Preflight
         };
 
-    private async Task<string?> ResolveCustomerId(string customerExactName)
+    private async Task<string?> GetCustomerIdFromProjectAsync(string projectInternalId)
     {
-        var request = new XtrfRequest("/customers/ids", Method.Get, Creds).AddQueryParameter("nameEquals", customerExactName);
-        var response = await Client.ExecuteWithErrorHandling<int[]>(request);
-        return response.FirstOrDefault().ToString();
+        var smartCandidates = new[]
+        {
+            $"/v2/projects/{projectInternalId}",
+            $"/smart/projects/{projectInternalId}"
+        };
+
+        foreach (var path in smartCandidates)
+        {
+            var smartReq = new XtrfRequest(path, Method.Get, Creds);
+            string? customerId = await TryExtractCustomerIdAsync(smartReq);
+            if (!string.IsNullOrEmpty(customerId))
+                return customerId;
+        }
+        return null;
+    }
+
+    private async Task<string?> TryExtractCustomerIdAsync(RestRequest request)
+    {
+        try
+        {
+            var response = await Client.ExecuteWithErrorHandling(request);
+            if (string.IsNullOrWhiteSpace(response.Content))
+                return null;
+
+            var jo = JObject.Parse(response.Content);
+
+            var candidates = new[]
+            {
+                "customer.id",
+                "client.id",
+                "customerId",
+                "clientId",
+                "customer.code",
+                "client.code"
+            };
+
+            foreach (var path in candidates)
+            {
+                var token = jo.SelectToken(path);
+                if (token != null && !string.IsNullOrWhiteSpace(token.ToString()))
+                    return token.ToString();
+            }
+
+            return null;
+        }
+        catch (PluginApplicationException ex) when (ex.Message.Contains("404") || ex.Message.Contains("Not Found"))
+        {
+            return null;
+        }
     }
 
     #endregion
