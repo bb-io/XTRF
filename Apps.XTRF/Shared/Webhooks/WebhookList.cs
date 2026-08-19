@@ -12,8 +12,6 @@ using Blackbird.Applications.Sdk.Common.Invocation;
 using Apps.XTRF.Classic.Models;
 using Apps.XTRF.Shared.Api;
 using RestSharp;
-using Blackbird.Applications.Sdk.Common.Exceptions;
-using Newtonsoft.Json.Linq;
 
 namespace Apps.XTRF.Shared.Webhooks;
 
@@ -60,8 +58,7 @@ public class WebhookList(InvocationContext invocationContext) : XtrfInvocable(in
 
         if (!string.IsNullOrWhiteSpace(customerOptionalRequest.CustomerId))
         {
-            var projectId = result.Result.InternalId;
-            var customerId = await GetCustomerIdFromProjectAsync(projectId);
+            string? customerId = await ResolveCustomerId(customerOptionalRequest.CustomerId);
 
             if (string.IsNullOrWhiteSpace(customerId))
                 return GetPreflightResponse<ProjectStatusChangedPayload>();
@@ -135,8 +132,7 @@ public class WebhookList(InvocationContext invocationContext) : XtrfInvocable(in
 
             if (!string.IsNullOrWhiteSpace(customerOptionalRequest.CustomerId))
             {
-                var projectId = result.Result.ProjectInternalId;
-                var customerId = await GetCustomerIdFromProjectAsync(projectId);
+                string? customerId = await ResolveCustomerId(customerOptionalRequest.CustomerId);
 
                 if (string.IsNullOrWhiteSpace(customerId))
                     return GetPreflightResponse<JobStatusChangedPayload>();
@@ -196,62 +192,11 @@ public class WebhookList(InvocationContext invocationContext) : XtrfInvocable(in
             ReceivedWebhookRequestType = WebhookRequestType.Preflight
         };
 
-    private async Task<string?> GetCustomerIdFromProjectAsync(string projectInternalId)
+    private async Task<string?> ResolveCustomerId(string customerExactName)
     {
-        var classicReq = new XtrfRequest($"/projects/{projectInternalId}", Method.Get, Creds);
-        var customerId = await TryExtractCustomerIdAsync(classicReq);
-        if (!string.IsNullOrEmpty(customerId))
-            return customerId;
-
-        var smartCandidates = new[]
-        {
-            $"/v2/projects/{projectInternalId}",
-            $"/smart/projects/{projectInternalId}"
-        };
-
-        foreach (var path in smartCandidates)
-        {
-            var smartReq = new XtrfRequest(path, Method.Get, Creds);
-            customerId = await TryExtractCustomerIdAsync(smartReq);
-            if (!string.IsNullOrEmpty(customerId))
-                return customerId;
-        }
-        return null;
-    }
-
-    private async Task<string?> TryExtractCustomerIdAsync(RestRequest request)
-    {
-        try
-        {
-            var response = await Client.ExecuteWithErrorHandling(request);
-            if (string.IsNullOrWhiteSpace(response.Content))
-                return null;
-
-            var jo = JObject.Parse(response.Content);
-
-            var candidates = new[]
-            {
-                "customer.id",
-                "client.id",
-                "customerId",
-                "clientId",
-                "customer.code",
-                "client.code"
-            };
-
-            foreach (var path in candidates)
-            {
-                var token = jo.SelectToken(path);
-                if (token != null && !string.IsNullOrWhiteSpace(token.ToString()))
-                    return token.ToString();
-            }
-
-            return null;
-        }
-        catch (PluginApplicationException ex) when (ex.Message.Contains("404") || ex.Message.Contains("Not Found"))
-        {
-            return null;
-        }
+        var request = new XtrfRequest("/customers/ids", Method.Get, Creds).AddQueryParameter("nameEquals", customerExactName);
+        var response = await Client.ExecuteWithErrorHandling<int[]>(request);
+        return response.FirstOrDefault().ToString();
     }
 
     #endregion
