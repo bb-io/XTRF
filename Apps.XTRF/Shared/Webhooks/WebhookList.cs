@@ -58,7 +58,7 @@ public class WebhookList(InvocationContext invocationContext) : XtrfInvocable(in
 
         if (!string.IsNullOrWhiteSpace(customerOptionalRequest.CustomerId))
         {
-            string? customerId = await ResolveCustomerId(customerOptionalRequest.CustomerId);
+            string? customerId = await ResolveCustomerId(result.Result.Client);
 
             if (string.IsNullOrWhiteSpace(customerId))
                 return GetPreflightResponse<ProjectStatusChangedPayload>();
@@ -103,6 +103,7 @@ public class WebhookList(InvocationContext invocationContext) : XtrfInvocable(in
         [WebhookParameter] JobOptionalRequest jobOptionalRequest,
         [WebhookParameter] CustomerOptionalRequest customerOptionalRequest)
     {
+        InvocationContext.Logger?.LogInformation(JsonConvert.SerializeObject(webhookRequest.Body), []);
         var result = await HandleWebhook<JobStatusChangedPayload>(webhookRequest,
             status != null ? payload => payload.Status.Equals(status, StringComparison.OrdinalIgnoreCase) : null);
 
@@ -132,7 +133,7 @@ public class WebhookList(InvocationContext invocationContext) : XtrfInvocable(in
 
             if (!string.IsNullOrWhiteSpace(customerOptionalRequest.CustomerId))
             {
-                string? customerId = await ResolveCustomerId(customerOptionalRequest.CustomerId);
+                string? customerId = await ResolveCustomerId(string.Empty);
 
                 if (string.IsNullOrWhiteSpace(customerId))
                     return GetPreflightResponse<JobStatusChangedPayload>();
