@@ -198,16 +198,17 @@ public class WebhookList(InvocationContext invocationContext) : XtrfInvocable(in
 
     private async Task<string?> GetCustomerIdFromProjectAsync(string projectInternalId)
     {
-        var smartCandidates = new[]
+        var endpoints = new[]
         {
-            $"/v2/projects/{projectInternalId}",
-            $"/smart/projects/{projectInternalId}"
+            $"/v2/projects/{projectInternalId}",    // Smart project
+            $"/projects/{projectInternalId}"        // Classic project
         };
 
-        foreach (var path in smartCandidates)
+        foreach (var path in endpoints)
         {
-            var smartReq = new XtrfRequest(path, Method.Get, Creds);
-            string? customerId = await TryExtractCustomerIdAsync(smartReq);
+            var request = new XtrfRequest(path, Method.Get, Creds);
+            
+            string? customerId = await TryExtractCustomerIdAsync(request);
             if (!string.IsNullOrEmpty(customerId))
                 return customerId;
         }
@@ -216,37 +217,39 @@ public class WebhookList(InvocationContext invocationContext) : XtrfInvocable(in
 
     private async Task<string?> TryExtractCustomerIdAsync(RestRequest request)
     {
+        RestResponse response;
         try
         {
-            var response = await Client.ExecuteWithErrorHandling(request);
-            if (string.IsNullOrWhiteSpace(response.Content))
-                return null;
-
-            var jo = JObject.Parse(response.Content);
-
-            var candidates = new[]
-            {
-                "customer.id",
-                "client.id",
-                "customerId",
-                "clientId",
-                "customer.code",
-                "client.code"
-            };
-
-            foreach (var path in candidates)
-            {
-                var token = jo.SelectToken(path);
-                if (token != null && !string.IsNullOrWhiteSpace(token.ToString()))
-                    return token.ToString();
-            }
-
-            return null;
+            response = await Client.ExecuteWithErrorHandling(request);
         }
-        catch (PluginApplicationException ex) when (ex.Message.Contains("404") || ex.Message.Contains("Not Found"))
+        catch (PluginApplicationException ex) when (ex.Message.Contains("no entity Project with id", StringComparison.OrdinalIgnoreCase))
         {
             return null;
         }
+        
+        if (string.IsNullOrWhiteSpace(response.Content))
+            return null;
+
+        var parsedResponse = JObject.Parse(response.Content);
+
+        var candidates = new[]
+        {
+            "customer.id",
+            "client.id",
+            "customerId",
+            "clientId",
+            "customer.code",
+            "client.code"
+        };
+
+        foreach (var path in candidates)
+        {
+            var token = parsedResponse.SelectToken(path);
+            if (token != null && !string.IsNullOrWhiteSpace(token.ToString()))
+                return token.ToString();
+        }
+
+        return null;
     }
 
     #endregion
