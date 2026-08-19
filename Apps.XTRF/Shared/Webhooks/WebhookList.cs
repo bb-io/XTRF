@@ -103,7 +103,8 @@ public class WebhookList(InvocationContext invocationContext) : XtrfInvocable(in
         [WebhookParameter] JobOptionalRequest jobOptionalRequest,
         [WebhookParameter] CustomerOptionalRequest customerOptionalRequest)
     {
-        InvocationContext.Logger?.LogInformation(JsonConvert.SerializeObject(webhookRequest.Body), []);
+        var rawBody = System.Text.Json.JsonSerializer.Serialize(webhookRequest.Body);
+        InvocationContext.Logger?.LogInformation(rawBody, []);
         var result = await HandleWebhook<JobStatusChangedPayload>(webhookRequest,
             status != null ? payload => payload.Status.Equals(status, StringComparison.OrdinalIgnoreCase) : null);
 
