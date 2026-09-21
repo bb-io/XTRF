@@ -4,6 +4,7 @@ using Newtonsoft.Json;
 using System.Net;
 using Apps.XTRF.Shared.DataSourceHandlers.EnumHandlers;
 using Apps.XTRF.Shared.Invocables;
+using Apps.XTRF.Shared.Webhooks.Models.Inputs;
 using Apps.XTRF.Shared.Webhooks.Models.Payloads;
 using Apps.XTRF.Shared.Webhooks.Models.Request;
 using Blackbird.Applications.Sdk.Common;
@@ -25,36 +26,60 @@ public class WebhookList(InvocationContext invocationContext) : XtrfInvocable(in
 
     [Webhook("On project created", typeof(ProjectCreatedHandler),
         Description = "Triggered when a new XTRF project is created")]
-    public Task<WebhookResponse<ProjectCreatedPayload>> ProjectCreatedHandler(WebhookRequest webhookRequest)
-        => HandleWebhook<ProjectCreatedPayload>(webhookRequest);
+    public async Task<WebhookResponse<ProjectCreatedPayload>> ProjectCreatedHandler(
+        WebhookRequest webhookRequest,
+        [WebhookParameter] ProjectNameContainsInput projectNameContainsInput)
+    {
+        var result = await HandleWebhook<ProjectCreatedPayload>(webhookRequest);
+
+        if (result.Result is null)
+            return GetPreflightResponse<ProjectCreatedPayload>();
+
+        if (!string.IsNullOrWhiteSpace(projectNameContainsInput.ProjectNameContains) &&
+            (string.IsNullOrEmpty(result.Result.Name) ||
+             !result.Result.Name.Contains(projectNameContainsInput.ProjectNameContains.Trim(),
+                 StringComparison.OrdinalIgnoreCase)))
+        {
+            return GetPreflightResponse<ProjectCreatedPayload>();
+        }
+
+        return result;
+    }
 
     [Webhook("On project status changed", typeof(ProjectStatusChangedHandler),
         Description = "Triggered when the status of an XTRF project is changed")]
     public async Task<WebhookResponse<ProjectStatusChangedPayload>> ProjectStatusChangedHandler(
         WebhookRequest webhookRequest,
         [WebhookParameter] [Display("Project status")] [StaticDataSource(typeof(ProjectStatusDataHandler))] string? status,
+        [WebhookParameter] ProjectNameContainsInput projectNameContainsInput,
         [WebhookParameter] ProjectOptionalRequest projectOptionalRequest,
         [WebhookParameter] CustomerOptionalRequest customerOptionalRequest)
     {
-        var result = await HandleWebhook<ProjectStatusChangedPayload>(webhookRequest,
-            status != null ? payload =>
-            {
-                if (string.IsNullOrEmpty(payload.Status))
-                    return false;
-
-                // API requests use 'CanceLLed', but the webhook payload uses 'CanceLed' :-/
-                if (status.Equals("CANCELLED", StringComparison.OrdinalIgnoreCase))
-                {
-                    return payload.Status.Equals("CANCELLED", StringComparison.OrdinalIgnoreCase) ||
-                           payload.Status.Equals("CANCELED", StringComparison.OrdinalIgnoreCase);
-                }
-
-                return payload.Status.Equals(status, StringComparison.OrdinalIgnoreCase);
-            }
-        : null);
+        var result = await HandleWebhook<ProjectStatusChangedPayload>(webhookRequest);
 
         if (result.Result is null)
             return GetPreflightResponse<ProjectStatusChangedPayload>();
+
+        if (status is not null)
+        {
+            // API requests use 'CanceLLed', but the webhook payload uses 'CanceLed' :-/
+            var statusMatches = !string.IsNullOrEmpty(result.Result.Status) &&
+                                (status.Equals("CANCELLED", StringComparison.OrdinalIgnoreCase)
+                                    ? result.Result.Status.Equals("CANCELLED", StringComparison.OrdinalIgnoreCase) ||
+                                      result.Result.Status.Equals("CANCELED", StringComparison.OrdinalIgnoreCase)
+                                    : result.Result.Status.Equals(status, StringComparison.OrdinalIgnoreCase));
+
+            if (!statusMatches)
+                return GetPreflightResponse<ProjectStatusChangedPayload>();
+        }
+
+        if (!string.IsNullOrWhiteSpace(projectNameContainsInput.ProjectNameContains) &&
+            (string.IsNullOrEmpty(result.Result.Name) ||
+             !result.Result.Name.Contains(projectNameContainsInput.ProjectNameContains.Trim(),
+                 StringComparison.OrdinalIgnoreCase)))
+        {
+            return GetPreflightResponse<ProjectStatusChangedPayload>();
+        }
 
         if (projectOptionalRequest.ProjectId != null && !result.Result.InternalId.Equals(projectOptionalRequest.ProjectId))
             return GetPreflightResponse<ProjectStatusChangedPayload>();
