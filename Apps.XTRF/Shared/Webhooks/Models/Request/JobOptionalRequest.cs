@@ -12,4 +12,7 @@ public class JobOptionalRequest
     [Display("Job type name")]
     [DataSource(typeof(JobTypeNameDataHandler))]
     public string? JobTypeName { get; set; }
+
+    [Display("Step type name")]
+    public string? StepTypeName { get; set; }
 }
