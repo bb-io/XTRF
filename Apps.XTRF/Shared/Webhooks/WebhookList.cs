@@ -11,8 +11,10 @@ using Blackbird.Applications.Sdk.Common;
 using Blackbird.Applications.Sdk.Common.Dictionaries;
 using Blackbird.Applications.Sdk.Common.Invocation;
 using Apps.XTRF.Classic.Models;
+using Apps.XTRF.Classic.Models.Entities;
 using Apps.XTRF.Shared.Api;
 using Apps.XTRF.Shared.Extensions;
+using Apps.XTRF.Smart.Models.Entities;
 using Blackbird.Applications.Sdk.Common.Exceptions;
 using Newtonsoft.Json.Linq;
 using RestSharp;
@@ -159,6 +161,17 @@ public class WebhookList(InvocationContext invocationContext) : XtrfInvocable(in
                 return GetPreflightResponse<JobStatusChangedPayload>();
             }
 
+            if (!string.IsNullOrWhiteSpace(jobOptionalRequest.StepTypeName))
+            {
+                var stepTypeName = await GetStepTypeNameFromJobAsync(result.Result.JobInternalId);
+
+                if (!string.Equals(stepTypeName?.Trim(), jobOptionalRequest.StepTypeName.Trim(),
+                        StringComparison.OrdinalIgnoreCase))
+                {
+                    return GetPreflightResponse<JobStatusChangedPayload>();
+                }
+            }
+
             if (!string.IsNullOrWhiteSpace(customerOptionalRequest.CustomerId))
             {
                 var projectId = result.Result.ProjectInternalId;
@@ -239,6 +252,20 @@ public class WebhookList(InvocationContext invocationContext) : XtrfInvocable(in
                 return customerId;
         }
         return null;
+    }
+
+    private async Task<string?> GetStepTypeNameFromJobAsync(string jobInternalId)
+    {
+        if (long.TryParse(jobInternalId, out _))
+        {
+            var request = new XtrfRequest($"/jobs/{jobInternalId}", Method.Get, Creds);
+            var job = await Client.ExecuteWithErrorHandling<ClassicJob>(request);
+            return job.StepType?.Name;
+        }
+
+        var smartRequest = new XtrfRequest($"/v2/jobs/{jobInternalId}", Method.Get, Creds);
+        var smartJob = await Client.ExecuteWithErrorHandling<SmartJob>(smartRequest);
+        return smartJob.StepType?.Name;
     }
 
     private async Task<string?> TryExtractCustomerIdAsync(RestRequest request)
