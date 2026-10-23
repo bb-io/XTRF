@@ -103,12 +103,12 @@ public class SmartProjectActions(InvocationContext invocationContext, IFileManag
     }
 
     [Action("Smart: List files in project", Description = "List all files in a smart project")]
-    public async Task<ListFilesResponse> GetFilesByProject([ActionParameter] ProjectIdentifier projectIdentifier,
+    public async Task<ListProjectFilesResponse> GetFilesByProject([ActionParameter] ProjectIdentifier projectIdentifier,
         [ActionParameter] FilterLanguageOptionalIdentifier languageIdentifier,
         [ActionParameter] SmartFileCategoryOptionalIdentifier fileCategoryIdentifier)
     {
         var request = new XtrfRequest($"/v2/projects/{projectIdentifier.ProjectId}/files", Method.Get, Creds);
-        var files = await Client.ExecuteWithErrorHandling<IEnumerable<SmartFileXTRF>>(request);
+        var files = await Client.ExecuteWithErrorHandling<IEnumerable<ProjectFileResponse>>(request);
         var filteredFiles = files.Where(file =>
                 languageIdentifier.LanguageId is null ||
                 file.LanguageRelation.Languages.Contains(languageIdentifier.LanguageId))
@@ -166,10 +166,10 @@ public class SmartProjectActions(InvocationContext invocationContext, IFileManag
     }
 
     [Action("Smart: Get project file details", Description = "Get information about specific file in a smart project")]
-    public async Task<SmartFileXTRF> GetProjectFile([ActionParameter] FileIdentifier fileIdentifier)
+    public async Task<ProjectFileResponse> GetProjectFile([ActionParameter] FileIdentifier fileIdentifier)
     {
         var request = new XtrfRequest($"/v2/projects/files/{fileIdentifier.FileId}", Method.Get, Creds);
-        var file = await Client.ExecuteWithErrorHandling<SmartFileXTRF>(request);
+        var file = await Client.ExecuteWithErrorHandling<ProjectFileResponse>(request);
         return file;
     }
 
