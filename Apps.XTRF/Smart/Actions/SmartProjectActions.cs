@@ -152,11 +152,7 @@ public class SmartProjectActions(InvocationContext invocationContext, IFileManag
         string filename)
     {
 
-        var details = await Client.ExecuteWithErrorHandling<ProjectFileResponse>(
-            new XtrfRequest(
-                $"/v2/projects/files/{fileIdentifier.FileId}",
-                Method.Get,
-                Creds));
+        var details = await GetProjectFile(fileIdentifier);
 
         HttpRequestMessage httpRequest;
 
