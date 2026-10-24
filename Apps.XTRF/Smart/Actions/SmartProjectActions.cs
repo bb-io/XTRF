@@ -147,22 +147,43 @@ public class SmartProjectActions(InvocationContext invocationContext, IFileManag
     }
 
     [Action("Smart: Download file", Description = "Download the content of a specific file")]
-    public Task<FileWrapper> DownloadFile([ActionParameter] FileIdentifier fileIdentifier,
+    public async Task<FileWrapper> DownloadFile([ActionParameter] FileIdentifier fileIdentifier,
         [ActionParameter] [Display("Filename")]
         string filename)
     {
-        filename = filename.Trim();
 
-        var token = Creds.Get(CredsNames.ApiToken).Value;
+        var details = await Client.ExecuteWithErrorHandling<ProjectFileResponse>(
+            new XtrfRequest(
+                $"/v2/projects/files/{fileIdentifier.FileId}",
+                Method.Get,
+                Creds));
 
-        var url = $"{BaseUrl}/home-api/v2/projects/files/{fileIdentifier.FileId}/download/{Uri.EscapeDataString(filename)}";
-        var httpRequest = new HttpRequestMessage(HttpMethod.Get, url);
-        httpRequest.Headers.Add("X-AUTH-ACCESS-TOKEN", token);
+        HttpRequestMessage httpRequest;
 
-        var contentType = MimeTypes.GetMimeType(filename);
-        var fileReference = new FileReference(httpRequest, filename, contentType);
+        if (details.IsLink == true)
+        {
+            var externalUrl = URLValidationForExternalLinksDownload.ValidateExternalUrl(details.Url);
+            httpRequest = new HttpRequestMessage(HttpMethod.Get, externalUrl);
 
-        return Task.FromResult(new FileWrapper { File = fileReference });
+        }
+        else
+        {
+            var token = Creds.Get(CredsNames.ApiToken).Value;
+            var url = $"{BaseUrl}/home-api/v2/projects/files/" +
+                      $"{fileIdentifier.FileId}/download/" +
+                      Uri.EscapeDataString(filename);
+
+            httpRequest = new HttpRequestMessage(HttpMethod.Get, url);
+            httpRequest.Headers.Add("X-AUTH-ACCESS-TOKEN", token);
+        }
+
+        var fileReference = new FileReference(
+            httpRequest,
+            filename,
+            MimeTypes.GetMimeType(filename));
+
+        return new FileWrapper { File = fileReference };
+
     }
 
     [Action("Smart: Get project file details", Description = "Get information about specific file in a smart project")]
