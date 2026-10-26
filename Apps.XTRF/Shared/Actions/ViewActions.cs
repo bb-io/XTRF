@@ -4,6 +4,7 @@ using Apps.XTRF.Shared.Models.Requests.Browser;
 using Apps.XTRF.Shared.Models.Requests.Project;
 using Apps.XTRF.Shared.Models.Responses.Browser;
 using Apps.XTRF.Shared.Models.Responses.Project;
+using Apps.XTRF.Shared.Services;
 using Apps.XTRF.Utils;
 using Blackbird.Applications.Sdk.Common;
 using Blackbird.Applications.Sdk.Common.Actions;
@@ -270,62 +271,14 @@ namespace Apps.XTRF.Shared.Actions
         [Action("Search rows in view", Description = "Search rows matching a dynamic filter in the specified view")]
         public async Task<SearchRowsInViewResponse> SearchRowsInView([ActionParameter] ViewSearchRequest input)
         {
-            const int pageSize = 1000;
-            var page = 1;
-
-            var all = new List<Row>();
-            var totalRows = 0;
-
-            var (viewId, uiFilters) = XtrfViewUrlParser.Parse(input.QueryUrl);
-            var apiFilters = XtrfUiFiltersConverter.ToApiQueryParams(uiFilters);
-
-            List<string> columnNames = new();
-
-            while (true)
-            {
-                var request = new XtrfRequest("/browser", Method.Get, Creds);
-
-                request.AddQueryParameter("viewId", viewId);
-                request.AddQueryParameter("page", page.ToString());
-                request.AddQueryParameter("maxRows", pageSize.ToString());
-
-                foreach (var kv in apiFilters)
-                    request.AddQueryParameter(kv.Key, kv.Value);
-
-                var result = await Client.ExecuteWithErrorHandling<GetViewValuesDto>(request);
-
-                if (page == 1)
-                {
-                    totalRows = result.Header?.Pagination?.UnfilteredRowsCount ?? 0;
-
-                    columnNames = (result.Header?.Columns ?? Enumerable.Empty<Column>())
-                        .Select(c =>
-                        {
-                            var label = !string.IsNullOrWhiteSpace(c.FullHeader) ? c.FullHeader
-                                      : !string.IsNullOrWhiteSpace(c.Header) ? c.Header
-                                      : c.Name;
-
-                            return string.IsNullOrWhiteSpace(c.Name) ? label : $"{label} ({c.Name})";
-                        })
-                        .ToList();
-                }
-
-                if (result.Rows?.Values?.Any() == true)
-                    all.AddRange(result.Rows.Values);
-
-                var pagination = result.Header?.Pagination;
-                if (pagination == null || page >= pagination.PagesCount)
-                    break;
-
-                page++;
-            }
+            var result = await new ViewRowsService(Client, Creds).SearchAsync(input.QueryUrl);
 
             return new SearchRowsInViewResponse
             {
-                ColumnNames = columnNames,
-                Rows = all.Select(r => r.Columns?.ToList() ?? new List<string>()).ToList(),
-                FilteredRows = all.Count,
-                TotalRows = totalRows
+                ColumnNames = result.ColumnNames,
+                Rows = result.Rows.Select(r => r.Columns?.ToList() ?? new List<string>()).ToList(),
+                FilteredRows = result.Rows.Count,
+                TotalRows = result.TotalRows
             };
         }
     }
