@@ -28,7 +28,7 @@ internal static class ViewPollingResponseFactory
             {
                 FlyBird = false,
                 Memory = memory,
-                Result = new List<ViewRowResponse>()
+                Result = null
             };
         }
 
@@ -50,7 +50,7 @@ internal static class ViewPollingResponseFactory
         {
             FlyBird = newRows.Count > 0,
             Memory = memory,
-            Result = newRows
+            Result = newRows.Count > 0 ? newRows : null
         };
     }
 
