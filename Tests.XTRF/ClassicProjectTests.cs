@@ -1,6 +1,7 @@
 ﻿using XTRF.Base;
 using Newtonsoft.Json;
 using Apps.XTRF.Classic.Actions;
+using Apps.XTRF.Classic.Models.Identifiers;
 using Apps.XTRF.Classic.Models.Requests.ClassicProject;
 using Apps.XTRF.Shared.Models.Identifiers;
 
@@ -47,15 +48,19 @@ public class ClassicProjectTests : TestBase
     }
 
     [TestMethod]
-    public async Task Downloadfile_ReturnsResponse()
+    public async Task DownloadFile_ReturnsResponse()
     {
-        var client = new ClassicProjectActions(InvocationContext, FileManager);
+        // Arrange
+        var actions = new ClassicProjectActions(InvocationContext, FileManager);
+        var taskId = new ClassicTaskIdentifier { TaskId = "139" };
+        var fileId = new ClassicFileIdentifier { FileId = "79" };
 
-        var result = await client.DownloadFile(new Apps.XTRF.Classic.Models.Identifiers.ClassicTaskIdentifier { TaskId= "87" },
-            new Apps.XTRF.Classic.Models.Identifiers.ClassicFileIdentifier { FileId= "7" });
+        // Act
+        var result = await actions.DownloadFile(taskId, fileId);
 
+        // Assert
         Assert.IsNotNull(result);
-        Console.WriteLine(JsonConvert.SerializeObject(result, Formatting.Indented));
+        Console.WriteLine(result.File.Name);
     }
 
     [TestMethod]

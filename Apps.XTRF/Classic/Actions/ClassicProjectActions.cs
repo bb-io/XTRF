@@ -12,26 +12,19 @@ using Apps.XTRF.Shared.Models.Identifiers;
 using Apps.XTRF.Smart.Models.Responses.File;
 using Blackbird.Applications.Sdk.Common;
 using Blackbird.Applications.Sdk.Common.Actions;
-using Blackbird.Applications.Sdk.Common.Files;
 using Blackbird.Applications.Sdk.Common.Invocation;
 using Blackbird.Applications.SDK.Extensions.FileManagement.Interfaces;
 using Blackbird.Applications.Sdk.Utils.Extensions.Http;
-using Blackbird.Applications.Sdk.Utils.Extensions.Sdk;
 using RestSharp;
 using Blackbird.Applications.Sdk.Common.Exceptions;
 using Apps.XTRF.Classic.Models.Responses;
-using Apps.XTRF.Classic.Models.Requests;
 
 namespace Apps.XTRF.Classic.Actions;
 
 [ActionList("Classic: projects")]
-public class ClassicProjectActions : BaseFileActions
+public class ClassicProjectActions(InvocationContext invocationContext, IFileManagementClient fileManagementClient)
+    : BaseFileActions(invocationContext, fileManagementClient)
 {
-    public ClassicProjectActions(InvocationContext invocationContext, IFileManagementClient fileManagementClient) 
-        : base(invocationContext, fileManagementClient)
-    {
-    }
-
     #region Get
     
     [Action("Classic: Get project details", Description = "Get information about classic project")]
@@ -56,37 +49,21 @@ public class ClassicProjectActions : BaseFileActions
                 .Concat(j.Files?.OutputFiles ?? Enumerable.Empty<ClassicFileXTRF>())
             );
 
+        string fileId = fileIdentifier.FileId;
+        
         var taskLevelOutput = filesResp?.OutputFiles ?? Enumerable.Empty<ClassicFileXTRF>();
-        var allFiles = jobFiles.Concat(taskLevelOutput);
-        var targetFile = allFiles.FirstOrDefault(f => f.Id == fileIdentifier.FileId);
+        var targetFile = jobFiles.Concat(taskLevelOutput).FirstOrDefault(f => f.Id == fileId) ??
+                         throw new PluginMisconfigurationException($"File ID {fileId} was not found for task {taskIdentifier.TaskId}");
 
-        var rawName = targetFile?.Name ?? $"xtrf-file-{fileIdentifier.FileId}";
-        var fileName = SafeFileName(rawName, $"xtrf-file-{fileIdentifier.FileId}");
+        var request = new XtrfRequest($"/projects/files/{fileId}/download", Method.Get, Creds);
+        var response = await Client.ExecuteWithErrorHandling(request);
 
-        var token = Creds.Get(CredsNames.ApiToken).Value;
+        var bytes = response.RawBytes ?? throw new PluginApplicationException("XTRF did not return file content");
+        string fileName = targetFile.Name.ToSafeFileName($"xtrf-file-{fileId}");
+        string contentType = MimeTypes.GetMimeType(fileName);
 
-        var url = $"{BaseUrl}/home-api/projects/files/{fileIdentifier.FileId}/download";
-        var httpRequest = new HttpRequestMessage(HttpMethod.Get, url);
-        httpRequest.Headers.Add("X-AUTH-ACCESS-TOKEN", token);
-
-        var contentType = MimeTypes.GetMimeType(fileName);
-        var fileRef = new FileReference(httpRequest, fileName, contentType);
-
-        return new FileWrapper { File = fileRef };
-    }
-
-    private static string SafeFileName(string? name, string fallback)
-    {
-        var n = string.IsNullOrWhiteSpace(name) ? fallback : name;
-
-        n = n.Replace("\r", "").Replace("\n", "").Trim();
-
-        foreach (var ch in Path.GetInvalidFileNameChars())
-            n = n.Replace(ch, '_');
-
-        if (n.EndsWith(".")) n = n.TrimEnd('.');
-
-        return string.IsNullOrWhiteSpace(n) ? fallback : n;
+        var file = await UploadFile(bytes, contentType, fileName);
+        return new FileWrapper { File = file };
     }
 
     #endregion
